@@ -522,9 +522,7 @@ models.</p>
 <p>To use a local model with Ollama:</p>
 <div class="python">
 <pre class="python"><code>from langchain_ollama import ChatOllama
-## ModuleNotFoundError: No module named &#39;langchain_ollama&#39;
-llm = ChatOllama(model=&quot;gpt-oss:20b&quot;)
-## NameError: name &#39;ChatOllama&#39; is not defined</code></pre>
+llm = ChatOllama(model=&quot;gpt-oss:20b&quot;)</code></pre>
 </div>
 <p>
  
@@ -544,9 +542,8 @@ package:</li>
 </ul>
 <div class="python">
 <pre class="python"><code>from dotenv import load_dotenv
-## ModuleNotFoundError: No module named &#39;dotenv&#39;
 load_dotenv()  # This loads environment variables from .env file
-## NameError: name &#39;load_dotenv&#39; is not defined
+## True
 # Now you can use ChatGroq and it will pick up the GROQ_API_KEY automatically</code></pre>
 </div>
 <ul>
@@ -557,9 +554,7 @@ haven’t already:</li>
 <p>To use a cloud model with Groq:</p>
 <div class="python">
 <pre class="python"><code>from langchain_groq import ChatGroq
-## ModuleNotFoundError: No module named &#39;langchain_groq&#39;
-llm = ChatGroq(model=&quot;openai/gpt-oss-120b&quot;)
-## NameError: name &#39;ChatGroq&#39; is not defined</code></pre>
+llm = ChatGroq(model=&quot;openai/gpt-oss-120b&quot;)</code></pre>
 </div>
 <p>
  
@@ -607,7 +602,6 @@ function takes a file path as input and returns the pages of the PDF
 stored in a Python list, with each page as a separate string.</p>
 <div class="python">
 <pre class="python"><code>from PyPDF2 import PdfReader
-## ModuleNotFoundError: No module named &#39;PyPDF2&#39;
 
 def pdf_to_page_list(pdf_path):
     &quot;&quot;&quot;
@@ -624,17 +618,14 @@ def pdf_to_page_list(pdf_path):
     return pages
 
 pdf_pages = pdf_to_page_list(&quot;/Users/peltouz/Downloads/Fake CV.pdf&quot;)
-## NameError: name &#39;PdfReader&#39; is not defined
 pdf_pages
-## NameError: name &#39;pdf_pages&#39; is not defined</code></pre>
+## [&quot;FAKE NAME\nPhone: \nemailADDRESS\nI&#39;m a student studying Aerospace Engineering at the University of Manchester. I have work \nexperience in the retail, catering, and commercial transport industry. I am honest, reliable and\nmy past roles have required good timekeeping and a positive attitude in high pressure \nenvironments. My aim is to get relevant internship experience whilst I am at university so I \ncan graduate with a greater understanding of the engineering industry and what companies \nlook for in engineering graduates.\nEDUCATION\n School (2006-2010) – GCSE\nEnglish – Grade C Business Studies – Grade B\nMaths – Grade C Catering – Grade C\nAdditional Science – Grade C Engineering Double Award – Grade B,C\n College (2010-2012) – Level 2 NVQ\nDiploma in HGV Vehicle Maintenance &amp; Repair\n College (2014-2015) – Level 3 Access to HE\nEngineering Science – 9 Distinctions, 6 Merits\nPhysics – 15 Distinctions\nMaths – 6 Distinctions, 9 Merits \nUniversity of Manchester (2015-Current) BEng/MEng \nAerospace Engineering with a Foundation Year\nWORK EXPERIENCE\nPenventon Park Hotel (May 2009) \nI had 2 weeks work experience at the Penventon Park Hotel in Redruth, Cornwall. My \nprimary role was an assistant kitchen porter and an assistant to the restaurant manager and \nthe head chef. I carried out jobs including washing up, cleaning/tidying and basic food \npreparation. My secondary roles at this work placement were assisting the room \nhousekeeping team, the reception, and the functions department. \nNAME - 1&quot;, &#39;NAME Commercials (June 2010 – June 2013) – Apprentice / Technician\nNAME Commercials is a commercial workshop that maintain and repair heavy goods \nvehicles. As an apprentice, I was tasked to: assist and learn from the senior technicians, to \nkeep the workshop clean and tidy, and to carry out routine servicing and maintenance of \ncustomer vehicles. I attended College one day a week and I achieved a Level 2 NVQ \ncertificate after 2 years of my apprenticeship. I was then promoted to a full time technician, \nmy duties in this job were to continue to hone my skills as a vehicle technician and with this \nrole came more responsibilities such as carrying out regular road safety inspections, \nservicing, maintenance and repair of customer vehicles. \nNAME Commercials (June 2013 – August 2014) – Parts Manager \nI was offered and accepted a position in the office and reception as a parts and store manager.\nThis role included everything to do with vehicle parts in the company. My duties were to \nmanage the warehouse stock levels to make sure fast moving items were replaced when used,\ncarry out customer sales/warranty issues, to source and locate parts required within a certain \ntime frame at the best price, and to administrate and keep a record of all the parts coming in \nand out of the company to ensure an appropriate profit margin. \nNAME Restaurant (August 2014 – December 2014) – Kitchen Porter\nResponsibilities included: loading and unloading an industrial dish washer, keeping the \nkitchen clean and tidy, assisting the head chef wherever required, and vegetable preparation.\nNAME Spar Shop (November 2014 – September 2015) – Shop Assistant\nIn this role I manned the tills at the front of the shop, handled money, and assisted customers \nwherever needed. I had to keep the shop clean and the shelves stocked with items from the \nstores.. For the last 3 months of this job I also assisted the owner of the shop with a morning \npaper round.\nINTERESTS / OTHER \nMy hobbies include: playing the guitar, martial arts, kayaking, and badminton. I\&#39;m interested \nin the development of the UK Space industry and the progress of technology in renewable \nenergy and bio-technology.\nI am also on the Residents Association for NAME Student Residences at the University of \nManchester. My role is Deputy Chair, this position includes: assisting the Chair oversee and \nmanage the responsibilites of the residents association, organising events for the residents of \nthe halls, ensuring proper procedures are taken with regards to administration and event \nplanning, and assisting the &quot;Raise and Give&quot; branch of the University with charity fund \nraisers.\nNAME - 2&#39;, &#39;REFERENCES\n \nTWO REFERENCES HERE, FROM THE SHOP AND THE COMMERCIAL GARAGE\nNAME - 3&#39;]</code></pre>
 </div>
 <p>The following code sets up an MCP server using the FastMCP class:</p>
 <div class="python">
 <pre class="python"><code>from mcp.server.fastmcp import FastMCP
-## ModuleNotFoundError: No module named &#39;mcp&#39;
 
-mcp = FastMCP(&quot;PDF-reader&quot;)
-## NameError: name &#39;FastMCP&#39; is not defined</code></pre>
+mcp = FastMCP(&quot;PDF-reader&quot;)</code></pre>
 </div>
 <p><code>mcp = FastMCP("PDF-reader")</code> creates an instance of the
 MCP server and gives it the name “PDF-reader”. This name identifies your
@@ -675,7 +666,7 @@ def say_hello():
 
 say_hello()
 ## Hello!
-## It took 1.00 seconds</code></pre>
+## It took 1.01 seconds</code></pre>
 </div>
 <p>In the context of MCP, you will use:</p>
 <div class="python">
