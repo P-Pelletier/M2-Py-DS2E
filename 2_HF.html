@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Hugging Face</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">M2 DS2E</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="2_HF.html">HF</a>
+</li>
+<li>
+  <a href="3_MCP.html">MCP</a>
+</li>
+<li>
+  <a href="4_Training.html">Training</a>
+</li>
+<li>
+  <a href="5_Parallelization.html">Parallelization</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/master-ds2e/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Hugging Face</h1>
+
+</div>
+
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+<p>
+ 
+</p>
+<div id="transformers-model" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Transformers model</h1>
+<p>
+ 
+</p>
+<div id="for-which-tasks" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> For which tasks?</h2>
+<ul>
+<li><strong>Classifying whole sentences</strong>:
+<ul>
+<li>Examples: Sentiment analysis, spam detection, grammatical
+correctness, sentence relationship.</li>
+</ul></li>
+<li><strong>Classifying each word in a sentence</strong>:
+<ul>
+<li>Examples: Grammatical components (noun, verb, adjective), named
+entity recognition (person, location, organization).</li>
+</ul></li>
+<li><strong>Generating text content</strong>:
+<ul>
+<li>Examples: Autocomplete text from a prompt, fill in masked words in a
+text.</li>
+</ul></li>
+<li><strong>Extracting an answer from a text</strong>:
+<ul>
+<li>Examples: Given a question and context, extract the answer based on
+the context.</li>
+</ul></li>
+<li><strong>Generating a new sentence from an input text</strong>:
+<ul>
+<li>Examples: Translation, text summarization.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+<div id="a-challenging-task" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> A challenging
+task</h3>
+<ul>
+<li><strong>Human vs Machine Language Processing</strong>:
+<ul>
+<li>Humans understand sentences like “I am hungry” easily, and can
+compare similar sentences like “I am hungry” and “I am sad”.</li>
+<li>Machine learning models find it more difficult to process and
+understand language, requiring careful text processing.</li>
+</ul></li>
+<li><strong>Introduction of Transformers</strong>:
+<ul>
+<li><strong>2017</strong>: Introduction of Transformers by Vaswani et
+al. in the paper “Attention Is All You Need.”
+<ul>
+<li>Neural network architecture learning context and relationships from
+sequential data, initially focused on translation tasks.</li>
+</ul></li>
+</ul></li>
+<li><strong>Influential Transformer Models</strong>:
+<ul>
+<li><strong>June 2018</strong>: GPT - First pretrained transformer
+model, state-of-the-art results on various NLP tasks.</li>
+<li><strong>October 2018</strong>: BERT - Designed to produce better
+sentence summaries.</li>
+<li><strong>February 2019</strong>: GPT-2 - Improved version of GPT, not
+immediately released due to ethical concerns.</li>
+<li><strong>October 2019</strong>: DistilBERT - A distilled version of
+BERT, 60% faster, 40% lighter, retaining 97% of BERT’s performance.</li>
+<li><strong>October 2019</strong>: BART and T5 - Pretrained models using
+the original Transformer architecture.</li>
+<li><strong>May 2020</strong>: GPT-3 - Larger model, capable of
+zero-shot learning.</li>
+<li><strong>November 2022</strong>: GPT-3.5 and <strong>March
+2023</strong>: GPT-4.</li>
+<li>Followed by other models like <strong>Llama</strong>,
+<strong>Claude</strong>, <strong>Gemini</strong>,
+<strong>Mistral</strong>.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+</div>
+</div>
+<div id="pretraining-and-fine-tuning" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Pretraining and
+Fine-tuning</h1>
+<ul>
+<li><strong>Transformer models (GPT, BERT, BART, T5, etc.)</strong> are
+trained as language models on large amounts of raw text using
+self-supervised learning.
+<ul>
+<li>Self-supervised learning: the model learns without human-labeled
+data, as the objective is computed automatically from the inputs.</li>
+<li>These models develop a statistical understanding of language but
+aren’t directly useful for specific tasks.</li>
+</ul></li>
+<li><strong>Transfer learning</strong>: the process where a pretrained
+model is fine-tuned on specific tasks using supervised learning
+(human-annotated labels).
+<ul>
+<li>Pretrained models undergo fine-tuning to adapt to particular
+tasks.</li>
+</ul></li>
+<li><strong>Pretraining</strong>:
+<ul>
+<li>The model is trained from scratch with randomly initialized
+weights.</li>
+<li>Pretraining is resource-intensive in terms of time, data, and
+money.</li>
+<li>It requires a large corpus and can take weeks to complete.</li>
+</ul></li>
+<li><strong>Fine-tuning</strong>:
+<ul>
+<li>Performed after pretraining using a dataset specific to a task.</li>
+<li>Reasons to fine-tune instead of training from scratch:
+<ul>
+<li>The pretrained model shares similarities with the fine-tuning
+dataset.</li>
+<li>Less data and time are required to achieve good results.</li>
+<li>Lower costs in terms of time, data, financial, and environmental
+resources.</li>
+<li>It allows for faster iteration and refinement.</li>
+</ul></li>
+</ul></li>
+<li><strong>Transfer learning advantages</strong>:
+<ul>
+<li>Leverages knowledge from pretraining for improved task-specific
+performance.</li>
+<li>Fine-tuning achieves better results than training from scratch
+unless massive data is available.</li>
+<li>Using pretrained models close to the target task optimizes
+performance.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="transformers-library" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Transformers
+Library</h1>
+<ul>
+<li><p>The 🤗 Transformers library provides tools to create and use
+shared models.</p></li>
+<li><p><strong>Model Hub</strong>:</p>
+<ul>
+<li>Contains thousands of pretrained models for download and use.</li>
+<li>Users can also upload their own models to the Hub.</li>
+</ul></li>
+<li><p><strong>Pipeline() function</strong>:</p>
+<ul>
+<li>The most basic object in the library.</li>
+<li>Connects a model with necessary preprocessing and postprocessing
+steps.</li>
+<li>Allows direct input of text for intelligible output.</li>
+</ul></li>
+<li><p><strong>Three main steps in a pipeline</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>Text is preprocessed into a format the model understands.</li>
+<li>Preprocessed inputs are passed to the model.</li>
+<li>Model predictions are post-processed for easy interpretation.</li>
+</ol></li>
+<li><p><strong>Available pipelines</strong>:</p>
+<ul>
+<li>feature-extraction (vector representation of a text)</li>
+<li>fill-mask</li>
+<li>ner (named entity recognition)</li>
+<li>question-answering</li>
+<li>sentiment-analysis</li>
+<li>summarization</li>
+<li>text-generation</li>
+<li>translation</li>
+<li>zero-shot-classification</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>import os
+hf_token = &quot;your-key&quot;
+custom_cache_dir = &#39;/Users/peltouz/Documents/pretrain&#39;
+
+os.environ[&#39;HF_HOME&#39;] = custom_cache_dir  # Hugging Face home directory for all HF operations
+os.environ[&#39;TRANSFORMERS_CACHE&#39;] = custom_cache_dir  # Transformers-specific cache directory
+os.environ[&#39;HF_DATASETS_CACHE&#39;] = custom_cache_dir  # Datasets-specific cache directory
+os.environ[&#39;HF_METRICS_CACHE&#39;] = custom_cache_dir  # Metrics-specific cache directory
+os.environ[&#39;HF_TOKEN&#39;] = hf_token  # Hugging Face API token</code></pre>
+</div>
+<p>This Python code snippet configures the environment to specify custom
+cache directories for operations involving Hugging Face libraries, and
+it sets an API token for authentication.</p>
+<ul>
+<li><strong>API Token Configuration</strong>:
+<ul>
+<li><code>hf_token</code>: Assigned to a string representing the Hugging
+Face API token.</li>
+<li>Purpose: Used for authenticating and accessing Hugging Face services
+that require credentials.</li>
+</ul></li>
+<li><strong>Custom Cache Directory</strong>:
+<ul>
+<li><code>custom_cache_dir</code>: Set to <code>D:/pretrain</code>.</li>
+<li>Purpose: Specifies a base directory for storing cache files related
+to Hugging Face operations.</li>
+</ul></li>
+<li><strong>Environment Variables</strong>:
+<ul>
+<li><code>HF_HOME</code>: Specifies the base directory for all Hugging
+Face-related operations.</li>
+<li><code>TRANSFORMERS_CACHE</code>: Directory for caching models
+downloaded via the transformers library.</li>
+<li><code>HF_DATASETS_CACHE</code>: Directory for caching datasets
+accessed via the datasets library.</li>
+<li><code>HF_METRICS_CACHE</code>: Directory for caching metrics-related
+files used in model evaluation.</li>
+<li><code>HF_TOKEN</code>: Environment variable for the Hugging Face API
+token to authenticate requests to Hugging Face services.</li>
+</ul></li>
+<li><strong>Purpose of Environment Variables</strong>:
+<ul>
+<li>Ensure all data related to models, datasets, and metrics are stored
+in the specified directory (<code>D:/pretrain</code>).</li>
+<li>Help manage disk space, especially when handling large models or
+datasets.</li>
+<li>Correctly configure credentials for accessing restricted
+services.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="the-pipeline-function" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> The Pipeline
+function</h1>
+<p>
+ 
+</p>
+<div id="sentiment-analysis" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Sentiment
+Analysis</h2>
+<div class="python">
+<pre class="python"><code>from transformers import pipeline
+
+classifier = pipeline(&quot;sentiment-analysis&quot;)
+sentiments = classifier(
+        [&quot;I hate teaching&quot;,
+         &quot;I love programming&quot;]
+    )
+
+print(sentiments)
+## [{&#39;label&#39;: &#39;NEGATIVE&#39;, &#39;score&#39;: 0.9989008903503418}, {&#39;label&#39;: &#39;POSITIVE&#39;, &#39;score&#39;: 0.9998173117637634}]
+sentiments[0][&#39;label&#39;]
+## &#39;NEGATIVE&#39;</code></pre>
+</div>
+<ul>
+<li>A pretrained model fine-tuned for sentiment analysis in English is
+selected by default.</li>
+<li>The model is downloaded and cached when the classifier object is
+created.</li>
+<li>Upon rerunning the command, the cached model is used without needing
+to download again.</li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="zero-shot-classification" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Zero-shot
+classification</h2>
+<div class="python">
+<pre class="python"><code>classifier = pipeline(&quot;zero-shot-classification&quot;)
+classifier(
+    &quot;df %&gt;% filter(!is.na(var1))&quot;,
+    candidate_labels=[&quot;python&quot;, &quot;Rstudio&quot;],
+)
+## {&#39;sequence&#39;: &#39;df %&gt;% filter(!is.na(var1))&#39;, &#39;labels&#39;: [&#39;Rstudio&#39;, &#39;python&#39;], &#39;scores&#39;: [0.6543467044830322, 0.345653235912323]}</code></pre>
+</div>
+<ul>
+<li><strong>Main idea</strong>:
+<ul>
+<li>Classifying unlabelled texts is a challenging task often encountered
+in real-world projects.</li>
+</ul></li>
+<li><strong>Comparison</strong>:
+<ul>
+<li>Annotating text manually is time-consuming and requires domain
+expertise.</li>
+</ul></li>
+<li><strong>Key aspect</strong>:
+<ul>
+<li>The zero-shot-classification pipeline is powerful because it lets
+you specify your own labels for classification, instead of relying on
+pretrained model labels.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="text-generation" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Text generation</h2>
+<div class="python">
+<pre class="python"><code>generator = pipeline(&quot;text-generation&quot;)
+generator(&quot;In my programming course in DS2E I will&quot;)
+## [{&#39;generated_text&#39;: &#39;In my programming course in DS2E I will always focus on the basics of programming and how to make use of the new features of 3D technology in a way that makes sense for an undergraduate.\n\nIf you are looking for the best 3D software, then you will find it here. If you are looking for the best 3D software, then you will find it here.\n\nYou can find the first post of my blog here.\n\nAdvertisements&#39;}]</code></pre>
+</div>
+<ul>
+<li><strong>Main idea</strong>:
+<ul>
+<li>A prompt is provided, and the model auto-completes it by generating
+the remaining text.</li>
+</ul></li>
+<li><strong>Comparison</strong>:
+<ul>
+<li>Similar to the predictive text feature on phones.</li>
+</ul></li>
+<li><strong>Key aspect</strong>:
+<ul>
+<li>Text generation involves randomness, so results may vary</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="mask-filling" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Mask filling</h2>
+<div class="python">
+<pre class="python"><code>unmasker = pipeline(&quot;fill-mask&quot;)
+unmasker(&quot;This course will teach you all about &lt;mask&gt; models.&quot;, top_k=2)
+## [{&#39;score&#39;: 0.19620011746883392, &#39;token&#39;: 30412, &#39;token_str&#39;: &#39; mathematical&#39;, &#39;sequence&#39;: &#39;This course will teach you all about mathematical models.&#39;}, {&#39;score&#39;: 0.04052743315696716, &#39;token&#39;: 38163, &#39;token_str&#39;: &#39; computational&#39;, &#39;sequence&#39;: &#39;This course will teach you all about computational models.&#39;}]</code></pre>
+</div>
+<ul>
+<li><strong>Main idea</strong>:
+<ul>
+<li>The task involves filling in the blanks in a given text.</li>
+</ul></li>
+<li><strong>Comparison</strong>:
+<ul>
+<li>Similar to completing sentences in cloze tests or gap-filling
+exercises.</li>
+</ul></li>
+<li><strong>Key aspect</strong>:
+<ul>
+<li>The focus is on providing contextually appropriate words or phrases
+to complete the text.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="named-entity-recognition" class="section level2" number="4.5">
+<h2><span class="header-section-number">4.5</span> Named entity
+recognition</h2>
+<div class="python">
+<pre class="python"><code>ner = pipeline(&quot;ner&quot;, grouped_entities=True)
+## /Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/transformers/pipelines/token_classification.py:186: UserWarning: `grouped_entities` is deprecated and will be removed in version v5.0.0, defaulted to `aggregation_strategy=&quot;AggregationStrategy.SIMPLE&quot;` instead.
+##   warnings.warn(
+ner(&quot;My name is Pierre and I work at BETA in Strasbourg.&quot;)
+## [{&#39;entity_group&#39;: &#39;PER&#39;, &#39;score&#39;: np.float32(0.99918455), &#39;word&#39;: &#39;Pierre&#39;, &#39;start&#39;: 11, &#39;end&#39;: 17}, {&#39;entity_group&#39;: &#39;ORG&#39;, &#39;score&#39;: np.float32(0.9977419), &#39;word&#39;: &#39;BETA&#39;, &#39;start&#39;: 32, &#39;end&#39;: 36}, {&#39;entity_group&#39;: &#39;LOC&#39;, &#39;score&#39;: np.float32(0.9894748), &#39;word&#39;: &#39;Strasbourg&#39;, &#39;start&#39;: 40, &#39;end&#39;: 50}]</code></pre>
+</div>
+<ul>
+<li><strong>Main idea</strong>:
+<ul>
+<li>Named entity recognition (NER) involves identifying parts of the
+input text that correspond to entities.</li>
+</ul></li>
+<li><strong>Comparison</strong>:
+<ul>
+<li>NER focuses on entities like persons, locations, or organizations in
+the text.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="question-answering" class="section level2" number="4.6">
+<h2><span class="header-section-number">4.6</span> Question
+answering</h2>
+<div class="python">
+<pre class="python"><code>question_answerer = pipeline(&quot;question-answering&quot;)
+question_answerer(
+    question=&quot;Where do I work?&quot;,
+    context=&quot;My name is Pierre and I work at BETA in Strasbourg.&quot;,
+)
+## {&#39;score&#39;: 0.5033916071697604, &#39;start&#39;: 32, &#39;end&#39;: 36, &#39;answer&#39;: &#39;BETA&#39;}</code></pre>
+</div>
+<p>The question-answering pipeline answers questions using information
+from a given context:</p>
+<p>
+ 
+</p>
+</div>
+<div id="summarization" class="section level2" number="4.7">
+<h2><span class="header-section-number">4.7</span> Summarization</h2>
+<div class="python">
+<pre class="python"><code>summarizer = pipeline(&quot;summarization&quot;)
+summarizer(
+    &quot;&quot;&quot;This paper offers insights into the diffusion and impact of artificial intelligence in science.
+More specifically, we show that neural network-based technology meets the essential properties of emerging technologies in the scientific realm.
+It is novel, because it shows discontinuous innovations in the originating domain and is put to new uses in many application domains;
+it is quick growing, its dimensions being subject to rapid change; it is coherent, because it detaches from its technological parents, and integrates and is accepted in different scientific communities;
+and it has a prominent impact on scientific discovery, but a high degree of uncertainty and ambiguity associated with this impact.
+Our findings suggest that intelligent machines diffuse in the sciences, reshape the nature of the discovery process and affect the organization of science.
+We propose a new conceptual framework that considers artificial intelligence as an emerging general method of invention and, on this basis, derive its policy implications.&quot;&quot;&quot;
+)
+## [{&#39;summary_text&#39;: &#39; Neural network-based technology meets the essential properties of emerging technologies in the scientific realm . It is novel, because it shows discontinuous innovations in the originating domain and is put to new uses in many application domains . Researchers propose a new conceptual framework that considers artificial intelligence as an emerging general method of invention .&#39;}]</code></pre>
+</div>
+<p>Summarization is the task of reducing a text into a shorter text
+while keeping all (or most) of the important aspects referenced in the
+text. Here’s an example:</p>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="using-specific-model" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Using specific
+model</h1>
+<p>See this <strong>Warning message</strong>: “Using a pipeline without
+specifying a model name and revision in production is not
+recommended.”</p>
+<ul>
+<li><strong>Recommendation</strong>:
+<ul>
+<li>Specify the model name and revision when using pipelines in
+production environments.</li>
+</ul></li>
+<li><strong>Actionable step</strong>:
+<ul>
+<li>Choose a specific model from the 1M+ models available on Hugging
+Face.</li>
+</ul></li>
+<li><strong>Resource</strong>:
+<ul>
+<li>Hugging Face model repository: <a
+href="https://huggingface.co/models">https://huggingface.co/models</a></li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>generator = pipeline(&quot;text-generation&quot;, model=&quot;distilgpt2&quot;)
+generator(
+    &quot;In my programming course in DS2E I will&quot;,
+    max_length=30,
+    num_return_sequences=3,
+)
+## [{&#39;generated_text&#39;: &#39;In my programming course in DS2E I will see whether I can use my own language in the IDE.\n\n\nI will see if I can use my own language in the IDE.\nI will see if I can use my own language in the IDE.\nI will see if I can use my own language in the IDE.\nI will see if I can use my own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI will see if I can use your own language in the IDE.\nI&#39;}, {&#39;generated_text&#39;: &quot;In my programming course in DS2E I will present a simple way to get the code into the environment. This is a simple way to get the code to the environment. This is a simple way to get the code into the environment. This is a simple way to get the code to the environment. This is a simple way to get the code to the environment. This is a simple way to get the code to the environment.\n\n\n\n\n\nThe first thing you&#39;ll need to do is to type in the following command:\nnpm install composer-plugin\nThe second thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe third thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe fourth thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe fourth thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe fifth thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe fourth thing you will need to do is to type in the following command:\nnpm install composer-plugin\nThe fifth thing you will&quot;}, {&#39;generated_text&#39;: &#39;In my programming course in DS2E I will be using Python 2.7. This will focus on using Python 2.7. The following code is intended to provide an alternative to Python 2.7.\n\n\nPython 2.7. The Python 2.7.\nThe Python 2.7.\nPipeline\npython2.7\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\npython2.7\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\npython2.7\nPython 2.7.\nPython 2.7.\npython2.7\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.\npython2.7\nPython 2.7.\nPython 2.7.\nPython 2.7.\nPython 2.7.&#39;}]</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>translator = pipeline(&quot;translation&quot;, model=&quot;Helsinki-NLP/opus-mt-fr-en&quot;)
+translator(&quot;Ce cours est produit par Hugging Face.&quot;)
+## [{&#39;translation_text&#39;: &#39;This course is produced by Hugging Face.&#39;}]</code></pre>
+</div>
+<p>For translation, you can use a default model if you provide a
+language pair in the task name (such as “translation_en_to_fr”), but the
+easiest way is to pick the model you want to use on the Model Hub.</p>
+<p>Here we’ll try translating from French to English:</p>
+<p>
+ 
+</p>
+</div>
+<div id="the-transformer-archictecture" class="section level1"
+number="6">
+<h1><span class="header-section-number">6</span> The Transformer
+Archictecture</h1>
+<ul>
+<li><strong>Model Composition</strong>:
+<ul>
+<li><strong>Encoder</strong>:
+<ul>
+<li>Receives input and builds its representation (features).</li>
+<li>Optimized for understanding the input.</li>
+</ul></li>
+<li><strong>Decoder</strong>:
+<ul>
+<li>Uses the encoder’s representation (features) and other inputs to
+generate a target sequence.</li>
+<li>Optimized for generating outputs.</li>
+</ul></li>
+</ul></li>
+<li><strong>Usage</strong>:
+<ul>
+<li><strong>Encoder-only models</strong>:
+<ul>
+<li>Suitable for tasks requiring input understanding (e.g., sentence
+classification, named entity recognition).</li>
+</ul></li>
+<li><strong>Decoder-only models</strong>:
+<ul>
+<li>Suitable for generative tasks (e.g., text generation).</li>
+</ul></li>
+<li><strong>Encoder-decoder models (sequence-to-sequence
+models)</strong>:
+<ul>
+<li>Suitable for generative tasks that require an input (e.g.,
+translation, summarization).</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><img src="img/eco-deco.png" /></p>
+<p>
+ 
+</p>
+<div id="attention-layers" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Attention layers</h2>
+<p>Attention layers are integral to the Transformer architecture. The
+paper introducing the Transformer was titled “Attention Is All You
+Need,” highlighting the importance of attention layers.</p>
+<ul>
+<li><p><strong>Function of attention layers</strong>: These layers
+direct the model to focus on specific words in a sentence, while
+downplaying the importance of others.</p></li>
+<li><p><strong>Contextual meaning</strong>: The meaning of a word
+depends not only on the word itself but also on its context, which
+includes other words around it.</p></li>
+</ul>
+<p>
+ 
+</p>
+<div id="the-original-architecture" class="section level3"
+number="6.1.1">
+<h3><span class="header-section-number">6.1.1</span> The original
+architecture</h3>
+<p>The Transformer architecture was initially designed for
+translation.</p>
+<ul>
+<li><strong>Encoder</strong>:
+<ul>
+<li>Receives inputs (sentences) in a certain language during
+training.</li>
+<li>Attention layers can use all the words in a sentence, considering
+both preceding and following words.</li>
+</ul></li>
+<li><strong>Decoder</strong>:
+<ul>
+<li>Receives the same sentences in the desired target language.</li>
+<li>Works sequentially, paying attention only to the words that have
+already been translated (i.e., the preceding words).</li>
+<li>For instance, after predicting the first three words of the
+translated target, the decoder uses these words and the inputs from the
+encoder to predict the fourth word.</li>
+</ul></li>
+<li><strong>Initial Embedding Lookup</strong>:
+<ul>
+<li>The raw embeddings for each token are
+<strong>context-independent</strong>.</li>
+<li>Example: The same embedding is used for “bank” whether it refers to
+a financial institution or a riverbank.</li>
+</ul></li>
+<li><strong>Transformer Layers</strong>:
+<ul>
+<li>After the initial embedding lookup, token embeddings (e.g.,
+<strong>768-dimensional vectors</strong>) are passed through the
+<strong>transformer’s self-attention layers</strong>.</li>
+<li>These layers enable the model to attend to other tokens in the
+sequence, capturing relationships and interactions between words.</li>
+</ul></li>
+<li><strong>Context-Sensitive Representations</strong>:
+<ul>
+<li>As the token embeddings pass through multiple transformer layers,
+each token’s representation becomes <strong>context-sensitive</strong>
+based on surrounding words.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="architectures-vs.-checkpoints" class="section level2"
+number="6.2">
+<h2><span class="header-section-number">6.2</span> Architectures
+vs. checkpoints</h2>
+<ul>
+<li><strong>Architecture</strong>:
+<ul>
+<li>Refers to the skeleton of the model, defining each layer and
+operation within it.</li>
+</ul></li>
+<li><strong>Checkpoints</strong>:
+<ul>
+<li>Weights that are loaded into a given architecture.</li>
+</ul></li>
+<li><strong>Model</strong>:
+<ul>
+<li>An umbrella term that can refer to both architecture and
+checkpoints.</li>
+</ul></li>
+<li><strong>Example</strong>:
+<ul>
+<li>BERT is an architecture.</li>
+<li>bert-base-cased, a set of weights trained by the Google team for the
+first release of BERT, is a checkpoint.</li>
+<li>The term “model” can be used to refer to both the architecture
+(e.g., “BERT model”) and the checkpoint (e.g., “bert-base-cased
+model”).</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+<div id="decoder-models" class="section level3" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Decoder models</h3>
+<ul>
+<li><p><strong>Decoder models</strong> use only the decoder part of a
+Transformer model.</p></li>
+<li><p><strong>Attention mechanism</strong>: At each stage, the
+attention layers can only access the words that are positioned before
+the current word in the sentence.</p></li>
+<li><p>These models are often referred to as <strong>auto-regressive
+models</strong>.</p></li>
+<li><p><strong>Pretraining</strong>: Typically focuses on predicting the
+next word in a sentence.</p></li>
+<li><p><strong>Best suited for</strong>: Tasks involving text
+generation.</p></li>
+<li><p><strong>Examples</strong> of decoder models:</p>
+<ul>
+<li>CTRL</li>
+<li>GPT</li>
+<li>GPT-2</li>
+<li>Transformer XL</li>
+</ul></li>
+</ul>
+<p><img src="img/eco-deco.png" /></p>
+<p><strong>Step 1</strong>: Input Embedding Converts words into
+numerical vectors:</p>
+<pre><code>Text: &quot;The cat eats&quot;
+↓
+Tokens: [The] [cat] [eats]
+↓
+Each becomes a dense vector (e.g., 768 numbers)
+[The] → [0.23, -0.45, 0.67, ..., 0.12]</code></pre>
+<p><strong>Step 2: Positional Encoding</strong> Adds position
+information since transformers don’t inherently understand word
+order:</p>
+<pre><code>Position 0: Gets encoding vector
+Position 1: Gets different encoding vector
+Position 2: Gets another different encoding vector
+
+Final = Word Embedding + Position Encoding</code></pre>
+<p><strong>Step 3: Transformer Block (repeated N times)</strong></p>
+<p><strong>3.1 - <em>Masked</em> Multi-Head Attention</strong></p>
+<p><strong>The Causal Mask:</strong></p>
+<pre><code>When processing &quot;eats&quot; at position 2:
+Can see: [The] [cat] [eats]
+Cannot see: [the] [mouse] (future tokens)
+
+Attention mask matrix:
+         The  cat  eats  the  mouse
+The     [ ✓   ✗    ✗    ✗    ✗   ]
+cat     [ ✓   ✓    ✗    ✗    ✗   ]
+eats    [ ✓   ✓    ✓    ✗    ✗   ]
+the     [ ✓   ✓    ✓    ✓    ✗   ]
+mouse   [ ✓   ✓    ✓    ✓    ✓   ]
+
+(✓ = can see, ✗ = blocked)</code></pre>
+<p><strong>Why “Multi-Head”?</strong> Having multiple attention heads
+(e.g., 12) allows the model to focus on different aspects
+simultaneously: - Head 1: Subject-verb relationships - Head 2: Semantic
+meaning - Head 3: Long-range dependencies - etc.</p>
+<p><strong>3.2 - Add &amp; Norm</strong> Two important techniques: -
+<strong>Residual Connection</strong>: Adds the input back to the output
+(prevents information loss in deep networks) - <strong>Layer
+Normalization</strong>: Stabilizes the numbers to prevent them from
+getting too large or small</p>
+<p>Think of it as: “Keep the original information and just add the new
+insights”</p>
+<p><strong>3.3 - Feed Forward Network</strong> A simple neural network
+applied to each position independently: - Expands the representation
+(768 → 3072 dimensions) - Applies non-linear transformation - Compresses
+back (3072 → 768 dimensions)</p>
+<p>This allows the model to process the attended information and extract
+higher-level features.</p>
+<p><strong>Step 4: Stacking Layers</strong></p>
+<p>These blocks repeat many times: - GPT-2: 12-48 layers - GPT-3: 96
+layers</p>
+<p>Each layer refines understanding: - <strong>Early layers</strong>:
+Grammar, syntax, word relationships - <strong>Middle layers</strong>:
+Meaning, context, semantic relationships<br />
+- <strong>Late layers</strong>: Abstract reasoning, global context</p>
+<p><strong>Step 5: Output Prediction</strong></p>
+<p>The final layer produces probabilities for the next word:</p>
+<pre><code>Current text: &quot;The cat eats&quot;
+
+Probability for next word:
+  [the]   : 0.001
+  [a]     : 0.089
+  [fish]  : 0.156
+  [mice]  : 0.234  ← Most likely
+  [quickly]: 0.078
+  ...</code></pre>
+<p>
+ 
+</p>
+</div>
+<div id="encoder-models" class="section level3" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Encoder models</h3>
+<ul>
+<li><p><strong>Encoder models</strong> use only the encoder part of a
+Transformer model.</p></li>
+<li><p><strong>Attention mechanism</strong>: At each stage, the
+attention layers can access all the words in the sentence.</p></li>
+<li><p>These models are characterized by <strong>bi-directional
+attention</strong> and are often referred to as <strong>auto-encoding
+models</strong>. Processes text <strong>bidirectionally</strong> - can
+see both past and future words. Designed for understanding, not
+generation.</p></li>
+<li><p><strong>Pretraining</strong>: Typically involves corrupting a
+sentence (e.g., by masking random words) and tasking the model with
+reconstructing the original sentence.</p></li>
+<li><p><strong>Best suited for</strong>: Tasks requiring a full
+understanding of the sentence, such as:</p>
+<ul>
+<li>Sentence classification</li>
+<li>Named entity recognition (word classification)</li>
+<li>Extractive question answering</li>
+</ul></li>
+<li><p><strong>Examples</strong> of encoder models:</p>
+<ul>
+<li>ALBERT</li>
+<li>BERT</li>
+<li>DistilBERT</li>
+<li>ELECTRA</li>
+<li>RoBERTa</li>
+</ul></li>
+</ul>
+<p><img src="img/eco-deco.png" /></p>
+<p><strong>Step 1: Input Embedding</strong> Similar to GPT, but adds
+special tokens:</p>
+<pre><code>Text: &quot;The cat eats the mouse&quot;
+↓
+Tokens: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+
+[CLS] = Classification token (for sentence-level tasks)
+[SEP] = Separator (for sentence pairs)</code></pre>
+<p><strong>Step 2: Positional Encoding</strong> Same as GPT - adds
+position information.</p>
+<p><strong>Step 3: Transformer Block</strong></p>
+<p><strong>3.1 - Multi-Head Attention (NO MASK)</strong></p>
+<p><strong>KEY DIFFERENCE: Bidirectional attention</strong></p>
+<pre><code>When processing &quot;cat&quot; at position 2:
+Can see: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+         ↑     ↑     ↑      ↑     ↑      ↑       ↑
+         ALL tokens visible (past AND future)
+
+Attention matrix (no masking):
+          CLS The cat eats the mouse SEP
+CLS      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+The      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+cat      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ] ← Can see everything!
+eats     [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+the      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+mouse    [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+SEP      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]</code></pre>
+<p><strong>Example attention for “eats”:</strong></p>
+<pre><code>Can attend to:
+  - &quot;cat&quot; (subject before): 0.35
+  - &quot;mouse&quot; (object after): 0.40  ← Can see future!
+  - &quot;the&quot; (determiner after): 0.15
+  - others: 0.10</code></pre>
+<p>The model understands <strong>full context</strong> from both
+directions, making it better at understanding what words mean in
+context.</p>
+<p><strong>3.2 - Add &amp; Norm</strong> Same as GPT - residual
+connections and normalization.</p>
+<p><strong>3.3 - Feed Forward</strong> Same as GPT - expand, transform,
+compress.</p>
+<p><strong>Step 4: Stacking Layers</strong> - BERT-base: 12 layers -
+BERT-large: 24 layers</p>
+<p>Each layer builds deeper understanding of the full sentence
+context.</p>
+<p><strong>Step 5: Task-Specific Output</strong></p>
+<p><strong>No autoregressive generation!</strong></p>
+<p>BERT produces a rich representation for each token:</p>
+<pre><code>[CLS]   → vector  ← Used for sentence classification
+[The]   → vector  ← Used for word-level tasks
+[cat]   → vector  ← Used for named entity recognition
+[eats]  → vector  
+...</code></pre>
+<p>
+ 
+</p>
+</div>
+<div id="sequence-to-sequence-models" class="section level3"
+number="6.2.3">
+<h3><span class="header-section-number">6.2.3</span>
+Sequence-to-sequence models</h3>
+<ul>
+<li><p><strong>Encoder-decoder models</strong> (also known as
+<strong>sequence-to-sequence models</strong>) use both parts of the
+Transformer architecture.</p></li>
+<li><p><strong>Attention mechanism</strong>:</p>
+<ul>
+<li>Encoder: The attention layers can access all the words in the input
+sentence.</li>
+<li>Decoder: The attention layers can only access the words positioned
+before the current word in the input.</li>
+</ul></li>
+<li><p><strong>Best suited for</strong>: Tasks that involve generating
+new sentences based on a given input, such as:</p>
+<ul>
+<li>Summarization</li>
+<li>Translation</li>
+<li>Generative question answering</li>
+</ul></li>
+<li><p><strong>Examples</strong> of encoder-decoder models:</p>
+<ul>
+<li>BART</li>
+<li>mBART</li>
+<li>Marian</li>
+<li>T5</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+</div>
+</div>
+<div id="bias-and-limitations" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Bias and
+limitations</h1>
+<ul>
+<li><p>Pretrained and fine-tuned models are powerful tools, but they
+have limitations.</p></li>
+<li><p>The main limitation stems from the nature of pretraining on large
+datasets.</p>
+<ul>
+<li>Data is often scraped indiscriminately from the internet.</li>
+<li>This includes both high-quality and low-quality content.</li>
+</ul></li>
+<li><p>An example is provided with a fill-mask pipeline using the BERT
+model.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>unmasker = pipeline(&quot;fill-mask&quot;, model=&quot;bert-base-uncased&quot;)
+result = unmasker(&quot;This man works as a [MASK].&quot;)
+print([r[&quot;token_str&quot;] for r in result])
+## [&#39;carpenter&#39;, &#39;lawyer&#39;, &#39;farmer&#39;, &#39;businessman&#39;, &#39;doctor&#39;]
+
+result = unmasker(&quot;This woman works as a [MASK].&quot;)
+print([r[&quot;token_str&quot;] for r in result])
+## [&#39;nurse&#39;, &#39;maid&#39;, &#39;teacher&#39;, &#39;waitress&#39;, &#39;prostitute&#39;]</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+<div id="behind-the-pipeline-function" class="section level1"
+number="8">
+<h1><span class="header-section-number">8</span> Behind the pipeline
+function</h1>
+<div class="python">
+<pre class="python"><code>from transformers import pipeline
+
+classifier = pipeline(&quot;sentiment-analysis&quot;)
+sentiments = classifier(
+        [&quot;I hate teaching&quot;,
+         &quot;I love programming&quot;]
+    )
+sentiments
+## [{&#39;label&#39;: &#39;NEGATIVE&#39;, &#39;score&#39;: 0.9989008903503418}, {&#39;label&#39;: &#39;POSITIVE&#39;, &#39;score&#39;: 0.9998173117637634}]</code></pre>
+</div>
+<p>this <code>pipeline</code> groups together three steps:
+preprocessing, passing the inputs through the model, and
+postprocessing:</p>
+<p>
+ 
+</p>
+<div id="preprocessing-with-a-tokenizer" class="section level2"
+number="8.1">
+<h2><span class="header-section-number">8.1</span> Preprocessing with a
+tokenizer</h2>
+<div class="python">
+<pre class="python"><code>from transformers import AutoTokenizer
+
+checkpoint = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)</code></pre>
+</div>
+<ul>
+<li><p><strong>Transformer models</strong> can’t process raw text
+directly.</p></li>
+<li><p>The first step is to <strong>convert text inputs into
+numbers</strong> using a tokenizer.</p></li>
+<li><p>The tokenizer is responsible for:</p>
+<ul>
+<li><strong>Splitting the input</strong> into tokens (words, subwords,
+or symbols like punctuation).</li>
+<li><strong>Mapping each token to an integer</strong>.</li>
+<li><strong>Adding additional inputs</strong> useful to the model.</li>
+</ul></li>
+<li><p>Preprocessing must be consistent with how the model was
+pretrained.</p></li>
+<li><p><strong>AutoTokenizer</strong> class and its
+<strong>from_pretrained()</strong> method help fetch and cache the
+tokenizer information.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import AutoTokenizer
+
+checkpoint = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)</code></pre>
+</div>
+<ul>
+<li><p>The default checkpoint for the <strong>sentiment-analysis
+pipeline</strong> is
+<strong>distilbert-base-uncased-finetuned-sst-2-english</strong>.</p></li>
+<li><p>🤗 Transformers can be used without concern for the underlying ML
+framework (PyTorch, TensorFlow, or Flax).</p></li>
+<li><p>Transformer models require <strong>tensors</strong> as
+input.</p></li>
+<li><p>Tensors are similar to NumPy arrays, which can have:</p>
+<ul>
+<li>0D (scalar),</li>
+<li>1D (vector),</li>
+<li>2D (matrix),</li>
+<li>or more dimensions.</li>
+</ul></li>
+<li><p>Other ML frameworks’ tensors behave similarly to NumPy arrays and
+are easy to instantiate.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>raw_inputs = [
+    &quot;I hate teaching&quot;,
+    &quot;I love programming&quot;,
+]
+inputs = tokenizer(raw_inputs, padding=True, truncation=True, return_tensors=&quot;pt&quot;) # Here pytorch
+inputs
+## {&#39;input_ids&#39;: tensor([[ 101, 1045, 5223, 4252,  102],
+##         [ 101, 1045, 2293, 4730,  102]]), &#39;attention_mask&#39;: tensor([[1, 1, 1, 1, 1],
+##         [1, 1, 1, 1, 1]])}</code></pre>
+</div>
+<ul>
+<li><strong>Output Structure</strong>:
+<ul>
+<li>A dictionary containing two keys: <code>input_ids</code> and
+<code>attention_mask</code>.</li>
+<li><code>input_ids</code>: Two rows of integers, one for each sentence,
+representing the unique identifiers of the tokens.</li>
+<li><code>attention_mask</code>: A tensor with the same shape as the
+<code>input_ids</code>, filled with 0s and 1s, where:
+<ul>
+<li>1s indicate tokens to be attended to.</li>
+<li>0s indicate tokens to be ignored by the model’s attention
+layers.</li>
+</ul></li>
+</ul></li>
+<li><strong>Padding</strong>:
+<ul>
+<li>Padding ensures all sequences in a batch match the length of the
+longest sequence by adding a special padding token (e.g.,
+<code>[PAD]</code>).</li>
+<li>Padding is important for:
+<ul>
+<li>Consistency in sequence length across a batch, ensuring efficient
+processing.</li>
+<li>Avoiding model bias caused by sequence length variations, which
+could affect performance.</li>
+</ul></li>
+</ul></li>
+<li><strong>Example</strong>:
+<ul>
+<li>Sentences:
+<ul>
+<li>“I love NLP.”</li>
+<li>“Padding in tokenizers is useful.”</li>
+</ul></li>
+<li>Maximum sequence length = 5 tokens.</li>
+<li>The shorter sentence is padded:
+<ul>
+<li>“I love NLP [PAD] [PAD]”</li>
+</ul></li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="tokenizers" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Tokenizers</h2>
+<p>
+ 
+</p>
+<div id="word-based-tokenizer" class="section level3" number="8.2.1">
+<h3><span class="header-section-number">8.2.1</span> Word-based
+Tokenizer</h3>
+<div class="python">
+<pre class="python"><code>tokenized_text = &quot;tokenize the text into words by applying Python’s split() function&quot;.split()
+tokenized_text
+## [&#39;tokenize&#39;, &#39;the&#39;, &#39;text&#39;, &#39;into&#39;, &#39;words&#39;, &#39;by&#39;, &#39;applying&#39;, &#39;Python’s&#39;, &#39;split()&#39;, &#39;function&#39;]</code></pre>
+</div>
+<ul>
+<li><p>Simple and easy to set up with few rules.</p></li>
+<li><p>Yields decent results for many applications.</p></li>
+<li><p><strong>Goal:</strong></p>
+<ul>
+<li>Split raw text into words.</li>
+<li>Find a numerical representation for each word.</li>
+</ul></li>
+<li><p><strong>Text Splitting Methods:</strong></p>
+<ul>
+<li>Can split text in different ways.</li>
+<li>Example: Using whitespace to tokenize text into words.</li>
+<li>Python’s <code>split()</code> function can be used for this
+purpose.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>tokenized_text = &quot;tokenize the text into words by applying Python’s split() function&quot;.split()
+tokenized_text
+## [&#39;tokenize&#39;, &#39;the&#39;, &#39;text&#39;, &#39;into&#39;, &#39;words&#39;, &#39;by&#39;, &#39;applying&#39;, &#39;Python’s&#39;, &#39;split()&#39;, &#39;function&#39;]</code></pre>
+</div>
+<ul>
+<li><p>Word tokenizers can include extra rules for punctuation.</p></li>
+<li><p>These tokenizers create vocabularies, defined by the total number
+of independent tokens in the corpus.</p></li>
+<li><p>Each word in the corpus is assigned a unique ID, starting from 0,
+which the model uses to identify each word.</p></li>
+<li><p>A comprehensive word-based tokenizer needs an identifier for
+every word in a language, leading to a large number of tokens.</p>
+<ul>
+<li>Example: The English language has over 500,000 words, meaning a vast
+vocabulary and many unique IDs.</li>
+<li>Words like “dog” and “dogs” or “run” and “running” are seen as
+unrelated by the model initially, as there’s no inherent recognition of
+similarity.</li>
+</ul></li>
+<li><p>Tokenizers include an “unknown” token (often <code>[UNK]</code>
+or <code>&lt;unk&gt;</code>) for words not in the vocabulary.</p></li>
+<li><p>If many unknown tokens are produced, it indicates that the
+tokenizer is struggling to represent words accurately, losing
+information.</p></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="character-based" class="section level3" number="8.2.2">
+<h3><span class="header-section-number">8.2.2</span>
+Character-based</h3>
+<p><strong>Character-based tokenization</strong> splits text into
+characters rather than words.</p>
+<p><strong>Primary benefits:</strong> - Smaller vocabulary. - Fewer
+out-of-vocabulary (unknown) tokens, as every word can be constructed
+from characters.</p>
+<p><strong>Challenges:</strong> - Handling spaces and punctuation can
+raise issues.</p>
+<p><strong>Drawbacks:</strong> - Representation may be less meaningful
+since individual characters carry less information compared to words. -
+This varies across languages (e.g., Chinese characters hold more
+information than characters in Latin languages). - It produces a larger
+number of tokens to process. A word that is a single token in word-based
+tokenization may become 10+ tokens in character-based tokenization.</p>
+<p>
+ 
+</p>
+</div>
+<div id="subword-tokenization" class="section level3" number="8.2.3">
+<h3><span class="header-section-number">8.2.3</span> Subword
+tokenization</h3>
+<p><strong>Subword tokenization</strong> offers a compromise, combining
+word-based and character-based approaches.</p>
+<ul>
+<li>Subword tokenization algorithms are based on the idea that:
+<ul>
+<li>Frequently used words should not be split.</li>
+<li>Rare words should be decomposed into meaningful subwords.</li>
+</ul></li>
+<li>Example:
+<ul>
+<li>“Annoyingly” could be split into “annoying” and “ly”.</li>
+<li>These subwords are more common and retain the original meaning.</li>
+<li><code>Let's&lt;/w&gt; do&lt;/w&gt; token ization&lt;/w&gt; !&lt;/w&gt;</code></li>
+</ul></li>
+<li>Benefits of subword tokenization:
+<ul>
+<li>Semantic meaning is preserved through subword combinations.</li>
+<li>Efficient representation of long words using fewer tokens.</li>
+<li>Achieves good vocabulary coverage.</li>
+<li>Minimizes unknown tokens.</li>
+</ul>
+<h3 id="loading-and-saving">Loading and saving</h3></li>
+</ul>
+<div class="python">
+<pre class="python"><code>tokenizer.save_pretrained(&quot;/Users/peltouz/Documents/pretrain/test&quot;)
+## (&#39;/Users/peltouz/Documents/pretrain/test/tokenizer_config.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/special_tokens_map.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/vocab.txt&#39;, &#39;/Users/peltouz/Documents/pretrain/test/added_tokens.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/tokenizer.json&#39;)</code></pre>
+</div>
+<ul>
+<li><p>Loading and saving tokenizers is similar to handling
+models.</p></li>
+<li><p>It uses the same two methods: <code>from_pretrained()</code> and
+<code>save_pretrained()</code>.</p></li>
+<li><p>These methods load or save:</p>
+<ul>
+<li>The algorithm used by the tokenizer (comparable to the architecture
+of a model).</li>
+<li>The vocabulary (comparable to the weights of a model).</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>tokenizer.save_pretrained(&quot;/Users/peltouz/Documents/pretrain/test&quot;)
+## (&#39;/Users/peltouz/Documents/pretrain/test/tokenizer_config.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/special_tokens_map.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/vocab.txt&#39;, &#39;/Users/peltouz/Documents/pretrain/test/added_tokens.json&#39;, &#39;/Users/peltouz/Documents/pretrain/test/tokenizer.json&#39;)</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="going-through-the-model" class="section level2" number="8.3">
+<h2><span class="header-section-number">8.3</span> Going through the
+model</h2>
+<div class="python">
+<pre class="python"><code>from transformers import AutoModel
+
+checkpoint = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+model = AutoModel.from_pretrained(checkpoint)</code></pre>
+</div>
+<p>from transformers import AutoModel</p>
+<p>checkpoint = “distilbert-base-uncased-finetuned-sst-2-english” model
+= AutoModel.from_pretrained(checkpoint)</p>
+<div class="python">
+<pre class="python"><code>outputs = model(**inputs)
+print(outputs.last_hidden_state.shape)
+## torch.Size([2, 5, 768])</code></pre>
+</div>
+<ul>
+<li><p>The outputs of 🤗 Transformers models resemble namedtuples or
+dictionaries.</p></li>
+<li><p>You can access elements in different ways:</p>
+<ul>
+<li>By attributes (e.g., <code>outputs.last_hidden_state</code>)</li>
+<li>By key (e.g., <code>outputs["last_hidden_state"]</code>)</li>
+<li>By index, if you know the exact position (e.g.,
+<code>outputs[0]</code>)</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="model-heads-making-sense-out-of-numbers" class="section level2"
+number="8.4">
+<h2><span class="header-section-number">8.4</span> Model heads: Making
+sense out of numbers</h2>
+<ul>
+<li><p>Take high-dimensional vectors of hidden states as input.</p></li>
+<li><p>Project these onto a different dimension.</p></li>
+<li><p>Usually composed of one or a few linear layers.</p></li>
+<li><p><strong>Transformers and Model Heads:</strong></p>
+<ul>
+<li>The output of the Transformer model is sent directly to the model
+head for further processing.</li>
+<li>The embeddings layer in the model converts input IDs into vectors
+representing the associated tokens.</li>
+<li>Subsequent layers manipulate these vectors using the attention
+mechanism to produce final sentence representations.</li>
+</ul></li>
+<li><p><strong>Available Architectures in 🤗 Transformers:</strong></p>
+<ul>
+<li>Model (retrieves hidden states)</li>
+<li>ForCausalLM</li>
+<li>ForMaskedLM</li>
+<li>ForMultipleChoice</li>
+<li>ForQuestionAnswering</li>
+<li>ForSequenceClassification</li>
+<li>ForTokenClassification</li>
+</ul></li>
+<li><p>For example for sentence classification tasks, use
+<code>AutoModelForSequenceClassification</code> instead of
+<code>AutoModel</code>.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import AutoModelForSequenceClassification
+
+checkpoint = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+outputs = model(**inputs)</code></pre>
+</div>
+<ul>
+<li><p>The model head reduces dimensionality by taking high-dimensional
+vectors as input.</p></li>
+<li><p>It outputs vectors containing two values, one for each
+label.</p></li>
+<li><p>Since there are two sentences and two labels, the resulting
+output has a shape of 2 x 2.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>print(outputs.logits.shape)
+## torch.Size([2, 2])
+print(outputs.logits)
+## tensor([[ 3.7257, -3.0865],
+##         [-4.1563,  4.4512]], grad_fn=&lt;AddmmBackward0&gt;)</code></pre>
+</div>
+<ul>
+<li><p>The values referred to are logits, not probabilities.</p></li>
+<li><p>Logits are raw, unnormalized scores outputted by the model’s last
+layer.</p></li>
+<li><p>To convert logits to probabilities, they must pass through a
+SoftMax layer.</p>
+<ul>
+<li>SoftMax is a generalization of the logistic function to multiple
+dimensions.</li>
+<li>It is used in multinomial logistic regression.</li>
+</ul></li>
+</ul>
+<p>During training, the loss function typically combines the final
+activation function (e.g., SoftMax) with the loss function (e.g., cross
+entropy).</p>
+<div class="python">
+<pre class="python"><code>import torch
+
+predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+print(predictions)
+## tensor([[9.9890e-01, 1.0991e-03],
+##         [1.8271e-04, 9.9982e-01]], grad_fn=&lt;SoftmaxBackward0&gt;)</code></pre>
+</div>
+<ul>
+<li><p>These are recognizable probability scores.</p></li>
+<li><p>To get the labels corresponding to each position, we can inspect
+the id2label attribute of the model config (more on this in the next
+section):</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>
+model.config.id2label
+## {0: &#39;NEGATIVE&#39;, 1: &#39;POSITIVE&#39;}</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="models" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Models</h1>
+<ul>
+<li><strong>AutoModel Class</strong>:
+<ul>
+<li>Designed to instantiate any model from a checkpoint.</li>
+<li>Functions as a wrapper for the various models in the library.</li>
+<li>Automatically guesses the appropriate model architecture for the
+checkpoint.</li>
+<li>Instantiates a model with the guessed architecture.</li>
+</ul></li>
+<li><strong>Direct Model Class Usage</strong>:
+<ul>
+<li>If the model type is known, the specific class defining the
+architecture can be used directly (e.g., BERT model).</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+<div id="creating-a-transformer" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Creating a
+Transformer</h2>
+<p>The first thing we’ll need to do to initialize a BERT model is load a
+configuration object:</p>
+<div class="python">
+<pre class="python"><code>from transformers import BertConfig, BertModel
+
+config = BertConfig()
+model = BertModel(config)
+
+print(config)
+## BertConfig {
+##   &quot;attention_probs_dropout_prob&quot;: 0.1,
+##   &quot;classifier_dropout&quot;: null,
+##   &quot;hidden_act&quot;: &quot;gelu&quot;,
+##   &quot;hidden_dropout_prob&quot;: 0.1,
+##   &quot;hidden_size&quot;: 768,
+##   &quot;initializer_range&quot;: 0.02,
+##   &quot;intermediate_size&quot;: 3072,
+##   &quot;layer_norm_eps&quot;: 1e-12,
+##   &quot;max_position_embeddings&quot;: 512,
+##   &quot;model_type&quot;: &quot;bert&quot;,
+##   &quot;num_attention_heads&quot;: 12,
+##   &quot;num_hidden_layers&quot;: 12,
+##   &quot;pad_token_id&quot;: 0,
+##   &quot;position_embedding_type&quot;: &quot;absolute&quot;,
+##   &quot;transformers_version&quot;: &quot;4.57.1&quot;,
+##   &quot;type_vocab_size&quot;: 2,
+##   &quot;use_cache&quot;: true,
+##   &quot;vocab_size&quot;: 30522
+## }</code></pre>
+</div>
+<ul>
+<li><p>The model can be used in its current state but will output
+gibberish.</p></li>
+<li><p>The model requires training before it can perform well.</p></li>
+<li><p>Training the model from scratch would:</p>
+<ul>
+<li>Take a long time.</li>
+<li>Require a lot of data.</li>
+<li>Have a non-negligible environmental impact.</li>
+</ul></li>
+<li><p>Instead, reusing pre-trained models can avoid unnecessary and
+duplicated efforts.</p></li>
+<li><p>Pre-trained Transformer models can be easily loaded using the
+<code>from_pretrained()</code> method.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import BertModel
+
+model = BertModel.from_pretrained(&quot;bert-base-cased&quot;)</code></pre>
+</div>
+<ul>
+<li><strong>Using AutoModel</strong>:
+<ul>
+<li>Replace <code>BertModel</code> with <code>AutoModel</code> to
+produce checkpoint-agnostic code.</li>
+<li>This ensures compatibility with different checkpoints trained for
+similar tasks, even if the architecture varies.</li>
+</ul></li>
+<li><strong>Loading Pretrained Models</strong>:
+<ul>
+<li>In the example, <code>BertConfig</code> was not used; instead, a
+pretrained model (<code>bert-base-cased</code>) was loaded.</li>
+<li>This specific checkpoint was trained by the original BERT authors,
+with details available in the model card.</li>
+</ul></li>
+<li><strong>Model Initialization and Usage</strong>:
+<ul>
+<li>The model is initialized with pretrained weights from the
+checkpoint.</li>
+<li>It can be used directly for inference or fine-tuned on new
+tasks.</li>
+<li>Using pretrained weights helps achieve good results faster than
+training from scratch.</li>
+</ul></li>
+<li><strong>Caching and Customizing Cache Folder</strong>:
+<ul>
+<li>Weights are downloaded and cached in the default folder
+<code>~/.cache/huggingface/transformers</code>.</li>
+<li>Cache folder location can be customized by setting the
+<code>HF_HOME</code> environment variable.</li>
+</ul></li>
+<li><strong>Model Identifiers</strong>:
+<ul>
+<li>The identifier used to load the model can be from any compatible
+model on the Model Hub.</li>
+<li>A full list of available BERT checkpoints can be found <a
+href="https://huggingface.co/models?other=bert">here</a>.</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+<div id="saving-methods" class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> Saving methods</h2>
+<ul>
+<li>Use the <code>save_pretrained()</code> method to save a model.</li>
+</ul>
+<div class="python">
+<pre class="python"><code>model.save_pretrained(&quot;/Users/peltouz/Documents/pretrain/test&quot;)</code></pre>
+</div>
+<ul>
+<li><strong>config.json file</strong>:
+<ul>
+<li>Contains attributes needed to build the model architecture.</li>
+<li>Includes metadata:
+<ul>
+<li>Checkpoint origin.</li>
+<li>🤗 Transformers version used when the checkpoint was last
+saved.</li>
+</ul></li>
+</ul></li>
+<li><strong>pytorch_model.bin file</strong>:
+<ul>
+<li>Known as the state dictionary.</li>
+<li>Contains all the model’s weights (parameters).</li>
+</ul></li>
+<li><strong>Relationship</strong>:
+<ul>
+<li>The <code>config.json</code> file provides the model
+architecture.</li>
+<li>The <code>pytorch_model.bin</code> file holds the model’s parameters
+(weights).</li>
+</ul></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="wrapping-up-from-tokenizer-to-model" class="section level1"
+number="10">
+<h1><span class="header-section-number">10</span> Wrapping up: From
+tokenizer to model</h1>
+<div class="python">
+<pre class="python"><code>
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+checkpoint = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+sequences = [&quot;I&#39;ve been waiting for a HuggingFace course my whole life.&quot;, &quot;So have I!&quot;]
+
+tokens = tokenizer(sequences, padding=True, truncation=True, return_tensors=&quot;pt&quot;)
+output = model(**tokens)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>predictions = torch.nn.functional.softmax(output.logits, dim=-1)
+print(predictions)
+## tensor([[4.0195e-02, 9.5981e-01],
+##         [5.3534e-04, 9.9946e-01]], grad_fn=&lt;SoftmaxBackward0&gt;)
+model.config.id2label
+## {0: &#39;NEGATIVE&#39;, 1: &#39;POSITIVE&#39;}</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

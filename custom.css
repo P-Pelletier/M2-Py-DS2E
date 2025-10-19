@@ -1,0 +1,84 @@
+/* Navbar background */
+.navbar-default {
+  background-color: #B399C4 !important;
+  border-color: #B399C4 !important;
+}
+
+/* Navbar links */
+.navbar-default .navbar-nav > li > a {
+  color: white !important;
+}
+
+/* Navbar links hover */
+.navbar-default .navbar-nav > li > a:hover {
+  background-color: #9561ad !important;
+}
+
+/* Navbar ACTIVE/SELECTED item */
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: #9561ad !important;
+  color: white !important;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+  color: #B399C4;
+}
+
+/* Links */
+a {
+  color: #B399C4;
+}
+
+a:hover {
+  color: #9561ad;
+}
+
+/* TOC (Table of Contents) active/selected item */
+#TOC .active {
+  border-left: 2px solid #B399C4 !important;
+}
+
+#TOC .active > a {
+  color: #B399C4 !important;
+  font-weight: bold;
+}
+
+/* TOC links */
+#TOC a {
+  color: #333;
+}
+
+#TOC a:hover {
+  color: #B399C4 !important;
+}
+/* Title */
+h1 {
+  color: #9561ad; /* Dark red color for title */
+  font-weight: bold; /* Bold title */
+  text-align: center; /* Center title */
+  margin-bottom: 2em; /* Add extra space after the title */
+}
+
+/* Subtitle */
+h2 {
+  color: #9561ad; /* Dark red color for subtitle */
+  font-weight: bold; /* Bold subtitle */
+  margin-bottom: 2em; /* Add extra space after subtitle */
+}
+
+/* Sub-subtitle */
+h3 {
+  color: #9561ad; /* Dark red color for sub-subtitle */
+  font-weight: bold; /* Bold sub-subtitle */
+  margin-bottom: 2em; /* Add extra space after sub-subtitle */
+}
+
+/* Further headings */
+h4, h5, h6 {
+  color: #9561ad; /* Dark red color for other headings */
+  font-weight: bold; /* Bold other headings */
+  margin-bottom: 2em; /* Add extra space after other headings */
+}

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>MCP</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">M2 DS2E</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="2_HF.html">HF</a>
+</li>
+<li>
+  <a href="3_MCP.html">MCP</a>
+</li>
+<li>
+  <a href="4_Training.html">Training</a>
+</li>
+<li>
+  <a href="5_Parallelization.html">Parallelization</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/master-ds2e/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">MCP</h1>
+
+</div>
+
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+<p>
+ 
+</p>
+<div id="what-is-a-mcp" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> What is a MCP?</h1>
+<p>Think of MCP as a universal standard or a “common language” that
+allows LLMs to use external tools. While many platforms like OpenAI or
+frameworks like LangChain allow LLMs to use tools, MCP takes it a step
+further.</p>
+<p>MCP (Model Context Protocol) is an open-source specification designed
+to bridge AI applications with external systems. This standardized
+protocol allows AI assistants like Claude and ChatGPT to integrate with
+various resources including data repositories (such as local files and
+databases), utility tools (like search engines and calculators), and
+custom workflows (including specialized prompts).</p>
+<p><img src="img/mcp-simple-diagram.avif" /></p>
+<p>
+ 
+</p>
+<div id="how-mcp-works" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> How MCP Works</h2>
+<p>Imagine you have an application that uses an LLM.</p>
+<ul>
+<li><p><strong>Without MCP</strong>: If you want to add a new tool (like
+a web search or a connection to a specific database), you typically have
+to modify your application’s source code. You need to define the new
+tool, handle how the LLM calls it, and manage its execution directly
+within your codebase.</p></li>
+<li><p><strong>With MCP</strong>: MCP works like a REST API for LLM
+tools. It creates a standard for communication between your main
+application and the tools, which can be running as completely separate
+applications. Your application doesn’t need to know the internal details
+of the tool. It just needs to know how to “talk” to it using the MCP
+standard.</p></li>
+</ul>
+<p>In short, MCP is a specification that decouples the LLM application
+from the tools it uses.</p>
+<p>
+ 
+</p>
+</div>
+<div id="why-mcp-matters" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Why MCP Matters</h2>
+<p>The primary importance of MCP lies in its architectural approach,
+which provides significant benefits:</p>
+<ul>
+<li><p><strong>Extensibility without Code Changes</strong>: You can add
+new capabilities and tools to an application without ever touching its
+original source code. If someone develops a new tool that follows the
+MCP standard, your existing application can use it immediately.</p></li>
+<li><p><strong>Decoupling</strong>: Tools are not part of the main
+application. They are independent, modular services. This makes your
+system cleaner, easier to maintain, and allows tool developers and
+application developers to work independently.</p></li>
+<li><p><strong>Interoperability</strong>: It fosters a standardized
+ecosystem. Anyone can create a tool, and as long as it adheres to the
+MCP standard, any MCP-compliant application can discover and use it.
+This is similar to how any web browser can access any web server because
+they both follow the HTTP standard.</p></li>
+</ul>
+<p><strong>MCP delivers distinct advantages to different
+stakeholders</strong></p>
+<ul>
+<li><p><strong>Developers</strong>: MCP reduces development time and
+complexity when building, or integrating with, an AI application or
+agent. AI applications or agents: MCP provides access to an ecosystem of
+data sources, tools and apps which will enhance capabilities and improve
+the end-user experience.</p></li>
+<li><p><strong>End-users</strong>: MCP results in more capable AI
+applications or agents which can access your data and take actions on
+your behalf when necessary.</p></li>
+</ul>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="creating-your-own-mcp" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Creating your own
+MCP</h1>
+<p>
+ 
+</p>
+<div id="initialisation" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Initialisation</h2>
+<p><strong>Create a Virtual Environment</strong>: It’s best practice to
+use a virtual environment.</p>
+<p><code>python -m venv MCP</code></p>
+<p><strong>Activate the Environment</strong>: - On Windows:
+<code>MCP\Scripts\activate</code> - On macOS/Linux:
+<code>source MCP/bin/activate</code></p>
+<p><strong>Install Dependencies</strong>:
+<code>pip install -r requirements_mcp.txt</code></p>
+<p>The following packages are listed in the requirements_mcp.txt for
+this project:</p>
+<pre class="text"><code>fastmcp==2.12.2
+
+langchain==0.3.27
+langchain-anthropic==0.3.19
+langchain-cerebras==0.5.0
+langchain-community==0.3.29
+langchain-core==0.3.75
+langchain-google-genai==2.1.10
+langchain-groq==0.3.7
+langchain-ibm==0.3.17
+langchain-mcp-adapters==0.1.9
+langchain-mcp-tools==0.2.13
+langchain-ollama==0.3.7
+langchain-openai==0.3.32
+langchain-text-splitters==0.3.11
+langchain-xai==0.2.5
+langgraph==0.6.6
+langgraph-checkpoint==2.1.1
+langgraph-prebuilt==0.6.4
+langgraph-sdk==0.2.6
+langsmith==0.4.23
+ollama==0.5.3
+
+loguru==0.7.3
+
+mcp==1.13.1
+mcp-chat==0.2.14
+mcp-use==1.3.10
+uv</code></pre>
+<p>In your terminal install llama.cpp:
+<code>brew install llama.cpp</code></p>
+<p>
+ 
+</p>
+</div>
+<div id="using-different-llms-with-mcp" class="section level2"
+number="2.2">
+<h2><span class="header-section-number">2.2</span> Using Different LLMs
+with MCP</h2>
+<p>You can interact with MCP using various LLMs, either running locally
+or via an API.</p>
+<p>
+ 
+</p>
+<div id="local" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Local</h3>
+<p>Download from <a href="https://ollama.com/download"
+class="uri">https://ollama.com/download</a></p>
+<p>After installation, you can run Ollama locally and use supported
+models.</p>
+<p>To use a local model with Ollama:</p>
+<div class="python">
+<pre class="python"><code>from langchain_ollama import ChatOllama
+## ModuleNotFoundError: No module named &#39;langchain_ollama&#39;
+llm = ChatOllama(model=&quot;gpt-oss:20b&quot;)
+## NameError: name &#39;ChatOllama&#39; is not defined</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+<div id="api" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> API</h3>
+<ul>
+<li>You need a Groq API key to use Groq-hosted models.</li>
+<li>Store your API key in a <code>.env</code> file in your project
+directory:</li>
+</ul>
+<pre class="env"><code>GROQ_API_KEY=your_groq_api_key_here</code></pre>
+<ul>
+<li>Load the key in your Python code using the <code>dotenv</code>
+package:</li>
+</ul>
+<div class="python">
+<pre class="python"><code>from dotenv import load_dotenv
+## ModuleNotFoundError: No module named &#39;dotenv&#39;
+load_dotenv()  # This loads environment variables from .env file
+## NameError: name &#39;load_dotenv&#39; is not defined
+# Now you can use ChatGroq and it will pick up the GROQ_API_KEY automatically</code></pre>
+</div>
+<ul>
+<li>Make sure to install the <code>python-dotenv</code> package if you
+haven’t already:</li>
+</ul>
+<pre class="sh"><code>pip install python-dotenv</code></pre>
+<p>To use a cloud model with Groq:</p>
+<div class="python">
+<pre class="python"><code>from langchain_groq import ChatGroq
+## ModuleNotFoundError: No module named &#39;langchain_groq&#39;
+llm = ChatGroq(model=&quot;openai/gpt-oss-120b&quot;)
+## NameError: name &#39;ChatGroq&#39; is not defined</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+</div>
+</div>
+<div id="mcp-architecture" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> MCP Architecture</h1>
+<p>The code should be organized into two parts: -
+<strong>client.py</strong>: This script executes your code and makes
+calls to the LLM. It acts as the client, sending requests and receiving
+responses. - <strong>server.py</strong>: This is the MCP server, which
+hosts all the tools you want to provide to the LLM. The server exposes
+these tools via a REST API.</p>
+<p>A REST API (Representational State Transfer Application Programming
+Interface) is a standard way for different software systems to
+communicate. It allows clients (like your client.py) to send requests to
+a server (like your MCP server), which processes the requests and
+returns responses, often in JSON format.</p>
+<p>This separation makes your system modular: - You can add or update
+tools on the server without changing the client code. - The client can
+interact with any server that follows the MCP REST API standard.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Set up the MCP server</strong>: We will first create a basic
+server.py that provides simple tools to our client.</li>
+<li><strong>Connect the client</strong>: The client.py script will send
+requests to the server, allowing the LLM to use the tools provided by
+the server.</li>
+</ol>
+<p>This architecture enables easy extensibility and clean separation
+between the LLM application logic and the tools it can use.</p>
+<p>This small example is inspired from this post: <a
+href="https://medium.com/@smrati.katiyar/building-mcp-server-and-client-in-python-and-using-ollama-as-llm-provider-dd79fe3a2b16"
+class="uri">https://medium.com/@smrati.katiyar/building-mcp-server-and-client-in-python-and-using-ollama-as-llm-provider-dd79fe3a2b16</a></p>
+<p>
+ 
+</p>
+</div>
+<div id="create-your-toolbox" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Create your
+toolbox</h1>
+<p>We will now create a small function that reads a PDF file. This
+function takes a file path as input and returns the pages of the PDF
+stored in a Python list, with each page as a separate string.</p>
+<div class="python">
+<pre class="python"><code>from PyPDF2 import PdfReader
+## ModuleNotFoundError: No module named &#39;PyPDF2&#39;
+
+def pdf_to_page_list(pdf_path):
+    &quot;&quot;&quot;
+    Reads a PDF file and returns a list of strings, one per page.
+    Args:
+        pdf_path (str): Path to the PDF file.
+    Returns:
+        list[str]: List where each element is the text of a page.
+    &quot;&quot;&quot;
+    reader = PdfReader(pdf_path)
+    pages = []
+    for page in reader.pages:
+        pages.append(page.extract_text())
+    return pages
+
+pdf_pages = pdf_to_page_list(&quot;/Users/peltouz/Downloads/Fake CV.pdf&quot;)
+## NameError: name &#39;PdfReader&#39; is not defined
+pdf_pages
+## NameError: name &#39;pdf_pages&#39; is not defined</code></pre>
+</div>
+<p>The following code sets up an MCP server using the FastMCP class:</p>
+<div class="python">
+<pre class="python"><code>from mcp.server.fastmcp import FastMCP
+## ModuleNotFoundError: No module named &#39;mcp&#39;
+
+mcp = FastMCP(&quot;PDF-reader&quot;)
+## NameError: name &#39;FastMCP&#39; is not defined</code></pre>
+</div>
+<p><code>mcp = FastMCP("PDF-reader")</code> creates an instance of the
+MCP server and gives it the name “PDF-reader”. This name identifies your
+server and its set of tools when interacting with clients or other
+services.</p>
+<p>
+ 
+</p>
+<div id="decorators" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Decorators</h2>
+<p>Before defining a function as a tool for the MCP server, you need to
+use a decorator. In Python, a decorator is a special syntax (using the @
+symbol) that allows you to modify or enhance the behavior of a function
+or class.</p>
+<p><strong>What is a Decorator?</strong> A decorator is a function that
+takes another function as input and returns a new function with added or
+changed behavior. Decorators are commonly used for logging, access
+control, registering functions, and more.</p>
+<p><strong>Why use a Decorator here?</strong> The
+<code>@mcp.tool()</code> decorator tells the MCP server that the
+decorated function should be exposed as a tool via the API. This makes
+it discoverable and callable by clients or LLMs.</p>
+<div class="python">
+<pre class="python"><code>import time
+
+def get_time(func):
+    def wrapper(*args, **kwargs):
+        t = time.time()
+        result = func(*args, **kwargs)
+        print(f&quot;It took {time.time() - t:.2f} seconds&quot;)
+        return result
+    return wrapper
+
+@get_time
+def say_hello():
+    time.sleep(1)
+    print(&quot;Hello!&quot;)
+
+say_hello()
+## Hello!
+## It took 1.00 seconds</code></pre>
+</div>
+<p>In the context of MCP, you will use:</p>
+<div class="python">
+<pre class="python"><code>@mcp.tool()
+def my_tool_function(...):
+    ...</code></pre>
+</div>
+<p>This registers <code>my_tool_function</code> as a tool that can be
+accessed through the MCP server.</p>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="full-example" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Full Example</h1>
+<p>
+ 
+</p>
+<div id="server.py" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> server.py</h2>
+<div class="python">
+<pre class="python"><code>from PyPDF2 import PdfReader
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP(&quot;PDF-reader&quot;)
+
+@mcp.tool()
+def pdf_to_page_list(pdf_path):
+    &quot;&quot;&quot;
+    Reads a PDF file and returns a list of strings, one per page.
+    Args:
+        pdf_path (str): Path to the PDF file.
+    Returns:
+        list[str]: List where each element is the text of a page.
+    &quot;&quot;&quot;
+    reader = PdfReader(pdf_path)
+    pages = []
+    for page in reader.pages:
+        pages.append(page.extract_text())
+    return pages
+
+if __name__ == &quot;__main__&quot;:
+    mcp.run(transport=&quot;stdio&quot;)</code></pre>
+</div>
+<p>
+ 
+</p>
+</div>
+<div id="client.py" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> client.py</h2>
+<div class="python">
+<pre class="python"><code>import asyncio
+import os
+from langchain_ollama.chat_models import ChatOllama
+from langchain_groq import ChatGroq
+from mcp_use import MCPAgent, MCPClient
+from dotenv import load_dotenv
+import warnings
+
+warnings.filterwarnings(&quot;ignore&quot;, category=ResourceWarning)
+
+load_dotenv()
+
+server_path = os.path.join(&quot;scripts/server.py&quot;)
+CONFIG = {
+    &quot;mcpServers&quot;: {
+        &quot;fii-demo&quot;: {
+            &quot;command&quot;: &quot;/Users/peltouz/Documents/GitHub/M2-Py-DS2E/MCP/bin/python3&quot;,
+            &quot;args&quot;: [server_path]
+        }
+    }
+}
+
+async def run_chatbot():
+    &quot;&quot;&quot;Running a chat using MCPAgent&#39;s built-in conversation memory&quot;&quot;&quot;
+    
+    client = MCPClient.from_dict(CONFIG)
+    # llm = ChatOllama(model=&quot;qwen3:8b&quot;)
+    llm = ChatGroq(model=&quot;openai/gpt-oss-120b&quot;)
+    
+    agent = MCPAgent(
+        llm=llm,
+        client=client,
+        max_steps=20,
+        memory_enabled=True,  # This enables conversation memory
+        verbose=False
+    )
+    
+    print(&quot;Type &#39;exit&#39; or &#39;quit&#39; to end the conversation&quot;)
+    print(&quot;Type &#39;clear&#39; to clear conversation history\n&quot;)
+    
+    try:
+        while True:
+            user_input = input(&quot;You: &quot;).strip()
+            
+            if user_input.lower() in [&quot;exit&quot;, &quot;quit&quot;]:
+                print(&quot;Ending conversation...&quot;)
+                break
+            
+            if user_input.lower() == &quot;clear&quot;:
+                agent.clear_conversation_history()
+                print(&quot;Conversation history cleared.\n&quot;)
+                continue
+            
+            if not user_input:
+                continue
+            
+            print(&quot;\nAssistant: &quot;, end=&quot;&quot;, flush=True)
+            
+            try:
+                # Just call agent.run() - memory is handled internally
+                response = await agent.run(user_input)
+                print(response)
+            except Exception as e:
+                print(f&quot;\nError: {e}&quot;)
+    
+    finally:
+        if client and client.sessions:
+            await client.close_all_sessions()
+
+if __name__ == &quot;__main__&quot;:
+    asyncio.run(run_chatbot())
+     
+## Type &#39;exit&#39; or &#39;quit&#39; to end the conversation
+## Type &#39;clear&#39; to clear conversation history
+## 
+## You:  Do a summary of the CV located at: /Users/peltouz/Downloads/Fake CV.pdf
+## 
+## Assistant: 2025-10-19 22:14:39,369 - mcp_use - INFO - 🚀 Initializing MCP agent and connecting to services...
+## 2025-10-19 22:14:39,370 - mcp_use - INFO - 🔌 Found 0 existing sessions
+## 2025-10-19 22:14:39,370 - mcp_use - INFO - 🔄 No active sessions found, creating new ones...
+## [10/19/25 22:14:39] INFO     Processing request of type ListToolsRequest                                                                      server.py:624
+##                     INFO     Processing request of type ListResourcesRequest                                                                  server.py:624
+##                     INFO     Processing request of type ListPromptsRequest                                                                    server.py:624
+## 2025-10-19 22:14:39,598 - mcp_use - INFO - ✅ Created 1 new sessions
+##                     INFO     Processing request of type ListToolsRequest                                                                      server.py:624
+##                     INFO     Processing request of type ListResourcesRequest                                                                  server.py:624
+##                     INFO     Processing request of type ListPromptsRequest                                                                    server.py:624
+## 2025-10-19 22:14:39,602 - mcp_use - INFO - 🛠️ Created 1 LangChain tools from client
+## 2025-10-19 22:14:39,602 - mcp_use - INFO - 🧰 Found 1 tools across all connectors
+## 2025-10-19 22:14:39,603 - mcp_use - INFO - 🧠 Agent ready with tools: pdf_to_page_list
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - ✨ Agent initialization complete
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 💬 Received query: &#39;Do a summary of the CV located at: /Users/peltouz/...&#39;
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 🏁 Starting agent execution with max_steps=20
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 👣 Step 1/20
+## [10/19/25 22:14:40] INFO     Processing request of type CallToolRequest                                                                       server.py:624
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 💭 Reasoning:  Invoking: `pdf_to_page_list` with `{&#39;pdf_path&#39;: &#39;/Users/peltouz/Downloads/Fake CV.pdf&#39;}`   
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 🔧 Tool call: pdf_to_page_list with input: {&#39;pdf_path&#39;: &#39;/Users/peltouz/Downloads/Fake CV.pdf&#39;}
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 📄 Tool result: FAKE NAME Phone:  emailADDRESS I&#39;m a student studying Aerospace Engineering at the University of ...
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 👣 Step 2/20
+## 2025-10-19 22:14:42,496 - mcp_use - INFO - ✅ Agent finished at step 2
+## 2025-10-19 22:14:42,496 - mcp_use - INFO - 🎉 Agent execution complete in 3.127031087875366 seconds
+## **Summary of CV – FAKE NAME**
+## 
+## **Profile**  
+## Aerospace Engineering student at the University of Manchester seeking an engineering internship. Describes himself as honest, reliable, punctual, and able to work well under pressure.
+## 
+## **Education**  
+## - **University of Manchester (2015‑Present)** – BEng/MEng in Aerospace Engineering (with Foundation Year).  
+## - **Level 3 Access to Higher Education (2014‑2015)** – Engineering Science (9 Distinctions, 6 Merits), Physics (15 Distinctions), Maths (6 Distinctions, 9 Merits).  
+## - **Level 2 NVQ (2010‑2012)** – Diploma in HGV Vehicle Maintenance &amp; Repair.  
+## - **GCSE (2006‑2010)** – Grades: English C, Business Studies B, Maths C, Catering C, Additional Science C, Engineering Double Award B/C.
+## 
+## **Work Experience**  
+## 1. **Penventon Park Hotel (May 2009)** – 2‑week work‑experience; assisted kitchen, restaurant, housekeeping, reception, and functions.  
+## 2. **NAME Commercials – Apprentice/Technician (Jun 2010‑Jun 2013)** – Assisted senior technicians, performed routine servicing/maintenance of heavy‑goods vehicles; earned Level 2 NVQ.  
+## 3. **NAME Commercials – Parts Manager (Jun 2013‑Aug 2014)** – Managed warehouse stock, handled sales/warranty issues, sourced parts, maintained records and profit margins.  
+## 4. **NAME Restaurant – Kitchen Porter (Aug‑Dec 2014)** – Operated industrial dishwasher, kept kitchen clean, assisted head chef, prepared vegetables.  
+## 5. **NAME Spar Shop – Shop Assistant (Nov 2014‑Sep 2015)** – Managed tills, handled cash, assisted customers, stocked shelves; later helped owner with a paper round.  
+## 
+## **Leadership &amp; Extracurricular**  
+## - Deputy Chair of the Residents Association for student residences at Manchester: helps oversee the association, organise events, manage administration, and support charity fundraisers.
+## 
+## **Interests &amp; Hobbies**  
+## - Playing guitar, martial arts, kayaking, badminton.  
+## - Keen on UK space industry development, renewable energy, and biotechnology.
+## 
+## **Key Attributes**  
+## - Strong work ethic and reliability across retail, catering, and commercial transport roles.  
+## - Experience in technical maintenance, parts inventory, and customer service.  
+## - Leadership experience in student housing association.  
+## - Passion for aerospace and emerging technologies, aligning with internship goals.
+## You: Without rerunning any function, what is the name of the candidate ?
+## 
+## Assistant: 2025-10-19 22:14:57,254 - mcp_use - INFO - 💬 Received query: &#39;Without rerunning any function, what is the name o...&#39;
+## 2025-10-19 22:14:57,255 - mcp_use - INFO - 🏁 Starting agent execution with max_steps=20
+## 2025-10-19 22:14:57,255 - mcp_use - INFO - 👣 Step 1/20
+## 2025-10-19 22:14:57,846 - mcp_use - INFO - ✅ Agent finished at step 1
+## 2025-10-19 22:14:57,846 - mcp_use - INFO - 🎉 Agent execution complete in 0.5922238826751709 seconds
+## The CV lists the candidate’s name as **FAKE NAME**.</code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

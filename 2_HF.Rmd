@@ -1,0 +1,1272 @@
+---
+title: "Hugging Face"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,collapse = T)
+library(reticulate)
+use_virtualenv("/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf", required=TRUE)
+py_config()
+#  md_document:
+#    variant: markdown_github
+#
+#
+#<div class = "row">
+#<div class = "row">
+#<div class = "python">
+#  
+#
+#</div>
+#</div>
+#<div class = "row">
+#<div class = "r">  
+#  
+#  
+#</div>
+#</div>
+#</div>
+
+
+#<style>
+#div.blue pre { background-color:lightblue; }
+#div.blue pre.r { background-color:blue; }
+#</style>
+#
+```
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+
+
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+
+
+<p>&nbsp;</p>
+
+
+# Transformers model
+
+<p>&nbsp;</p>
+
+## For which tasks?
+
+- **Classifying whole sentences**:
+  - Examples: Sentiment analysis, spam detection, grammatical correctness, sentence relationship.
+
+
+- **Classifying each word in a sentence**:
+  - Examples: Grammatical components (noun, verb, adjective), named entity recognition (person, location, organization).
+
+
+- **Generating text content**:
+  - Examples: Autocomplete text from a prompt, fill in masked words in a text.
+
+
+- **Extracting an answer from a text**:
+  - Examples: Given a question and context, extract the answer based on the context.
+
+
+- **Generating a new sentence from an input text**:
+  - Examples: Translation, text summarization.
+
+
+<p>&nbsp;</p>
+
+### A challenging task
+
+- **Human vs Machine Language Processing**:
+  - Humans understand sentences like "I am hungry" easily, and can compare similar sentences like "I am hungry" and "I am sad".
+  - Machine learning models find it more difficult to process and understand language, requiring careful text processing.
+
+
+- **Introduction of Transformers**:
+  - **2017**: Introduction of Transformers by Vaswani et al. in the paper "Attention Is All You Need."
+    - Neural network architecture learning context and relationships from sequential data, initially focused on translation tasks.
+
+
+- **Influential Transformer Models**:
+  - **June 2018**: GPT - First pretrained transformer model, state-of-the-art results on various NLP tasks.
+  - **October 2018**: BERT - Designed to produce better sentence summaries.
+  - **February 2019**: GPT-2 - Improved version of GPT, not immediately released due to ethical concerns.
+  - **October 2019**: DistilBERT - A distilled version of BERT, 60% faster, 40% lighter, retaining 97% of BERT’s performance.
+  - **October 2019**: BART and T5 - Pretrained models using the original Transformer architecture.
+  - **May 2020**: GPT-3 - Larger model, capable of zero-shot learning.
+  - **November 2022**: GPT-3.5 and **March 2023**: GPT-4.
+  - Followed by other models like **Llama**, **Claude**, **Gemini**, **Mistral**.
+
+
+<p>&nbsp;</p>
+
+# Pretraining and Fine-tuning
+
+- **Transformer models (GPT, BERT, BART, T5, etc.)** are trained as language models on large amounts of raw text using self-supervised learning.
+   - Self-supervised learning: the model learns without human-labeled data, as the objective is computed automatically from the inputs.
+   - These models develop a statistical understanding of language but aren't directly useful for specific tasks.
+
+- **Transfer learning**: the process where a pretrained model is fine-tuned on specific tasks using supervised learning (human-annotated labels).
+   - Pretrained models undergo fine-tuning to adapt to particular tasks.
+
+
+- **Pretraining**:
+   - The model is trained from scratch with randomly initialized weights.
+   - Pretraining is resource-intensive in terms of time, data, and money.
+   - It requires a large corpus and can take weeks to complete.
+
+
+- **Fine-tuning**:
+   - Performed after pretraining using a dataset specific to a task.
+   - Reasons to fine-tune instead of training from scratch:
+     - The pretrained model shares similarities with the fine-tuning dataset.
+     - Less data and time are required to achieve good results.
+     - Lower costs in terms of time, data, financial, and environmental resources.
+     - It allows for faster iteration and refinement.
+
+
+- **Transfer learning advantages**:
+   - Leverages knowledge from pretraining for improved task-specific performance.
+   - Fine-tuning achieves better results than training from scratch unless massive data is available.
+   - Using pretrained models close to the target task optimizes performance.
+
+
+
+<p>&nbsp;</p>
+# Transformers Library
+
+- The 🤗 Transformers library provides tools to create and use shared models.
+
+
+- **Model Hub**:
+  - Contains thousands of pretrained models for download and use.
+  - Users can also upload their own models to the Hub.
+  
+  
+- **Pipeline() function**:
+  - The most basic object in the library.
+  - Connects a model with necessary preprocessing and postprocessing steps.
+  - Allows direct input of text for intelligible output.
+
+
+- **Three main steps in a pipeline**:
+  1. Text is preprocessed into a format the model understands.
+  2. Preprocessed inputs are passed to the model.
+  3. Model predictions are post-processed for easy interpretation.
+
+
+- **Available pipelines**:
+  - feature-extraction (vector representation of a text)
+  - fill-mask
+  - ner (named entity recognition)
+  - question-answering
+  - sentiment-analysis
+  - summarization
+  - text-generation
+  - translation
+  - zero-shot-classification
+
+
+
+
+<div class = "python">
+```{python, eval = F}
+import os
+hf_token = "your-key"
+custom_cache_dir = '/Users/peltouz/Documents/pretrain'
+
+os.environ['HF_HOME'] = custom_cache_dir  # Hugging Face home directory for all HF operations
+os.environ['TRANSFORMERS_CACHE'] = custom_cache_dir  # Transformers-specific cache directory
+os.environ['HF_DATASETS_CACHE'] = custom_cache_dir  # Datasets-specific cache directory
+os.environ['HF_METRICS_CACHE'] = custom_cache_dir  # Metrics-specific cache directory
+os.environ['HF_TOKEN'] = hf_token  # Hugging Face API token
+```
+</div>
+
+This Python code snippet configures the environment to specify custom cache directories for operations involving Hugging Face libraries, and it sets an API token for authentication.
+
+- **API Token Configuration**:
+   - `hf_token`: Assigned to a string representing the Hugging Face API token.
+   - Purpose: Used for authenticating and accessing Hugging Face services that require credentials.
+
+
+- **Custom Cache Directory**:
+   - `custom_cache_dir`: Set to `D:/pretrain`.
+   - Purpose: Specifies a base directory for storing cache files related to Hugging Face operations.
+
+
+- **Environment Variables**:
+   - `HF_HOME`: Specifies the base directory for all Hugging Face-related operations.
+   - `TRANSFORMERS_CACHE`: Directory for caching models downloaded via the transformers library.
+   - `HF_DATASETS_CACHE`: Directory for caching datasets accessed via the datasets library.
+   - `HF_METRICS_CACHE`: Directory for caching metrics-related files used in model evaluation.
+   - `HF_TOKEN`: Environment variable for the Hugging Face API token to authenticate requests to Hugging Face services.
+
+
+- **Purpose of Environment Variables**:
+   - Ensure all data related to models, datasets, and metrics are stored in the specified directory (`D:/pretrain`).
+   - Help manage disk space, especially when handling large models or datasets.
+   - Correctly configure credentials for accessing restricted services.
+
+
+<p>&nbsp;</p>
+
+# The Pipeline function
+
+<p>&nbsp;</p>
+
+## Sentiment Analysis
+
+<div class = "python">
+```{python}
+from transformers import pipeline
+
+classifier = pipeline("sentiment-analysis")
+sentiments = classifier(
+        ["I hate teaching",
+         "I love programming"]
+    )
+
+print(sentiments)
+sentiments[0]['label']
+```
+</div>
+
+  - A pretrained model fine-tuned for sentiment analysis in English is selected by default.
+  - The model is downloaded and cached when the classifier object is created.
+  - Upon rerunning the command, the cached model is used without needing to download again.
+
+
+<p>&nbsp;</p>
+
+## Zero-shot classification
+
+<div class = "python">
+```{python}
+classifier = pipeline("zero-shot-classification")
+classifier(
+    "df %>% filter(!is.na(var1))",
+    candidate_labels=["python", "Rstudio"],
+)
+```
+</div>
+
+ - **Main idea**: 
+   - Classifying unlabelled texts is a challenging task often encountered in real-world projects.
+
+
+- **Comparison**: 
+  - Annotating text manually is time-consuming and requires domain expertise.
+
+
+- **Key aspect**: 
+  - The zero-shot-classification pipeline is powerful because it lets you specify your own labels for classification, instead of relying on pretrained model labels.
+
+<p>&nbsp;</p>
+
+## Text generation
+
+<div class = "python">
+```{python}
+generator = pipeline("text-generation")
+generator("In my programming course in DS2E I will")
+```
+</div>
+
+- **Main idea**: 
+  - A prompt is provided, and the model auto-completes it by generating the remaining text.
+  
+  
+- **Comparison**: 
+  - Similar to the predictive text feature on phones.
+  
+  
+- **Key aspect**: 
+  - Text generation involves randomness, so results may vary
+
+<p>&nbsp;</p>
+
+## Mask filling
+
+<div class = "python">
+```{python}
+unmasker = pipeline("fill-mask")
+unmasker("This course will teach you all about <mask> models.", top_k=2)
+```
+</div>
+
+- **Main idea**: 
+  - The task involves filling in the blanks in a given text.
+
+
+- **Comparison**: 
+  - Similar to completing sentences in cloze tests or gap-filling exercises.
+  
+
+- **Key aspect**: 
+  - The focus is on providing contextually appropriate words or phrases to complete the text.
+
+<p>&nbsp;</p>
+
+## Named entity recognition
+
+<div class = "python">
+```{python}
+ner = pipeline("ner", grouped_entities=True)
+ner("My name is Pierre and I work at BETA in Strasbourg.")
+```
+</div>
+
+- **Main idea**: 
+  - Named entity recognition (NER) involves identifying parts of the input text that correspond to entities.
+
+
+- **Comparison**: 
+  - NER focuses on entities like persons, locations, or organizations in the text.
+
+
+<p>&nbsp;</p>
+
+## Question answering
+
+<div class = "python">
+```{python}
+question_answerer = pipeline("question-answering")
+question_answerer(
+    question="Where do I work?",
+    context="My name is Pierre and I work at BETA in Strasbourg.",
+)
+```
+</div>
+
+The question-answering pipeline answers questions using information from a given context:
+
+<p>&nbsp;</p>
+
+## Summarization
+
+<div class = "python">
+```{python}
+summarizer = pipeline("summarization")
+summarizer(
+    """This paper offers insights into the diffusion and impact of artificial intelligence in science.
+More specifically, we show that neural network-based technology meets the essential properties of emerging technologies in the scientific realm.
+It is novel, because it shows discontinuous innovations in the originating domain and is put to new uses in many application domains;
+it is quick growing, its dimensions being subject to rapid change; it is coherent, because it detaches from its technological parents, and integrates and is accepted in different scientific communities;
+and it has a prominent impact on scientific discovery, but a high degree of uncertainty and ambiguity associated with this impact.
+Our findings suggest that intelligent machines diffuse in the sciences, reshape the nature of the discovery process and affect the organization of science.
+We propose a new conceptual framework that considers artificial intelligence as an emerging general method of invention and, on this basis, derive its policy implications."""
+)
+```
+</div>
+
+Summarization is the task of reducing a text into a shorter text while keeping all (or most) of the important aspects referenced in the text. Here’s an example:
+
+<p>&nbsp;</p>
+
+# Using specific model
+
+See this **Warning message**: "Using a pipeline without specifying a model name and revision in production is not recommended."
+  
+  
+- **Recommendation**:
+  - Specify the model name and revision when using pipelines in production environments.
+
+
+- **Actionable step**:
+  - Choose a specific model from the 1M+ models available on Hugging Face.
+
+
+- **Resource**:
+  - Hugging Face model repository: [https://huggingface.co/models](https://huggingface.co/models)
+
+<div class = "python">
+```{python}
+generator = pipeline("text-generation", model="distilgpt2")
+generator(
+    "In my programming course in DS2E I will",
+    max_length=30,
+    num_return_sequences=3,
+)
+```
+</div>
+
+<div class = "python">
+```{python}
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
+translator("Ce cours est produit par Hugging Face.")
+```
+</div>
+
+For translation, you can use a default model if you provide a language pair in the task name (such as "translation_en_to_fr"), but the easiest way is to pick the model you want to use on the Model Hub. 
+
+Here we’ll try translating from French to English:
+
+<p>&nbsp;</p>
+
+# The Transformer Archictecture 
+
+- **Model Composition**:
+  - **Encoder**:
+    - Receives input and builds its representation (features).
+    - Optimized for understanding the input.
+  - **Decoder**:
+    - Uses the encoder's representation (features) and other inputs to generate a target sequence.
+    - Optimized for generating outputs.
+
+
+- **Usage**:
+  - **Encoder-only models**:
+    - Suitable for tasks requiring input understanding (e.g., sentence classification, named entity recognition).
+  - **Decoder-only models**:
+    - Suitable for generative tasks (e.g., text generation).
+  - **Encoder-decoder models (sequence-to-sequence models)**:
+    - Suitable for generative tasks that require an input (e.g., translation, summarization).
+
+
+![](img/eco-deco.png)
+
+<p>&nbsp;</p>
+
+## Attention layers
+
+Attention layers are integral to the Transformer architecture. The paper introducing the Transformer was titled “Attention Is All You Need,” highlighting the importance of attention layers.
+
+- **Function of attention layers**: These layers direct the model to focus on specific words in a sentence, while downplaying the importance of others.
+
+- **Contextual meaning**: The meaning of a word depends not only on the word itself but also on its context, which includes other words around it.
+
+
+
+
+<p>&nbsp;</p>
+
+### The original architecture
+
+The Transformer architecture was initially designed for translation.
+
+- **Encoder**:
+  - Receives inputs (sentences) in a certain language during training.
+  - Attention layers can use all the words in a sentence, considering both preceding and following words.
+
+- **Decoder**:
+  - Receives the same sentences in the desired target language.
+  - Works sequentially, paying attention only to the words that have already been translated (i.e., the preceding words).
+  - For instance, after predicting the first three words of the translated target, the decoder uses these words and the inputs from the encoder to predict the fourth word.
+
+
+- **Initial Embedding Lookup**:
+  - The raw embeddings for each token are **context-independent**.
+  - Example: The same embedding is used for "bank" whether it refers to a financial institution or a riverbank.
+
+
+- **Transformer Layers**:
+  - After the initial embedding lookup, token embeddings (e.g., **768-dimensional vectors**) are passed through the **transformer's self-attention layers**.
+  - These layers enable the model to attend to other tokens in the sequence, capturing relationships and interactions between words.
+
+
+- **Context-Sensitive Representations**:
+  - As the token embeddings pass through multiple transformer layers, each token's representation becomes **context-sensitive** based on surrounding words.
+
+<p>&nbsp;</p>
+
+## Architectures vs. checkpoints
+
+- **Architecture**: 
+  - Refers to the skeleton of the model, defining each layer and operation within it.
+  
+  
+- **Checkpoints**: 
+  - Weights that are loaded into a given architecture.
+
+
+- **Model**: 
+  - An umbrella term that can refer to both architecture and checkpoints.
+  
+
+- **Example**: 
+  - BERT is an architecture.
+  - bert-base-cased, a set of weights trained by the Google team for the first release of BERT, is a checkpoint.
+  - The term "model" can be used to refer to both the architecture (e.g., "BERT model") and the checkpoint (e.g., "bert-base-cased model").
+
+<p>&nbsp;</p>
+
+
+### Decoder models
+
+- **Decoder models** use only the decoder part of a Transformer model.
+
+
+- **Attention mechanism**: At each stage, the attention layers can only access the words that are positioned before the current word in the sentence.
+
+
+- These models are often referred to as **auto-regressive models**.
+
+
+- **Pretraining**: Typically focuses on predicting the next word in a sentence.
+
+
+- **Best suited for**: Tasks involving text generation.
+
+
+- **Examples** of decoder models:
+    - CTRL
+    - GPT
+    - GPT-2
+    - Transformer XL
+    
+
+![](img/eco-deco.png)
+
+**Step 1**: Input Embedding
+Converts words into numerical vectors:
+
+```
+Text: "The cat eats"
+↓
+Tokens: [The] [cat] [eats]
+↓
+Each becomes a dense vector (e.g., 768 numbers)
+[The] → [0.23, -0.45, 0.67, ..., 0.12]
+```
+
+**Step 2: Positional Encoding**
+Adds position information since transformers don't inherently understand word order:
+```
+Position 0: Gets encoding vector
+Position 1: Gets different encoding vector
+Position 2: Gets another different encoding vector
+
+Final = Word Embedding + Position Encoding
+```
+
+**Step 3: Transformer Block (repeated N times)**
+
+**3.1 - *Masked* Multi-Head Attention**
+
+**The Causal Mask:**
+```
+When processing "eats" at position 2:
+Can see: [The] [cat] [eats]
+Cannot see: [the] [mouse] (future tokens)
+
+Attention mask matrix:
+         The  cat  eats  the  mouse
+The     [ ✓   ✗    ✗    ✗    ✗   ]
+cat     [ ✓   ✓    ✗    ✗    ✗   ]
+eats    [ ✓   ✓    ✓    ✗    ✗   ]
+the     [ ✓   ✓    ✓    ✓    ✗   ]
+mouse   [ ✓   ✓    ✓    ✓    ✓   ]
+
+(✓ = can see, ✗ = blocked)
+```
+
+**Why "Multi-Head"?**
+Having multiple attention heads (e.g., 12) allows the model to focus on different aspects simultaneously:
+- Head 1: Subject-verb relationships
+- Head 2: Semantic meaning
+- Head 3: Long-range dependencies
+- etc.
+
+**3.2 - Add & Norm**
+Two important techniques:
+- **Residual Connection**: Adds the input back to the output (prevents information loss in deep networks)
+- **Layer Normalization**: Stabilizes the numbers to prevent them from getting too large or small
+
+Think of it as: "Keep the original information and just add the new insights"
+
+**3.3 - Feed Forward Network**
+A simple neural network applied to each position independently:
+- Expands the representation (768 → 3072 dimensions)
+- Applies non-linear transformation
+- Compresses back (3072 → 768 dimensions)
+
+This allows the model to process the attended information and extract higher-level features.
+
+
+**Step 4: Stacking Layers**
+
+These blocks repeat many times:
+- GPT-2: 12-48 layers
+- GPT-3: 96 layers
+
+Each layer refines understanding:
+- **Early layers**: Grammar, syntax, word relationships
+- **Middle layers**: Meaning, context, semantic relationships  
+- **Late layers**: Abstract reasoning, global context
+
+
+**Step 5: Output Prediction**
+
+The final layer produces probabilities for the next word:
+```
+Current text: "The cat eats"
+
+Probability for next word:
+  [the]   : 0.001
+  [a]     : 0.089
+  [fish]  : 0.156
+  [mice]  : 0.234  ← Most likely
+  [quickly]: 0.078
+  ...
+```
+
+<p>&nbsp;</p>
+
+
+### Encoder models
+
+- **Encoder models** use only the encoder part of a Transformer model.
+
+
+- **Attention mechanism**: At each stage, the attention layers can access all the words in the sentence.
+
+
+- These models are characterized by **bi-directional attention** and are often referred to as **auto-encoding models**. Processes text **bidirectionally** - can see both past and future words. Designed for understanding, not generation.
+
+
+- **Pretraining**: Typically involves corrupting a sentence (e.g., by masking random words) and tasking the model with reconstructing the original sentence.
+
+
+- **Best suited for**: Tasks requiring a full understanding of the sentence, such as:
+    - Sentence classification
+    - Named entity recognition (word classification)
+    - Extractive question answering
+
+
+- **Examples** of encoder models:
+    - ALBERT
+    - BERT
+    - DistilBERT
+    - ELECTRA
+    - RoBERTa
+
+
+![](img/eco-deco.png)
+
+**Step 1: Input Embedding**
+Similar to GPT, but adds special tokens:
+```
+Text: "The cat eats the mouse"
+↓
+Tokens: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+
+[CLS] = Classification token (for sentence-level tasks)
+[SEP] = Separator (for sentence pairs)
+```
+
+**Step 2: Positional Encoding**
+Same as GPT - adds position information.
+
+
+**Step 3: Transformer Block**
+
+**3.1 - Multi-Head Attention (NO MASK)**
+
+**KEY DIFFERENCE: Bidirectional attention**
+```
+When processing "cat" at position 2:
+Can see: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+         ↑     ↑     ↑      ↑     ↑      ↑       ↑
+         ALL tokens visible (past AND future)
+
+Attention matrix (no masking):
+          CLS The cat eats the mouse SEP
+CLS      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+The      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+cat      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ] ← Can see everything!
+eats     [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+the      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+mouse    [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+SEP      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+```
+
+**Example attention for "eats":**
+```
+Can attend to:
+  - "cat" (subject before): 0.35
+  - "mouse" (object after): 0.40  ← Can see future!
+  - "the" (determiner after): 0.15
+  - others: 0.10
+```
+
+The model understands **full context** from both directions, making it better at understanding what words mean in context.
+
+**3.2 - Add & Norm**
+Same as GPT - residual connections and normalization.
+
+**3.3 - Feed Forward**
+Same as GPT - expand, transform, compress.
+
+
+**Step 4: Stacking Layers**
+- BERT-base: 12 layers
+- BERT-large: 24 layers
+
+Each layer builds deeper understanding of the full sentence context.
+
+
+**Step 5: Task-Specific Output**
+
+**No autoregressive generation!**
+
+BERT produces a rich representation for each token:
+
+```
+[CLS]   → vector  ← Used for sentence classification
+[The]   → vector  ← Used for word-level tasks
+[cat]   → vector  ← Used for named entity recognition
+[eats]  → vector  
+...
+```
+
+<p>&nbsp;</p>
+
+### Sequence-to-sequence models
+
+- **Encoder-decoder models** (also known as **sequence-to-sequence models**) use both parts of the Transformer architecture.
+
+
+- **Attention mechanism**:
+    - Encoder: The attention layers can access all the words in the input sentence.
+    - Decoder: The attention layers can only access the words positioned before the current word in the input.
+
+
+- **Best suited for**: Tasks that involve generating new sentences based on a given input, such as:
+    - Summarization
+    - Translation
+    - Generative question answering
+
+
+- **Examples** of encoder-decoder models:
+    - BART
+    - mBART
+    - Marian
+    - T5
+
+<p>&nbsp;</p>
+
+# Bias and limitations
+
+- Pretrained and fine-tuned models are powerful tools, but they have limitations.
+
+
+- The main limitation stems from the nature of pretraining on large datasets.
+  - Data is often scraped indiscriminately from the internet.
+  - This includes both high-quality and low-quality content.
+
+
+- An example is provided with a fill-mask pipeline using the BERT model.
+
+<div class = "python">
+```{python}
+unmasker = pipeline("fill-mask", model="bert-base-uncased")
+result = unmasker("This man works as a [MASK].")
+print([r["token_str"] for r in result])
+
+result = unmasker("This woman works as a [MASK].")
+print([r["token_str"] for r in result])
+```
+</div>
+
+<p>&nbsp;</p>
+
+# Behind the pipeline function
+
+<div class = "python">
+```{python} 
+from transformers import pipeline
+
+classifier = pipeline("sentiment-analysis")
+sentiments = classifier(
+        ["I hate teaching",
+         "I love programming"]
+    )
+sentiments
+```
+</div>
+
+this `pipeline` groups together three steps: preprocessing, passing the inputs through the model, and postprocessing:
+
+<p>&nbsp;</p>
+
+## Preprocessing with a tokenizer
+
+<div class = "python">
+```{python}
+from transformers import AutoTokenizer
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+```
+</div>
+
+- **Transformer models** can't process raw text directly.
+
+
+- The first step is to **convert text inputs into numbers** using a tokenizer.
+
+
+- The tokenizer is responsible for:
+  - **Splitting the input** into tokens (words, subwords, or symbols like punctuation).
+  - **Mapping each token to an integer**.
+  - **Adding additional inputs** useful to the model.
+
+
+- Preprocessing must be consistent with how the model was pretrained.
+
+
+- **AutoTokenizer** class and its **from_pretrained()** method help fetch and cache the tokenizer information.
+
+<div class = "python">
+```{python}
+from transformers import AutoTokenizer
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+```
+</div>
+
+- The default checkpoint for the **sentiment-analysis pipeline** is **distilbert-base-uncased-finetuned-sst-2-english**.
+
+
+- 🤗 Transformers can be used without concern for the underlying ML framework (PyTorch, TensorFlow, or Flax).
+
+
+- Transformer models require **tensors** as input.
+
+
+- Tensors are similar to NumPy arrays, which can have:
+  - 0D (scalar),
+  - 1D (vector),
+  - 2D (matrix),
+  - or more dimensions.
+
+
+- Other ML frameworks' tensors behave similarly to NumPy arrays and are easy to instantiate.
+
+
+<div class = "python">
+```{python}
+raw_inputs = [
+    "I hate teaching",
+    "I love programming",
+]
+inputs = tokenizer(raw_inputs, padding=True, truncation=True, return_tensors="pt") # Here pytorch
+inputs
+```
+</div>
+
+- **Output Structure**:
+  - A dictionary containing two keys: `input_ids` and `attention_mask`.
+  - `input_ids`: Two rows of integers, one for each sentence, representing the unique identifiers of the tokens.
+  - `attention_mask`: A tensor with the same shape as the `input_ids`, filled with 0s and 1s, where:
+    - 1s indicate tokens to be attended to.
+    - 0s indicate tokens to be ignored by the model's attention layers.
+    
+
+- **Padding**:
+  - Padding ensures all sequences in a batch match the length of the longest sequence by adding a special padding token (e.g., `[PAD]`).
+  - Padding is important for:
+    - Consistency in sequence length across a batch, ensuring efficient processing.
+    - Avoiding model bias caused by sequence length variations, which could affect performance.
+
+
+- **Example**:
+  - Sentences:
+    - "I love NLP."
+    - "Padding in tokenizers is useful."
+  - Maximum sequence length = 5 tokens.
+  - The shorter sentence is padded:
+    - "I love NLP [PAD] [PAD]"
+
+<p>&nbsp;</p>
+
+## Tokenizers
+
+<p>&nbsp;</p>
+
+### Word-based Tokenizer
+
+<div class = "python">
+```{python}
+tokenized_text = "tokenize the text into words by applying Python’s split() function".split()
+tokenized_text
+```
+</div>
+
+  - Simple and easy to set up with few rules.
+
+
+  - Yields decent results for many applications.
+  
+  
+- **Goal:**
+  - Split raw text into words.
+  - Find a numerical representation for each word.
+
+
+- **Text Splitting Methods:**
+  - Can split text in different ways.
+  - Example: Using whitespace to tokenize text into words.
+  - Python's `split()` function can be used for this purpose.
+
+
+<div class = "python">
+```{python}
+tokenized_text = "tokenize the text into words by applying Python’s split() function".split()
+tokenized_text
+```
+</div>
+- Word tokenizers can include extra rules for punctuation.
+
+
+- These tokenizers create vocabularies, defined by the total number of independent tokens in the corpus.
+
+
+- Each word in the corpus is assigned a unique ID, starting from 0, which the model uses to identify each word.
+
+
+- A comprehensive word-based tokenizer needs an identifier for every word in a language, leading to a large number of tokens.
+   - Example: The English language has over 500,000 words, meaning a vast vocabulary and many unique IDs.
+   - Words like "dog" and "dogs" or "run" and "running" are seen as unrelated by the model initially, as there’s no inherent recognition of similarity.
+
+
+- Tokenizers include an "unknown" token (often `[UNK]` or `<unk>`) for words not in the vocabulary.
+
+ - If many unknown tokens are produced, it indicates that the tokenizer is struggling to represent words accurately, losing information.
+ 
+<p>&nbsp;</p>
+    
+###  Character-based
+
+**Character-based tokenization** splits text into characters rather than words.
+  
+  **Primary benefits:**
+  - Smaller vocabulary.
+  - Fewer out-of-vocabulary (unknown) tokens, as every word can be constructed from characters.
+  
+  
+  **Challenges:**
+  - Handling spaces and punctuation can raise issues.
+  
+  
+  **Drawbacks:**
+  - Representation may be less meaningful since individual characters carry less information compared to words.
+  - This varies across languages (e.g., Chinese characters hold more information than characters in Latin languages).
+  - It produces a larger number of tokens to process. A word that is a single token in word-based tokenization may become 10+ tokens in character-based tokenization.
+  
+<p>&nbsp;</p>
+
+### Subword tokenization
+
+**Subword tokenization** offers a compromise, combining word-based and character-based approaches.
+
+- Subword tokenization algorithms are based on the idea that:
+  - Frequently used words should not be split.
+  - Rare words should be decomposed into meaningful subwords.
+  
+  
+- Example: 
+  - "Annoyingly" could be split into "annoying" and "ly".
+  - These subwords are more common and retain the original meaning.
+  - `Let's</w> do</w> token ization</w> !</w>`
+
+
+- Benefits of subword tokenization:
+  - Semantic meaning is preserved through subword combinations.
+  - Efficient representation of long words using fewer tokens.
+  - Achieves good vocabulary coverage.
+  - Minimizes unknown tokens.
+
+
+  ### Loading and saving
+
+<div class = "python">
+```{python}
+tokenizer.save_pretrained("/Users/peltouz/Documents/pretrain/test")
+```
+</div>
+
+- Loading and saving tokenizers is similar to handling models.
+
+
+- It uses the same two methods: `from_pretrained()` and `save_pretrained()`.
+
+
+- These methods load or save:
+  - The algorithm used by the tokenizer (comparable to the architecture of a model).
+  - The vocabulary (comparable to the weights of a model).
+
+<div class = "python">
+```{python}
+tokenizer.save_pretrained("/Users/peltouz/Documents/pretrain/test")
+```
+</div>
+<p>&nbsp;</p>
+
+## Going through the model
+
+<div class = "python">
+```{python}
+from transformers import AutoModel
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+model = AutoModel.from_pretrained(checkpoint)
+```
+</div>
+
+from transformers import AutoModel
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+model = AutoModel.from_pretrained(checkpoint)
+
+<div class = "python">
+```{python}
+outputs = model(**inputs)
+print(outputs.last_hidden_state.shape)
+```
+</div>
+
+- The outputs of 🤗 Transformers models resemble namedtuples or dictionaries.
+
+
+- You can access elements in different ways:
+  - By attributes (e.g., `outputs.last_hidden_state`)
+  - By key (e.g., `outputs["last_hidden_state"]`)
+  - By index, if you know the exact position (e.g., `outputs[0]`)
+
+<p>&nbsp;</p>
+
+## Model heads: Making sense out of numbers
+
+  - Take high-dimensional vectors of hidden states as input.
+  
+  - Project these onto a different dimension.
+  
+  - Usually composed of one or a few linear layers.
+
+
+- **Transformers and Model Heads:**
+  - The output of the Transformer model is sent directly to the model head for further processing.
+  - The embeddings layer in the model converts input IDs into vectors representing the associated tokens.
+  - Subsequent layers manipulate these vectors using the attention mechanism to produce final sentence representations.
+
+
+
+- **Available Architectures in 🤗 Transformers:**
+  - Model (retrieves hidden states)
+  - ForCausalLM
+  - ForMaskedLM
+  - ForMultipleChoice
+  - ForQuestionAnswering
+  - ForSequenceClassification
+  - ForTokenClassification
+
+
+
+ - For example for sentence classification tasks, use `AutoModelForSequenceClassification` instead of `AutoModel`.
+
+<div class = "python">
+```{python}
+from transformers import AutoModelForSequenceClassification
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+outputs = model(**inputs)
+```
+</div>
+
+- The model head reduces dimensionality by taking high-dimensional vectors as input.
+
+
+- It outputs vectors containing two values, one for each label.
+
+
+- Since there are two sentences and two labels, the resulting output has a shape of 2 x 2.
+
+
+<div class = "python">
+```{python}
+print(outputs.logits.shape)
+print(outputs.logits)
+```
+</div>
+
+- The values referred to are logits, not probabilities.
+
+
+- Logits are raw, unnormalized scores outputted by the model's last layer.
+
+
+- To convert logits to probabilities, they must pass through a SoftMax layer.
+  - SoftMax is a generalization of the logistic function to multiple dimensions.
+  - It is used in multinomial logistic regression.
+
+
+During training, the loss function typically combines the final activation function (e.g., SoftMax) with the loss function (e.g., cross entropy).
+
+<div class = "python">
+```{python}
+import torch
+
+predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+print(predictions)
+```
+</div>
+
+- These are recognizable probability scores.
+
+- To get the labels corresponding to each position, we can inspect the id2label attribute of the model config (more on this in the next section):
+
+<div class = "python">
+```{python}
+
+model.config.id2label
+```
+</div>
+<p>&nbsp;</p>
+
+# Models
+
+- **AutoModel Class**: 
+  - Designed to instantiate any model from a checkpoint.
+  - Functions as a wrapper for the various models in the library.
+  - Automatically guesses the appropriate model architecture for the checkpoint.
+  - Instantiates a model with the guessed architecture.
+
+
+- **Direct Model Class Usage**:
+  - If the model type is known, the specific class defining the architecture can be used directly (e.g., BERT model).
+
+<p>&nbsp;</p>
+
+## Creating a Transformer
+
+The first thing we’ll need to do to initialize a BERT model is load a configuration object:
+
+
+<div class = "python">
+```{python}
+from transformers import BertConfig, BertModel
+
+config = BertConfig()
+model = BertModel(config)
+
+print(config)
+``` 
+</div>
+
+- The model can be used in its current state but will output gibberish.
+
+
+- The model requires training before it can perform well.
+
+
+- Training the model from scratch would:
+  - Take a long time.
+  - Require a lot of data.
+  - Have a non-negligible environmental impact.
+
+
+- Instead, reusing pre-trained models can avoid unnecessary and duplicated efforts.
+
+
+- Pre-trained Transformer models can be easily loaded using the `from_pretrained()` method.
+
+
+<div class = "python">
+```{python}
+from transformers import BertModel
+
+model = BertModel.from_pretrained("bert-base-cased")
+```
+</div>
+
+- **Using AutoModel**:
+  - Replace `BertModel` with `AutoModel` to produce checkpoint-agnostic code.
+  - This ensures compatibility with different checkpoints trained for similar tasks, even if the architecture varies.
+
+
+- **Loading Pretrained Models**:
+  - In the example, `BertConfig` was not used; instead, a pretrained model (`bert-base-cased`) was loaded.
+  - This specific checkpoint was trained by the original BERT authors, with details available in the model card.
+
+
+- **Model Initialization and Usage**:
+  - The model is initialized with pretrained weights from the checkpoint.
+  - It can be used directly for inference or fine-tuned on new tasks.
+  - Using pretrained weights helps achieve good results faster than training from scratch.
+
+
+- **Caching and Customizing Cache Folder**:
+  - Weights are downloaded and cached in the default folder `~/.cache/huggingface/transformers`.
+  - Cache folder location can be customized by setting the `HF_HOME` environment variable.
+
+
+- **Model Identifiers**:
+  - The identifier used to load the model can be from any compatible model on the Model Hub.
+  - A full list of available BERT checkpoints can be found [here](https://huggingface.co/models?other=bert).
+
+<p>&nbsp;</p>
+
+## Saving methods
+
+- Use the `save_pretrained()` method to save a model.
+
+<div class = "python">
+```{python}
+model.save_pretrained("/Users/peltouz/Documents/pretrain/test")
+```
+</div>
+
+- **config.json file**:
+  - Contains attributes needed to build the model architecture.
+  - Includes metadata:
+    - Checkpoint origin.
+    - 🤗 Transformers version used when the checkpoint was last saved.
+
+
+- **pytorch_model.bin file**:
+  - Known as the state dictionary.
+  - Contains all the model’s weights (parameters).
+
+
+- **Relationship**:
+  - The `config.json` file provides the model architecture.
+  - The `pytorch_model.bin` file holds the model’s parameters (weights).
+
+<p>&nbsp;</p>
+
+#  Wrapping up: From tokenizer to model
+
+<div class = "python">
+```{python}
+
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+sequences = ["I've been waiting for a HuggingFace course my whole life.", "So have I!"]
+
+tokens = tokenizer(sequences, padding=True, truncation=True, return_tensors="pt")
+output = model(**tokens)
+```
+</div>
+
+
+<div class = "python">
+```{python}
+predictions = torch.nn.functional.softmax(output.logits, dim=-1)
+print(predictions)
+model.config.id2label
+```
+</div>

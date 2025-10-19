@@ -1,0 +1,52 @@
+---
+title: "Parallelization"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,collapse = T)
+library(reticulate)
+
+#  md_document:
+#    variant: markdown_github
+#
+#
+#<div class = "row">
+#<div class = "row">
+#<div class = "python">
+#  
+#
+#</div>
+#</div>
+#<div class = "row">
+#<div class = "r">  
+#  
+#  
+#</div>
+#</div>
+#</div>
+
+
+#<style>
+#div.blue pre { background-color:lightblue; }
+#div.blue pre.r { background-color:blue; }
+#</style>
+#
+```
+
+<style>
+div.python pre { background-color: #e9f7f5
+; }
+</style>
+
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+
+
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+
+
+<p>&nbsp;</p>

@@ -1,0 +1,810 @@
+---
+title: "Training"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,collapse = T)
+library(reticulate)
+use_virtualenv("/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf", required=TRUE)
+py_config()
+
+#  md_document:
+#    variant: markdown_github
+#
+#
+#<div class = "row">
+#<div class = "row">
+#<div class = "python">
+#  
+#
+#</div>
+#</div>
+#<div class = "row">
+#<div class = "r">  
+#  
+#  
+#</div>
+#</div>
+#</div>
+
+
+#<style>
+#div.blue pre { background-color:lightblue; }
+#div.blue pre.r { background-color:blue; }
+#</style>
+#
+```
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+
+
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+
+
+<p>&nbsp;</p>
+
+
+#  Fine-tuning a pretrained model
+
+## Processing the data
+
+Here is a first small example:
+
+<div class = "python">
+```{python}
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from torch.optim import AdamW
+
+checkpoint = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+sequences = [
+    "I've been waiting for a HuggingFace course my whole life.",
+    "This course is amazing!",
+]
+batch = tokenizer(sequences, padding=True, truncation=True, return_tensors="pt")
+
+batch["labels"] = torch.tensor([1, 1]) # Set labels, here both sequence are labelled as 1
+
+optimizer = AdamW(model.parameters())
+loss = model(**batch).loss
+loss.backward()
+optimizer.step()
+```
+</div>
+
+##  Loading a dataset from the Hub
+
+- The Hub contain models multiple datasets in lots of different languages.(https://huggingface.co/datasets)
+
+- **MRPC dataset**: This is one of the 10 datasets composing the GLUE benchmark, which is an academic benchmark that is used to measure the performance of ML models across 10 different text classification tasks.
+
+<div class = "python">
+```{python}
+from datasets import load_dataset
+
+raw_datasets = load_dataset("glue", "mrpc")
+raw_datasets
+```
+</div>
+
+<div class = "python">
+```{python}
+raw_train_dataset = raw_datasets["train"]
+raw_train_dataset[0]
+```
+</div>
+
+<div class = "python">
+```{python}
+raw_train_dataset.features
+```
+</div>
+
+<div class = "python">
+```{python}
+raw_datasets["train"]["sentence1"][:3]
+```
+</div>
+
+# Preprocessing a dataset
+
+To preprocess the dataset, we need to convert the text to numbers the model can make sense of. This is done with a tokenizer. We can feed the tokenizer one sentence or a list of sentences, so we can directly tokenize all the first sentences and all the second sentences of each pair like this:
+
+<div class = "python">
+```{python}
+from transformers import AutoTokenizer
+
+checkpoint = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+tokenized_sentences_1 = tokenizer(list(raw_datasets["train"]["sentence1"]))
+tokenized_sentences_2 = tokenizer(list(raw_datasets["train"]["sentence2"]))
+```
+</div>
+
+- A direct input of two sequences to the model won't yield a prediction for whether the sentences are paraphrases.
+- The two sequences must be handled as a pair and preprocessed appropriately.
+- The tokenizer can accept a pair of sequences and process them in the format required by the BERT model.
+
+<div class = "python">
+```{python}
+inputs = tokenizer("This is the first sentence.", "This is the second one.")
+inputs
+```
+</div>
+
+<div class = "python">
+```{python}
+tokenizer.convert_ids_to_tokens(inputs["input_ids"])
+```
+</div>
+
+- **Token Type IDs**:
+  - Parts of the input corresponding to `[CLS] sentence1 [SEP]` have a token type ID of 0.
+  - Parts of the input corresponding to `sentence2 [SEP]` have a token type ID of 1.
+
+- **Handling Token Type IDs**:
+  - Generally, there’s no need to worry about token_type_ids in tokenized inputs.
+  - As long as the tokenizer and model use the same checkpoint, the tokenizer will correctly provide the required information.
+
+- **Tokenizing a Dataset**:
+  - The tokenizer can handle a list of sentence pairs by taking separate lists for the first and second sentences.
+  - This approach is compatible with padding and truncation options.
+
+<div class = "python">
+```{python}
+tokenized_dataset = tokenizer(
+    list(raw_datasets["train"]["sentence1"]),
+    list(raw_datasets["train"]["sentence2"]),
+    padding=True,
+    truncation=True,
+)
+```
+</div>
+
+- The initial method works well but has some limitations:
+  - Returns a dictionary with specific keys (`input_ids`, `attention_mask`, `token_type_ids`) and values as lists of lists.
+  - Requires sufficient RAM to store the entire dataset during tokenization.
+  - In contrast, 🤗 Datasets library datasets are Apache Arrow files, stored on disk, so only the requested samples are loaded in memory.
+
+
+- To address these limitations and retain the dataset format:
+  - Use `Dataset.map()` method.
+  - This method allows for extra preprocessing beyond tokenization.
+  - `map()` applies a function to each element in the dataset, enabling customized tokenization functions.
+
+<div class = "python">
+```{python}
+def tokenize_function(example):
+    return tokenizer(example["sentence1"], example["sentence2"], truncation=True)
+```
+</div>
+
+<div class = "python">
+```{python}
+tokenize_function( raw_datasets["train"][0])
+```
+</div>
+
+- The function takes a dictionary as input (similar to dataset items) and returns a new dictionary with the keys:
+  - `input_ids`
+  - `attention_mask`
+  - `token_type_ids`
+  
+- The function can handle multiple samples simultaneously:
+  - Each key can contain a list of sentences.
+  - This allows for using `batched=True` in the `map()` call, enhancing tokenization speed by processing multiple samples at once.
+
+
+- Padding optimization:
+  - Padding is excluded from the function to avoid inefficiency.
+  - Instead, padding is applied when building a batch, so only the maximum length in each batch is padded, not across the entire dataset.
+  - This strategy saves time and processing power, especially with variable-length inputs.
+
+
+- Application on datasets:
+  - The tokenization function is applied to all datasets at once using `batched=True` with `map()`.
+  - The `Datasets` library adds new fields to each dataset based on the keys in the returned dictionary for efficient preprocessing.
+
+<div class = "python">
+```{python}
+tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
+tokenized_datasets
+```
+</div>
+
+- **Tokenize Function Output**:
+  - Returns a dictionary with the following keys:
+    - `input_ids`
+    - `attention_mask`
+    - `token_type_ids`
+  - These fields are added to all splits of the dataset.
+  
+
+- **Customization with map()**:
+  - Possible to modify existing fields in the dataset by returning new values for an existing key in the preprocessing function.
+
+
+# With your own Dataset
+<div class = "python">
+```{python, eval = F}
+import pandas as pd
+df = pd.read_csv('Data/text1995.csv')
+data_wang = pd.read_json('Data/1995.json')
+data_wang['score'] = data_wang['items_wang_3_restricted50'].apply(lambda x: x['score']['novelty'] )
+df = pd.merge(df[['id','text']],data_wang[['id','score']],on = 'id', how = 'inner')
+
+
+num_positive = df[df['score'] > 0].shape[0]
+positive_score_subset = df[df['score'] > 0]
+positive_score_subset['score'] = 1 
+zero_score_subset = df[df['score'] == 0].sample(n=num_positive, random_state=42) 
+balanced_df = pd.concat([positive_score_subset, zero_score_subset])
+balanced_df = balanced_df.sample(frac=1, random_state=24).reset_index(drop=True)
+balanced_df['score'] = balanced_df['score'].astype(int)
+
+from sklearn.model_selection import train_test_split
+balanced_df = balanced_df[['id','score', 'text']].set_index('id')
+train_df, temp_df = train_test_split(balanced_df, test_size=0.4, random_state=42)
+valid_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42) 
+
+from datasets import Dataset, DatasetDict, load_dataset
+
+train_dataset = Dataset.from_pandas(train_df)
+valid_dataset = Dataset.from_pandas(valid_df)
+test_dataset = Dataset.from_pandas(test_df)
+
+datasets = DatasetDict({
+    'train': train_dataset,
+    'validation': valid_dataset,
+    'test':test_dataset
+})
+
+
+datasets.save_to_disk('Data/test_novelty')
+```
+</div>
+
+## Dynamic padding
+
+- **Collate Function**: 
+  - The collate function organizes samples within a batch in a DataLoader.
+  - Default behavior: Converts samples to PyTorch tensors and concatenates them, handling lists, tuples, or dictionaries recursively.
+  - Limitation: This approach won’t work if inputs vary in size.
+
+
+- **Batch Padding Strategy**:
+  - Padding is deliberately applied only as needed for each batch to minimize excessive padding.
+  - Benefits: Speeds up training by reducing over-long inputs.
+
+
+
+- **Custom Collate Function with Padding**:
+  - A custom collate function applies appropriate padding to batch items.
+  - Transformers library provides `DataCollatorWithPadding` for this purpose.
+    - Requires a tokenizer to handle padding tokens and specify left or right padding as needed by the model.
+
+<div class = "python">
+```{python}
+from transformers import DataCollatorWithPadding
+
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+```
+</div>
+
+<div class = "python">
+```{python}
+samples = tokenized_datasets["train"][:8]
+samples = {k: v for k, v in samples.items() if k not in ["idx", "sentence1", "sentence2"]}
+[len(x) for x in samples["input_ids"]]
+```
+</div>
+
+- Samples have varying lengths, ranging from 32 to 67.
+- **Dynamic padding**: Pads samples in a batch to the maximum length within that batch (67 in this case).
+- **Without dynamic padding**: Would require padding all samples to the maximum length across the entire dataset or to the model's maximum acceptable length.
+- A check on `data_collator` confirms proper application of dynamic padding for the batch.
+
+<div class = "python">
+```{python}
+batch = data_collator(samples)
+{k: v.shape for k, v in batch.items()}
+```
+</div>
+
+# Fine-tuning a model with the Trainer API
+
+- **Trainer Class in Transformers**:
+  - The Trainer class is provided by Transformers for fine-tuning pretrained models on custom datasets.
+  - After data preprocessing, only a few steps are needed to define the Trainer.
+
+
+- **Setting Up the Training Environment**:
+  - Running `Trainer.train()` on a CPU is very slow; a GPU is recommended.
+  - Google Colab offers access to free GPUs and TPUs for faster training.
+
+<div class = "python">
+```{python}
+from datasets import load_dataset
+from transformers import AutoTokenizer, DataCollatorWithPadding
+
+raw_datasets = load_dataset("glue", "mrpc")
+checkpoint = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+
+def tokenize_function(example):
+    return tokenizer(example["sentence1"], example["sentence2"], truncation=True)
+
+
+tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+```
+</div>
+
+## Training
+
+- **Define TrainingArguments**: 
+  - Before defining the Trainer, set up a `TrainingArguments` class.
+  - This class will include all the necessary hyperparameters for training and evaluation.
+
+
+- **Required Argument**:
+  - Specify a directory where:
+    - The trained model will be saved.
+    - Checkpoints will be stored during training.
+
+
+- **Default Settings**:
+  - Defaults for other parameters are generally sufficient for basic fine-tuning.
+
+<div class = "python">
+```{python}
+from transformers import TrainingArguments
+
+training_args = TrainingArguments("test-trainer0")
+```
+</div>
+
+<div class = "python">
+```{python}
+from transformers import AutoModelForSequenceClassification
+
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
+```
+</div>
+
+- **Warning on Model Instantiation**:
+  - A warning appears after loading the pretrained BERT model.
+  - BERT was not pretrained for sentence pair classification, so the original model head is discarded.
+  - A new head for sequence classification is added, causing:
+    - Some weights to be unused (from the discarded pretraining head).
+    - Some weights to be randomly initialized (for the new classification head).
+  - The warning suggests training the model to optimize the new head.
+
+- **Defining a Trainer**:
+  - The Trainer requires the following components:
+    - The modified model (with a new head).
+    - `training_args`: settings and configurations for the training process.
+    - `training` and `validation` datasets.
+    - `data_collator`: a function to collate batches of data.
+    - `tokenizer`: to process text inputs.
+
+<div class = "python">
+```{python}
+from transformers import Trainer
+
+trainer = Trainer(
+    model,
+    training_args,
+    train_dataset=tokenized_datasets["train"],
+    eval_dataset=tokenized_datasets["validation"],
+    data_collator=data_collator,
+    tokenizer=tokenizer,
+)
+```
+</div>
+
+- To fine-tune the model on our dataset, we just have to call the train() method of our Trainer
+- The fine-tuning process will begin, which should take a few minutes on a GPU.
+- Training loss will be reported every 500 steps.
+- However, model performance (quality) is not assessed due to:
+  - Lack of evaluation strategy:
+    - `evaluation_strategy` was not set to "steps" (evaluate every `eval_steps`) or "epoch" (evaluate at the end of each epoch).
+  - Absence of `compute_metrics()` function:
+    - Without this, no metrics are calculated during evaluation; only the loss would be printed, which is not very informative.
+
+## Evaluation
+
+- **Goal**: Build a `compute_metrics()` function to use during model training.
+
+- **Function Requirements**:
+  - Accepts an `EvalPrediction` object (a named tuple with:
+    - `predictions` field
+    - `label_ids` field)
+  - Returns a dictionary:
+    - Keys are metric names (strings)
+    - Values are metric values (floats)
+
+- **Usage**:
+  - Use `Trainer.predict()` to generate model predictions.
+
+<div class = "python">
+```{python}
+predictions = trainer.predict(tokenized_datasets["validation"])
+print(predictions.predictions.shape, predictions.label_ids.shape)
+```
+</div>
+
+- **predict() method output**:
+  - Returns a named tuple with three fields:
+    - **predictions**: 
+      - A 2D array with shape 408 x 2 (for 408 elements in the dataset).
+      - Contains logits for each element, which need to be transformed to make predictions.
+      - Transformation process: select the index with the maximum value on the second axis.
+    - **label_ids**: Stores the labels for comparison.
+    - **metrics**:
+      - Initially includes:
+        - **Loss** on the dataset passed.
+        - **Time metrics** (total and average prediction time).
+      - When `compute_metrics()` is defined and passed to `Trainer`, `metrics` also includes the metrics returned by `compute_metrics()`.
+
+<div class = "python">
+```{python}
+import numpy as np
+
+preds = np.argmax(predictions.predictions, axis=-1)
+```
+</div>
+
+ - We can now compare those preds to the labels.
+ - To build our compute_metric() function, we will rely on the metrics from the Evaluate library. 
+ - We can load the metrics associated with the MRPC dataset as easily as we loaded the dataset, this time with the evaluate.load() function.
+ - The object returned has a compute() method we can use to do the metric calculation:
+
+<div class = "python">
+```{python}
+import evaluate
+
+metric = evaluate.load("glue", "mrpc")
+metric.compute(predictions=preds, references=predictions.label_ids)
+
+
+print("Preds:", preds[:10])
+print("Labels:", predictions.label_ids[:10])
+print("Preds type:", type(preds[0]))
+print("Labels type:", type(predictions.label_ids[0]))
+print("Unique values in preds:", np.unique(preds))
+print("Unique values in labels:", np.unique(predictions.label_ids))
+```
+</div>
+
+<div class = "python">
+```{python}
+def compute_metrics(eval_preds):
+    metric = evaluate.load("glue", "mrpc")
+    logits, labels = eval_preds
+    predictions = np.argmax(logits, axis=-1)
+    return metric.compute(predictions=predictions, references=labels)
+```
+</div>
+
+<div class = "python">
+```{python}
+
+device =  torch.device("mps") if torch.backends.mps.is_available()  else torch.device("cpu")
+
+training_args = TrainingArguments("test-trainer", eval_strategy="epoch")
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
+model.to(device)
+
+trainer = Trainer(
+    model,
+    training_args,
+    train_dataset=tokenized_datasets["train"],
+    eval_dataset=tokenized_datasets["validation"],
+    data_collator=data_collator,
+    tokenizer=tokenizer,
+    compute_metrics=compute_metrics,
+)
+```
+</div>
+
+- **New TrainingArguments**:
+  - A new `TrainingArguments` object is created.
+  - The `evaluation_strategy` parameter is set to `"epoch"`.
+
+
+- **New Model**:
+  - A new model is instantiated for training.
+  - This prevents continuing training on an already trained model.
+
+
+- To launch a new training run, we execute:
+
+<div class = "python">
+```{python}
+trainer.train()
+```
+</div>
+
+- The model will now:
+  - Report validation loss and metrics (accuracy, F1 score) at the end of each epoch.
+  - Continue reporting training loss.
+
+- Note:
+  - The exact accuracy/F1 score may vary slightly due to the model's random head initialization.
+  - Despite this variability, results should remain close to the expected range.
+
+
+<div class = "python">
+```{python}
+test_pred = trainer.predict(tokenized_datasets["test"])
+preds = np.argmax(test_pred.predictions, axis=-1)
+metric = evaluate.load("glue", "mrpc")
+metric.compute(predictions=preds, references=test_pred.label_ids)
+
+
+print("Preds:", preds[:10])
+print("Labels:", predictions.label_ids[:10])
+print("Preds type:", type(preds[0]))
+print("Labels type:", type(predictions.label_ids[0]))
+print("Unique values in preds:", np.unique(preds))
+print("Unique values in labels:", np.unique(predictions.label_ids))
+```
+</div>
+
+# BERT Full Training Script
+
+<div class = "python">
+```{python}
+from transformers import AutoTokenizer, DataCollatorWithPadding, Trainer, TrainingArguments
+from transformers import AutoModelForSequenceClassification, EarlyStoppingCallback
+from datasets import load_from_disk
+from evaluate import load
+import numpy as np
+import torch
+
+datasets = load_from_disk('Data/test_novelty')
+
+checkpoint = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+def tokenize_function(example):
+    return tokenizer(example["text"], truncation=True)
+
+tokenized_datasets = datasets.map(tokenize_function, batched=True)
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+tokenized_datasets = tokenized_datasets.remove_columns(["text", "id"])
+tokenized_datasets = tokenized_datasets.rename_column("score", "labels")
+tokenized_datasets.set_format("torch")
+
+def compute_metrics(eval_preds):
+    logits, labels = eval_preds
+    predictions = np.argmax(logits, axis=-1)
+    
+    accuracy = load('accuracy')
+    f1 = load('f1')
+    precision = load('precision')
+    recall = load('recall')
+    
+    accuracy_result = accuracy.compute(predictions=predictions, references=labels)
+    f1_result = f1.compute(predictions=predictions, references=labels)
+    precision_result = precision.compute(predictions=predictions, references=labels)
+    recall_result = recall.compute(predictions=predictions, references=labels)
+    
+    return {
+        'accuracy': accuracy_result['accuracy'],
+        'f1': f1_result['f1'],
+        'precision': precision_result['precision'],
+        'recall': recall_result['recall']
+    }
+
+# device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device =  torch.device("mps") if torch.backends.mps.is_available()  else torch.device("cpu")
+```
+</div>
+
+<div class = "python">
+```{python,eval =F}
+
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
+model.to(device)
+
+training_args = TrainingArguments(
+    output_dir='./novelty_bert_checkpoints', 
+
+    eval_strategy="steps",  # Evaluate the model every N steps (not per epoch)
+    eval_steps=200,  # Run evaluation on validation set every 200 training steps
+    save_steps=400,  # Save model checkpoint every 400 training steps
+    learning_rate=2e-5,  # Learning rate for the optimizer
+
+    per_device_train_batch_size=16,  # Number of training samples processed per device before updating weights
+    per_device_eval_batch_size=16,  # Number of evaluation samples processed per device
+    
+    num_train_epochs=1,  # Total number of complete passes through the training dataset
+    
+    weight_decay=0.01,  # L2 regularization coefficient to prevent overfitting
+    
+    load_best_model_at_end=True,  # After training, load the checkpoint with the best validation performance
+    metric_for_best_model="f1",  # Use F1 score to determine which checkpoint is "best"
+    greater_is_better=True,
+    
+    warmup_steps=100,  # Number of steps to gradually increase learning rate from 0 to learning_rate (helps training stability)
+    
+    logging_steps=50,  # Log training metrics (loss, learning rate) every 50 steps
+    
+    report_to="none",  # Disable automatic logging to external tools (wandb, tensorboard, etc.)
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args, 
+    train_dataset=tokenized_datasets["train"], 
+    eval_dataset=tokenized_datasets["validation"],  
+    compute_metrics=compute_metrics,  # Calculate metrics on validation set
+    processing_class=tokenizer,  # Tokenizer for processing
+    data_collator=data_collator,  # Handles dynamic padding of batches
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]  # Stop training if validation metric doesn't improve for 3 consecutive evaluations
+)
+
+trainer.train()
+
+trainer.save_model('./novelty_bert_final')
+tokenizer.save_pretrained('./novelty_bert_final')
+
+
+## 
+## Map: 100%|██████████████████████████████████████████████████████████████████████████████| 12706/12706 [00:01<00:00, 8906.47 examples/s]
+## Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: ['classifier.bias', 'classifier.weight']
+## You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+##   0%|                                                                                                         | 0/2383 [00:00<?, ?it/s]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## {'loss': 0.7648, 'grad_norm': 12.595635414123535, 'learning_rate': 9.800000000000001e-06, 'epoch': 0.02}
+## {'loss': 0.6888, 'grad_norm': 5.888716697692871, 'learning_rate': 1.98e-05, 'epoch': 0.04}
+## {'loss': 0.6858, 'grad_norm': 2.0533313751220703, 'learning_rate': 1.9570740254051688e-05, 'epoch': 0.06}
+## {'loss': 0.6569, 'grad_norm': 3.2530934810638428, 'learning_rate': 1.9132720105124838e-05, 'epoch': 0.08}
+## Downloading builder script: 7.56kB [00:00, 1.44MB/s]                                                | 200/2383 [04:30<46:13,  1.27s/it]
+## Downloading builder script: 7.38kB [00:00, 5.48MB/s]█████████████████████████████████████████████████| 795/795 [04:57<00:00,  3.05it/s]
+## {'eval_loss': 0.6507338881492615, 'eval_accuracy': 0.6109405745769382, 'eval_f1': 0.47532109117928034, 'eval_precision': 0.7180885182809493, 'eval_recall': 0.355227669363795, 'eval_runtime': 309.63, 'eval_samples_per_second': 41.033, 'eval_steps_per_second': 2.568, 'epoch': 0.08}
+## {'loss': 0.6463, 'grad_norm': 3.86037015914917, 'learning_rate': 1.8694699956197987e-05, 'epoch': 0.1}
+## {'loss': 0.6469, 'grad_norm': 7.634893417358398, 'learning_rate': 1.8256679807271137e-05, 'epoch': 0.13}
+## {'loss': 0.6517, 'grad_norm': 2.9199094772338867, 'learning_rate': 1.7818659658344287e-05, 'epoch': 0.15}
+## {'loss': 0.6356, 'grad_norm': 6.318357944488525, 'learning_rate': 1.7380639509417433e-05, 'epoch': 0.17}
+##  17%|███████████████▉                                                                               | 400/2383 [14:25<43:57,  1.33s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## Downloading builder script: 7.56kB [00:00, 3.58MB/s]
+## Downloading builder script: 7.38kB [00:00, 3.77MB/s]████████████████████████████████████████████████▉| 794/795 [04:54<00:00,  2.65it/s]
+## {'eval_loss': 0.6258542537689209, 'eval_accuracy': 0.657693821330185, 'eval_f1': 0.6632597754548974, 'eval_precision': 0.6477616454930429, 'eval_recall': 0.6795176899888942, 'eval_runtime': 298.9649, 'eval_samples_per_second': 42.497, 'eval_steps_per_second': 2.659, 'epoch': 0.17}
+## {'loss': 0.6368, 'grad_norm': 2.8214261531829834, 'learning_rate': 1.6942619360490583e-05, 'epoch': 0.19}
+## {'loss': 0.6433, 'grad_norm': 6.014491558074951, 'learning_rate': 1.6504599211563733e-05, 'epoch': 0.21}
+## {'loss': 0.6428, 'grad_norm': 6.863008499145508, 'learning_rate': 1.6066579062636882e-05, 'epoch': 0.23}
+## {'loss': 0.6229, 'grad_norm': 4.182170867919922, 'learning_rate': 1.5628558913710032e-05, 'epoch': 0.25}
+##  25%|███████████████████████▉                                                                       | 600/2383 [24:40<36:58,  1.24s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## {'eval_loss': 0.622889518737793, 'eval_accuracy': 0.6445493900039354, 'eval_f1': 0.6951120712935458, 'eval_precision': 0.6050064637442708, 'eval_recall': 0.8167539267015707, 'eval_runtime': 312.7921, 'eval_samples_per_second': 40.618, 'eval_steps_per_second': 2.542, 'epoch': 0.25}
+## {'loss': 0.6093, 'grad_norm': 4.26153039932251, 'learning_rate': 1.519053876478318e-05, 'epoch': 0.27}
+## {'loss': 0.6248, 'grad_norm': 3.7737467288970947, 'learning_rate': 1.475251861585633e-05, 'epoch': 0.29}
+## {'loss': 0.6273, 'grad_norm': 7.192020416259766, 'learning_rate': 1.431449846692948e-05, 'epoch': 0.31}
+## {'loss': 0.6266, 'grad_norm': 5.350361347198486, 'learning_rate': 1.3876478318002628e-05, 'epoch': 0.34}
+##  34%|███████████████████████████████▉                                                               | 800/2383 [34:26<35:29,  1.35s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## {'eval_loss': 0.6135651469230652, 'eval_accuracy': 0.6554112554112554, 'eval_f1': 0.6299239222316145, 'eval_precision': 0.6741451058440383, 'eval_recall': 0.5911470728224655, 'eval_runtime': 300.898, 'eval_samples_per_second': 42.224, 'eval_steps_per_second': 2.642, 'epoch': 0.34}
+## {'loss': 0.6263, 'grad_norm': 4.366634845733643, 'learning_rate': 1.343845816907578e-05, 'epoch': 0.36}
+## {'loss': 0.6162, 'grad_norm': 6.9116950035095215, 'learning_rate': 1.3000438020148929e-05, 'epoch': 0.38}
+## {'loss': 0.633, 'grad_norm': 2.419966220855713, 'learning_rate': 1.2562417871222077e-05, 'epoch': 0.4}
+## {'loss': 0.619, 'grad_norm': 3.9776971340179443, 'learning_rate': 1.2124397722295227e-05, 'epoch': 0.42}
+##  42%|███████████████████████████████████████▍                                                      | 1000/2383 [43:37<27:23,  1.19s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## {'eval_loss': 0.6167282462120056, 'eval_accuracy': 0.6605273514364424, 'eval_f1': 0.663808558734118, 'eval_precision': 0.6524670548574931, 'eval_recall': 0.6755513247659845, 'eval_runtime': 291.3567, 'eval_samples_per_second': 43.606, 'eval_steps_per_second': 2.729, 'epoch': 0.42}
+## {'loss': 0.6176, 'grad_norm': 2.9242210388183594, 'learning_rate': 1.1686377573368375e-05, 'epoch': 0.44}
+## {'loss': 0.6312, 'grad_norm': 8.742416381835938, 'learning_rate': 1.1248357424441525e-05, 'epoch': 0.46}
+## {'loss': 0.6317, 'grad_norm': 5.807154178619385, 'learning_rate': 1.0810337275514674e-05, 'epoch': 0.48}
+## {'loss': 0.6111, 'grad_norm': 6.02040433883667, 'learning_rate': 1.0372317126587823e-05, 'epoch': 0.5}
+##  50%|█████████████████████████████████████████████████████████████████████████████████████                                                                                    | 1200/2383 [52:34<25:09,  1.28s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## {'eval_loss': 0.6142168641090393, 'eval_accuracy': 0.6557260920897284, 'eval_f1': 0.6404734506000329, 'eval_precision': 0.6645062254818352, 'eval_recall': 0.6181183563382516, 'eval_runtime': 294.665, 'eval_samples_per_second': 43.117, 'eval_steps_per_second': 2.698, 'epoch': 0.5}
+## {'train_runtime': 3451.0748, 'train_samples_per_second': 11.044, 'train_steps_per_second': 0.691, 'train_loss': 0.6415314928690592, 'epoch': 0.5}
+##  50%|█████████████████████████████████████████████████████████████████████████████████████                                                                                    | 1200/2383 [57:31<56:42,  2.88s/it]
+## /Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+##   warnings.warn(warn_msg)
+## 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 795/795 [04:53<00:00,  2.71it/s]
+```
+</div>
+
+- Evaluate on Test Set
+
+<div class = "python">
+```{python}
+
+from transformers import AutoModelForSequenceClassification
+from torch.utils.data import DataLoader
+import evaluate
+from tqdm import tqdm
+import torch
+import numpy as np
+
+def get_model_eval_testset(checkpoint):
+  model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+  model.to(device)
+  
+  eval_dataloader = DataLoader(
+      tokenized_datasets["test"], batch_size=16, collate_fn=data_collator
+  )
+  
+  # Collect all predictions and labels
+  all_logits = []
+  all_labels = []
+  
+  model.eval()
+  
+  for batch in eval_dataloader:
+      batch = {k: v.to(device) for k, v in batch.items()}
+      with torch.no_grad():
+          outputs = model(**batch)
+          logits = outputs.logits
+      
+      all_logits.append(logits.cpu().numpy())
+      all_labels.append(batch["labels"].cpu().numpy())
+  
+  all_logits = np.concatenate(all_logits, axis=0)
+  all_labels = np.concatenate(all_labels, axis=0)
+  
+  results = compute_metrics((all_logits, all_labels))
+  
+  print("\nTest Set Results:")
+  print("=" * 50)
+  for metric_name, value in results.items():
+      print(f"{metric_name}: {value:.4f}")
+  print("=" * 50)
+
+```
+</div>
+
+- Before Training
+
+<div class = "python">
+```{python, eval = F}
+get_model_eval_testset('bert-base-uncased')
+## 
+## Test Set Results:
+## ==================================================
+## accuracy: 0.5026
+## f1: 0.0427
+## precision: 0.4947
+## recall: 0.0223
+## ==================================================
+```
+
+</div>
+
+- After Training
+
+<div class = "python">
+
+```{python, eval = F}
+get_model_eval_testset('./novelty_bert_final')
+## 
+## Test Set Results:
+## ==================================================
+## accuracy: 0.6585
+## f1: 0.6666
+## precision: 0.6477
+## recall: 0.6867
+## ==================================================
+```
+
+</div>
+

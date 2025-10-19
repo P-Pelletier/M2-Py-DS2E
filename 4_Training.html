@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Training</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">M2 DS2E</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="2_HF.html">HF</a>
+</li>
+<li>
+  <a href="3_MCP.html">MCP</a>
+</li>
+<li>
+  <a href="4_Training.html">Training</a>
+</li>
+<li>
+  <a href="5_Parallelization.html">Parallelization</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/master-ds2e/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Training</h1>
+
+</div>
+
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+<p>
+ 
+</p>
+<div id="fine-tuning-a-pretrained-model" class="section level1"
+number="1">
+<h1><span class="header-section-number">1</span> Fine-tuning a
+pretrained model</h1>
+<div id="processing-the-data" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Processing the
+data</h2>
+<p>Here is a first small example:</p>
+<div class="python">
+<pre class="python"><code>import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from torch.optim import AdamW
+
+checkpoint = &quot;bert-base-uncased&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+sequences = [
+    &quot;I&#39;ve been waiting for a HuggingFace course my whole life.&quot;,
+    &quot;This course is amazing!&quot;,
+]
+batch = tokenizer(sequences, padding=True, truncation=True, return_tensors=&quot;pt&quot;)
+
+batch[&quot;labels&quot;] = torch.tensor([1, 1]) # Set labels, here both sequence are labelled as 1
+
+optimizer = AdamW(model.parameters())
+loss = model(**batch).loss
+loss.backward()
+optimizer.step()</code></pre>
+</div>
+</div>
+<div id="loading-a-dataset-from-the-hub" class="section level2"
+number="1.2">
+<h2><span class="header-section-number">1.2</span> Loading a dataset
+from the Hub</h2>
+<ul>
+<li><p>The Hub contain models multiple datasets in lots of different
+languages.(<a href="https://huggingface.co/datasets"
+class="uri">https://huggingface.co/datasets</a>)</p></li>
+<li><p><strong>MRPC dataset</strong>: This is one of the 10 datasets
+composing the GLUE benchmark, which is an academic benchmark that is
+used to measure the performance of ML models across 10 different text
+classification tasks.</p></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from datasets import load_dataset
+
+raw_datasets = load_dataset(&quot;glue&quot;, &quot;mrpc&quot;)
+raw_datasets
+## DatasetDict({
+##     train: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;],
+##         num_rows: 3668
+##     })
+##     validation: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;],
+##         num_rows: 408
+##     })
+##     test: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;],
+##         num_rows: 1725
+##     })
+## })</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>raw_train_dataset = raw_datasets[&quot;train&quot;]
+raw_train_dataset[0]
+## {&#39;sentence1&#39;: &#39;Amrozi accused his brother , whom he called &quot; the witness &quot; , of deliberately distorting his evidence .&#39;, &#39;sentence2&#39;: &#39;Referring to him as only &quot; the witness &quot; , Amrozi accused his brother of deliberately distorting his evidence .&#39;, &#39;label&#39;: 1, &#39;idx&#39;: 0}</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>raw_train_dataset.features
+## {&#39;sentence1&#39;: Value(&#39;string&#39;), &#39;sentence2&#39;: Value(&#39;string&#39;), &#39;label&#39;: ClassLabel(names=[&#39;not_equivalent&#39;, &#39;equivalent&#39;]), &#39;idx&#39;: Value(&#39;int32&#39;)}</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>raw_datasets[&quot;train&quot;][&quot;sentence1&quot;][:3]
+## [&#39;Amrozi accused his brother , whom he called &quot; the witness &quot; , of deliberately distorting his evidence .&#39;, &quot;Yucaipa owned Dominick &#39;s before selling the chain to Safeway in 1998 for $ 2.5 billion .&quot;, &#39;They had published an advertisement on the Internet on June 10 , offering the cargo for sale , he added .&#39;]</code></pre>
+</div>
+</div>
+</div>
+<div id="preprocessing-a-dataset" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Preprocessing a
+dataset</h1>
+<p>To preprocess the dataset, we need to convert the text to numbers the
+model can make sense of. This is done with a tokenizer. We can feed the
+tokenizer one sentence or a list of sentences, so we can directly
+tokenize all the first sentences and all the second sentences of each
+pair like this:</p>
+<div class="python">
+<pre class="python"><code>from transformers import AutoTokenizer
+
+checkpoint = &quot;bert-base-uncased&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+tokenized_sentences_1 = tokenizer(list(raw_datasets[&quot;train&quot;][&quot;sentence1&quot;]))
+tokenized_sentences_2 = tokenizer(list(raw_datasets[&quot;train&quot;][&quot;sentence2&quot;]))</code></pre>
+</div>
+<ul>
+<li>A direct input of two sequences to the model won’t yield a
+prediction for whether the sentences are paraphrases.</li>
+<li>The two sequences must be handled as a pair and preprocessed
+appropriately.</li>
+<li>The tokenizer can accept a pair of sequences and process them in the
+format required by the BERT model.</li>
+</ul>
+<div class="python">
+<pre class="python"><code>inputs = tokenizer(&quot;This is the first sentence.&quot;, &quot;This is the second one.&quot;)
+inputs
+## {&#39;input_ids&#39;: [101, 2023, 2003, 1996, 2034, 6251, 1012, 102, 2023, 2003, 1996, 2117, 2028, 1012, 102], &#39;token_type_ids&#39;: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], &#39;attention_mask&#39;: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>tokenizer.convert_ids_to_tokens(inputs[&quot;input_ids&quot;])
+## [&#39;[CLS]&#39;, &#39;this&#39;, &#39;is&#39;, &#39;the&#39;, &#39;first&#39;, &#39;sentence&#39;, &#39;.&#39;, &#39;[SEP]&#39;, &#39;this&#39;, &#39;is&#39;, &#39;the&#39;, &#39;second&#39;, &#39;one&#39;, &#39;.&#39;, &#39;[SEP]&#39;]</code></pre>
+</div>
+<ul>
+<li><strong>Token Type IDs</strong>:
+<ul>
+<li>Parts of the input corresponding to
+<code>[CLS] sentence1 [SEP]</code> have a token type ID of 0.</li>
+<li>Parts of the input corresponding to <code>sentence2 [SEP]</code>
+have a token type ID of 1.</li>
+</ul></li>
+<li><strong>Handling Token Type IDs</strong>:
+<ul>
+<li>Generally, there’s no need to worry about token_type_ids in
+tokenized inputs.</li>
+<li>As long as the tokenizer and model use the same checkpoint, the
+tokenizer will correctly provide the required information.</li>
+</ul></li>
+<li><strong>Tokenizing a Dataset</strong>:
+<ul>
+<li>The tokenizer can handle a list of sentence pairs by taking separate
+lists for the first and second sentences.</li>
+<li>This approach is compatible with padding and truncation
+options.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>tokenized_dataset = tokenizer(
+    list(raw_datasets[&quot;train&quot;][&quot;sentence1&quot;]),
+    list(raw_datasets[&quot;train&quot;][&quot;sentence2&quot;]),
+    padding=True,
+    truncation=True,
+)</code></pre>
+</div>
+<ul>
+<li>The initial method works well but has some limitations:
+<ul>
+<li>Returns a dictionary with specific keys (<code>input_ids</code>,
+<code>attention_mask</code>, <code>token_type_ids</code>) and values as
+lists of lists.</li>
+<li>Requires sufficient RAM to store the entire dataset during
+tokenization.</li>
+<li>In contrast, 🤗 Datasets library datasets are Apache Arrow files,
+stored on disk, so only the requested samples are loaded in memory.</li>
+</ul></li>
+<li>To address these limitations and retain the dataset format:
+<ul>
+<li>Use <code>Dataset.map()</code> method.</li>
+<li>This method allows for extra preprocessing beyond tokenization.</li>
+<li><code>map()</code> applies a function to each element in the
+dataset, enabling customized tokenization functions.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>def tokenize_function(example):
+    return tokenizer(example[&quot;sentence1&quot;], example[&quot;sentence2&quot;], truncation=True)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>tokenize_function( raw_datasets[&quot;train&quot;][0])
+## {&#39;input_ids&#39;: [101, 2572, 3217, 5831, 5496, 2010, 2567, 1010, 3183, 2002, 2170, 1000, 1996, 7409, 1000, 1010, 1997, 9969, 4487, 23809, 3436, 2010, 3350, 1012, 102, 7727, 2000, 2032, 2004, 2069, 1000, 1996, 7409, 1000, 1010, 2572, 3217, 5831, 5496, 2010, 2567, 1997, 9969, 4487, 23809, 3436, 2010, 3350, 1012, 102], &#39;token_type_ids&#39;: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], &#39;attention_mask&#39;: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}</code></pre>
+</div>
+<ul>
+<li>The function takes a dictionary as input (similar to dataset items)
+and returns a new dictionary with the keys:
+<ul>
+<li><code>input_ids</code></li>
+<li><code>attention_mask</code></li>
+<li><code>token_type_ids</code></li>
+</ul></li>
+<li>The function can handle multiple samples simultaneously:
+<ul>
+<li>Each key can contain a list of sentences.</li>
+<li>This allows for using <code>batched=True</code> in the
+<code>map()</code> call, enhancing tokenization speed by processing
+multiple samples at once.</li>
+</ul></li>
+<li>Padding optimization:
+<ul>
+<li>Padding is excluded from the function to avoid inefficiency.</li>
+<li>Instead, padding is applied when building a batch, so only the
+maximum length in each batch is padded, not across the entire
+dataset.</li>
+<li>This strategy saves time and processing power, especially with
+variable-length inputs.</li>
+</ul></li>
+<li>Application on datasets:
+<ul>
+<li>The tokenization function is applied to all datasets at once using
+<code>batched=True</code> with <code>map()</code>.</li>
+<li>The <code>Datasets</code> library adds new fields to each dataset
+based on the keys in the returned dictionary for efficient
+preprocessing.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
+tokenized_datasets
+## DatasetDict({
+##     train: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;, &#39;input_ids&#39;, &#39;token_type_ids&#39;, &#39;attention_mask&#39;],
+##         num_rows: 3668
+##     })
+##     validation: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;, &#39;input_ids&#39;, &#39;token_type_ids&#39;, &#39;attention_mask&#39;],
+##         num_rows: 408
+##     })
+##     test: Dataset({
+##         features: [&#39;sentence1&#39;, &#39;sentence2&#39;, &#39;label&#39;, &#39;idx&#39;, &#39;input_ids&#39;, &#39;token_type_ids&#39;, &#39;attention_mask&#39;],
+##         num_rows: 1725
+##     })
+## })</code></pre>
+</div>
+<ul>
+<li><strong>Tokenize Function Output</strong>:
+<ul>
+<li>Returns a dictionary with the following keys:
+<ul>
+<li><code>input_ids</code></li>
+<li><code>attention_mask</code></li>
+<li><code>token_type_ids</code></li>
+</ul></li>
+<li>These fields are added to all splits of the dataset.</li>
+</ul></li>
+<li><strong>Customization with map()</strong>:
+<ul>
+<li>Possible to modify existing fields in the dataset by returning new
+values for an existing key in the preprocessing function.</li>
+</ul></li>
+</ul>
+</div>
+<div id="with-your-own-dataset" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> With your own
+Dataset</h1>
+<div class="python">
+<pre class="python"><code>import pandas as pd
+df = pd.read_csv(&#39;Data/text1995.csv&#39;)
+data_wang = pd.read_json(&#39;Data/1995.json&#39;)
+data_wang[&#39;score&#39;] = data_wang[&#39;items_wang_3_restricted50&#39;].apply(lambda x: x[&#39;score&#39;][&#39;novelty&#39;] )
+df = pd.merge(df[[&#39;id&#39;,&#39;text&#39;]],data_wang[[&#39;id&#39;,&#39;score&#39;]],on = &#39;id&#39;, how = &#39;inner&#39;)
+
+
+num_positive = df[df[&#39;score&#39;] &gt; 0].shape[0]
+positive_score_subset = df[df[&#39;score&#39;] &gt; 0]
+positive_score_subset[&#39;score&#39;] = 1 
+zero_score_subset = df[df[&#39;score&#39;] == 0].sample(n=num_positive, random_state=42) 
+balanced_df = pd.concat([positive_score_subset, zero_score_subset])
+balanced_df = balanced_df.sample(frac=1, random_state=24).reset_index(drop=True)
+balanced_df[&#39;score&#39;] = balanced_df[&#39;score&#39;].astype(int)
+
+from sklearn.model_selection import train_test_split
+balanced_df = balanced_df[[&#39;id&#39;,&#39;score&#39;, &#39;text&#39;]].set_index(&#39;id&#39;)
+train_df, temp_df = train_test_split(balanced_df, test_size=0.4, random_state=42)
+valid_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42) 
+
+from datasets import Dataset, DatasetDict, load_dataset
+
+train_dataset = Dataset.from_pandas(train_df)
+valid_dataset = Dataset.from_pandas(valid_df)
+test_dataset = Dataset.from_pandas(test_df)
+
+datasets = DatasetDict({
+    &#39;train&#39;: train_dataset,
+    &#39;validation&#39;: valid_dataset,
+    &#39;test&#39;:test_dataset
+})
+
+
+datasets.save_to_disk(&#39;Data/test_novelty&#39;)</code></pre>
+</div>
+<div id="dynamic-padding" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Dynamic padding</h2>
+<ul>
+<li><strong>Collate Function</strong>:
+<ul>
+<li>The collate function organizes samples within a batch in a
+DataLoader.</li>
+<li>Default behavior: Converts samples to PyTorch tensors and
+concatenates them, handling lists, tuples, or dictionaries
+recursively.</li>
+<li>Limitation: This approach won’t work if inputs vary in size.</li>
+</ul></li>
+<li><strong>Batch Padding Strategy</strong>:
+<ul>
+<li>Padding is deliberately applied only as needed for each batch to
+minimize excessive padding.</li>
+<li>Benefits: Speeds up training by reducing over-long inputs.</li>
+</ul></li>
+<li><strong>Custom Collate Function with Padding</strong>:
+<ul>
+<li>A custom collate function applies appropriate padding to batch
+items.</li>
+<li>Transformers library provides <code>DataCollatorWithPadding</code>
+for this purpose.
+<ul>
+<li>Requires a tokenizer to handle padding tokens and specify left or
+right padding as needed by the model.</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import DataCollatorWithPadding
+
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>samples = tokenized_datasets[&quot;train&quot;][:8]
+samples = {k: v for k, v in samples.items() if k not in [&quot;idx&quot;, &quot;sentence1&quot;, &quot;sentence2&quot;]}
+[len(x) for x in samples[&quot;input_ids&quot;]]
+## [50, 59, 47, 67, 59, 50, 62, 32]</code></pre>
+</div>
+<ul>
+<li>Samples have varying lengths, ranging from 32 to 67.</li>
+<li><strong>Dynamic padding</strong>: Pads samples in a batch to the
+maximum length within that batch (67 in this case).</li>
+<li><strong>Without dynamic padding</strong>: Would require padding all
+samples to the maximum length across the entire dataset or to the
+model’s maximum acceptable length.</li>
+<li>A check on <code>data_collator</code> confirms proper application of
+dynamic padding for the batch.</li>
+</ul>
+<div class="python">
+<pre class="python"><code>batch = data_collator(samples)
+{k: v.shape for k, v in batch.items()}
+## {&#39;input_ids&#39;: torch.Size([8, 67]), &#39;token_type_ids&#39;: torch.Size([8, 67]), &#39;attention_mask&#39;: torch.Size([8, 67]), &#39;labels&#39;: torch.Size([8])}</code></pre>
+</div>
+</div>
+</div>
+<div id="fine-tuning-a-model-with-the-trainer-api"
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Fine-tuning a model
+with the Trainer API</h1>
+<ul>
+<li><strong>Trainer Class in Transformers</strong>:
+<ul>
+<li>The Trainer class is provided by Transformers for fine-tuning
+pretrained models on custom datasets.</li>
+<li>After data preprocessing, only a few steps are needed to define the
+Trainer.</li>
+</ul></li>
+<li><strong>Setting Up the Training Environment</strong>:
+<ul>
+<li>Running <code>Trainer.train()</code> on a CPU is very slow; a GPU is
+recommended.</li>
+<li>Google Colab offers access to free GPUs and TPUs for faster
+training.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from datasets import load_dataset
+from transformers import AutoTokenizer, DataCollatorWithPadding
+
+raw_datasets = load_dataset(&quot;glue&quot;, &quot;mrpc&quot;)
+checkpoint = &quot;bert-base-uncased&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+
+def tokenize_function(example):
+    return tokenizer(example[&quot;sentence1&quot;], example[&quot;sentence2&quot;], truncation=True)
+
+
+tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)</code></pre>
+</div>
+<div id="training" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Training</h2>
+<ul>
+<li><strong>Define TrainingArguments</strong>:
+<ul>
+<li>Before defining the Trainer, set up a <code>TrainingArguments</code>
+class.</li>
+<li>This class will include all the necessary hyperparameters for
+training and evaluation.</li>
+</ul></li>
+<li><strong>Required Argument</strong>:
+<ul>
+<li>Specify a directory where:
+<ul>
+<li>The trained model will be saved.</li>
+<li>Checkpoints will be stored during training.</li>
+</ul></li>
+</ul></li>
+<li><strong>Default Settings</strong>:
+<ul>
+<li>Defaults for other parameters are generally sufficient for basic
+fine-tuning.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import TrainingArguments
+
+training_args = TrainingArguments(&quot;test-trainer0&quot;)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>from transformers import AutoModelForSequenceClassification
+
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)</code></pre>
+</div>
+<ul>
+<li><strong>Warning on Model Instantiation</strong>:
+<ul>
+<li>A warning appears after loading the pretrained BERT model.</li>
+<li>BERT was not pretrained for sentence pair classification, so the
+original model head is discarded.</li>
+<li>A new head for sequence classification is added, causing:
+<ul>
+<li>Some weights to be unused (from the discarded pretraining
+head).</li>
+<li>Some weights to be randomly initialized (for the new classification
+head).</li>
+</ul></li>
+<li>The warning suggests training the model to optimize the new
+head.</li>
+</ul></li>
+<li><strong>Defining a Trainer</strong>:
+<ul>
+<li>The Trainer requires the following components:
+<ul>
+<li>The modified model (with a new head).</li>
+<li><code>training_args</code>: settings and configurations for the
+training process.</li>
+<li><code>training</code> and <code>validation</code> datasets.</li>
+<li><code>data_collator</code>: a function to collate batches of
+data.</li>
+<li><code>tokenizer</code>: to process text inputs.</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>from transformers import Trainer
+
+trainer = Trainer(
+    model,
+    training_args,
+    train_dataset=tokenized_datasets[&quot;train&quot;],
+    eval_dataset=tokenized_datasets[&quot;validation&quot;],
+    data_collator=data_collator,
+    tokenizer=tokenizer,
+)
+## &lt;string&gt;:2: FutureWarning: `tokenizer` is deprecated and will be removed in version 5.0.0 for `Trainer.__init__`. Use `processing_class` instead.</code></pre>
+</div>
+<ul>
+<li>To fine-tune the model on our dataset, we just have to call the
+train() method of our Trainer</li>
+<li>The fine-tuning process will begin, which should take a few minutes
+on a GPU.</li>
+<li>Training loss will be reported every 500 steps.</li>
+<li>However, model performance (quality) is not assessed due to:
+<ul>
+<li>Lack of evaluation strategy:
+<ul>
+<li><code>evaluation_strategy</code> was not set to “steps” (evaluate
+every <code>eval_steps</code>) or “epoch” (evaluate at the end of each
+epoch).</li>
+</ul></li>
+<li>Absence of <code>compute_metrics()</code> function:
+<ul>
+<li>Without this, no metrics are calculated during evaluation; only the
+loss would be printed, which is not very informative.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="evaluation" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Evaluation</h2>
+<ul>
+<li><p><strong>Goal</strong>: Build a <code>compute_metrics()</code>
+function to use during model training.</p></li>
+<li><p><strong>Function Requirements</strong>:</p>
+<ul>
+<li>Accepts an <code>EvalPrediction</code> object (a named tuple with:
+<ul>
+<li><code>predictions</code> field</li>
+<li><code>label_ids</code> field)</li>
+</ul></li>
+<li>Returns a dictionary:
+<ul>
+<li>Keys are metric names (strings)</li>
+<li>Values are metric values (floats)</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Usage</strong>:</p>
+<ul>
+<li>Use <code>Trainer.predict()</code> to generate model
+predictions.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>predictions = trainer.predict(tokenized_datasets[&quot;validation&quot;])
+## /Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+##   0%|          | 0/51 [00:00&lt;?, ?it/s]  8%|7         | 4/51 [00:00&lt;00:01, 35.40it/s] 16%|#5        | 8/51 [00:00&lt;00:01, 26.92it/s] 22%|##1       | 11/51 [00:00&lt;00:01, 25.59it/s] 27%|##7       | 14/51 [00:00&lt;00:01, 26.08it/s] 33%|###3      | 17/51 [00:00&lt;00:01, 24.92it/s] 41%|####1     | 21/51 [00:00&lt;00:01, 27.23it/s] 49%|####9     | 25/51 [00:00&lt;00:00, 29.09it/s] 57%|#####6    | 29/51 [00:01&lt;00:00, 31.78it/s] 65%|######4   | 33/51 [00:01&lt;00:00, 30.51it/s] 73%|#######2  | 37/51 [00:01&lt;00:00, 31.85it/s] 80%|########  | 41/51 [00:01&lt;00:00, 33.76it/s] 88%|########8 | 45/51 [00:01&lt;00:00, 32.21it/s] 96%|#########6| 49/51 [00:01&lt;00:00, 32.47it/s]100%|##########| 51/51 [00:01&lt;00:00, 30.47it/s]
+print(predictions.predictions.shape, predictions.label_ids.shape)
+## (408, 2) (408,)</code></pre>
+</div>
+<ul>
+<li><strong>predict() method output</strong>:
+<ul>
+<li>Returns a named tuple with three fields:
+<ul>
+<li><strong>predictions</strong>:
+<ul>
+<li>A 2D array with shape 408 x 2 (for 408 elements in the
+dataset).</li>
+<li>Contains logits for each element, which need to be transformed to
+make predictions.</li>
+<li>Transformation process: select the index with the maximum value on
+the second axis.</li>
+</ul></li>
+<li><strong>label_ids</strong>: Stores the labels for comparison.</li>
+<li><strong>metrics</strong>:
+<ul>
+<li>Initially includes:
+<ul>
+<li><strong>Loss</strong> on the dataset passed.</li>
+<li><strong>Time metrics</strong> (total and average prediction
+time).</li>
+</ul></li>
+<li>When <code>compute_metrics()</code> is defined and passed to
+<code>Trainer</code>, <code>metrics</code> also includes the metrics
+returned by <code>compute_metrics()</code>.</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>import numpy as np
+
+preds = np.argmax(predictions.predictions, axis=-1)</code></pre>
+</div>
+<ul>
+<li>We can now compare those preds to the labels.</li>
+<li>To build our compute_metric() function, we will rely on the metrics
+from the Evaluate library.</li>
+<li>We can load the metrics associated with the MRPC dataset as easily
+as we loaded the dataset, this time with the evaluate.load()
+function.</li>
+<li>The object returned has a compute() method we can use to do the
+metric calculation:</li>
+</ul>
+<div class="python">
+<pre class="python"><code>import evaluate
+
+metric = evaluate.load(&quot;glue&quot;, &quot;mrpc&quot;)
+metric.compute(predictions=preds, references=predictions.label_ids)
+## {&#39;accuracy&#39;: 0.6838235294117647, &#39;f1&#39;: 0.8122270742358079}
+
+
+print(&quot;Preds:&quot;, preds[:10])
+## Preds: [1 1 1 1 1 1 1 1 1 1]
+print(&quot;Labels:&quot;, predictions.label_ids[:10])
+## Labels: [1 0 0 1 0 1 0 1 1 1]
+print(&quot;Preds type:&quot;, type(preds[0]))
+## Preds type: &lt;class &#39;numpy.int64&#39;&gt;
+print(&quot;Labels type:&quot;, type(predictions.label_ids[0]))
+## Labels type: &lt;class &#39;numpy.int64&#39;&gt;
+print(&quot;Unique values in preds:&quot;, np.unique(preds))
+## Unique values in preds: [1]
+print(&quot;Unique values in labels:&quot;, np.unique(predictions.label_ids))
+## Unique values in labels: [0 1]</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>def compute_metrics(eval_preds):
+    metric = evaluate.load(&quot;glue&quot;, &quot;mrpc&quot;)
+    logits, labels = eval_preds
+    predictions = np.argmax(logits, axis=-1)
+    return metric.compute(predictions=predictions, references=labels)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>
+device =  torch.device(&quot;mps&quot;) if torch.backends.mps.is_available()  else torch.device(&quot;cpu&quot;)
+
+training_args = TrainingArguments(&quot;test-trainer&quot;, eval_strategy=&quot;epoch&quot;)
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
+model.to(device)
+## BertForSequenceClassification(
+##   (bert): BertModel(
+##     (embeddings): BertEmbeddings(
+##       (word_embeddings): Embedding(30522, 768, padding_idx=0)
+##       (position_embeddings): Embedding(512, 768)
+##       (token_type_embeddings): Embedding(2, 768)
+##       (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+##       (dropout): Dropout(p=0.1, inplace=False)
+##     )
+##     (encoder): BertEncoder(
+##       (layer): ModuleList(
+##         (0-11): 12 x BertLayer(
+##           (attention): BertAttention(
+##             (self): BertSdpaSelfAttention(
+##               (query): Linear(in_features=768, out_features=768, bias=True)
+##               (key): Linear(in_features=768, out_features=768, bias=True)
+##               (value): Linear(in_features=768, out_features=768, bias=True)
+##               (dropout): Dropout(p=0.1, inplace=False)
+##             )
+##             (output): BertSelfOutput(
+##               (dense): Linear(in_features=768, out_features=768, bias=True)
+##               (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+##               (dropout): Dropout(p=0.1, inplace=False)
+##             )
+##           )
+##           (intermediate): BertIntermediate(
+##             (dense): Linear(in_features=768, out_features=3072, bias=True)
+##             (intermediate_act_fn): GELUActivation()
+##           )
+##           (output): BertOutput(
+##             (dense): Linear(in_features=3072, out_features=768, bias=True)
+##             (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+##             (dropout): Dropout(p=0.1, inplace=False)
+##           )
+##         )
+##       )
+##     )
+##     (pooler): BertPooler(
+##       (dense): Linear(in_features=768, out_features=768, bias=True)
+##       (activation): Tanh()
+##     )
+##   )
+##   (dropout): Dropout(p=0.1, inplace=False)
+##   (classifier): Linear(in_features=768, out_features=2, bias=True)
+## )
+
+trainer = Trainer(
+    model,
+    training_args,
+    train_dataset=tokenized_datasets[&quot;train&quot;],
+    eval_dataset=tokenized_datasets[&quot;validation&quot;],
+    data_collator=data_collator,
+    tokenizer=tokenizer,
+    compute_metrics=compute_metrics,
+)
+## &lt;string&gt;:2: FutureWarning: `tokenizer` is deprecated and will be removed in version 5.0.0 for `Trainer.__init__`. Use `processing_class` instead.</code></pre>
+</div>
+<ul>
+<li><strong>New TrainingArguments</strong>:
+<ul>
+<li>A new <code>TrainingArguments</code> object is created.</li>
+<li>The <code>evaluation_strategy</code> parameter is set to
+<code>"epoch"</code>.</li>
+</ul></li>
+<li><strong>New Model</strong>:
+<ul>
+<li>A new model is instantiated for training.</li>
+<li>This prevents continuing training on an already trained model.</li>
+</ul></li>
+<li>To launch a new training run, we execute:</li>
+</ul>
+<div class="python">
+<pre class="python"><code>trainer.train()
+##   0%|          | 0/1377 [00:00&lt;?, ?it/s]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+##   0%|          | 1/1377 [00:00&lt;03:54,  5.86it/s]  0%|          | 2/1377 [00:00&lt;03:39,  6.25it/s]  0%|          | 3/1377 [00:00&lt;03:10,  7.21it/s]  0%|          | 4/1377 [00:00&lt;02:59,  7.64it/s]  0%|          | 5/1377 [00:00&lt;03:02,  7.54it/s]  0%|          | 6/1377 [00:00&lt;02:58,  7.67it/s]  1%|          | 8/1377 [00:01&lt;02:42,  8.43it/s]  1%|          | 9/1377 [00:01&lt;02:42,  8.43it/s]  1%|          | 10/1377 [00:01&lt;02:44,  8.31it/s]  1%|          | 11/1377 [00:01&lt;02:38,  8.64it/s]  1%|          | 12/1377 [00:01&lt;02:35,  8.78it/s]  1%|1         | 14/1377 [00:01&lt;02:31,  9.00it/s]  1%|1         | 15/1377 [00:01&lt;02:31,  8.99it/s]  1%|1         | 16/1377 [00:01&lt;02:34,  8.79it/s]  1%|1         | 17/1377 [00:02&lt;02:32,  8.92it/s]  1%|1         | 18/1377 [00:02&lt;02:30,  9.02it/s]  1%|1         | 19/1377 [00:02&lt;02:33,  8.83it/s]  1%|1         | 20/1377 [00:02&lt;02:32,  8.88it/s]  2%|1         | 21/1377 [00:02&lt;02:41,  8.38it/s]  2%|1         | 22/1377 [00:02&lt;02:52,  7.86it/s]  2%|1         | 23/1377 [00:02&lt;02:45,  8.18it/s]  2%|1         | 24/1377 [00:02&lt;02:56,  7.66it/s]  2%|1         | 25/1377 [00:03&lt;02:56,  7.66it/s]  2%|1         | 26/1377 [00:03&lt;02:47,  8.08it/s]  2%|1         | 27/1377 [00:03&lt;02:47,  8.06it/s]  2%|2         | 28/1377 [00:03&lt;02:52,  7.83it/s]  2%|2         | 29/1377 [00:03&lt;02:45,  8.15it/s]  2%|2         | 30/1377 [00:03&lt;02:50,  7.88it/s]  2%|2         | 31/1377 [00:03&lt;02:44,  8.18it/s]  2%|2         | 32/1377 [00:03&lt;02:52,  7.78it/s]  2%|2         | 33/1377 [00:04&lt;02:45,  8.11it/s]  2%|2         | 34/1377 [00:04&lt;02:39,  8.43it/s]  3%|2         | 35/1377 [00:04&lt;02:37,  8.54it/s]  3%|2         | 36/1377 [00:04&lt;02:40,  8.37it/s]  3%|2         | 37/1377 [00:04&lt;02:34,  8.66it/s]  3%|2         | 38/1377 [00:04&lt;02:32,  8.78it/s]  3%|2         | 39/1377 [00:04&lt;02:31,  8.84it/s]  3%|2         | 41/1377 [00:04&lt;02:22,  9.39it/s]  3%|3         | 42/1377 [00:05&lt;02:27,  9.06it/s]  3%|3         | 43/1377 [00:05&lt;02:34,  8.62it/s]  3%|3         | 44/1377 [00:05&lt;02:35,  8.57it/s]  3%|3         | 45/1377 [00:05&lt;02:31,  8.78it/s]  3%|3         | 46/1377 [00:05&lt;02:29,  8.91it/s]  3%|3         | 48/1377 [00:05&lt;02:21,  9.36it/s]  4%|3         | 49/1377 [00:05&lt;02:26,  9.07it/s]  4%|3         | 50/1377 [00:05&lt;02:27,  9.00it/s]  4%|3         | 51/1377 [00:06&lt;02:23,  9.22it/s]  4%|3         | 52/1377 [00:06&lt;02:23,  9.27it/s]  4%|3         | 53/1377 [00:06&lt;02:20,  9.40it/s]  4%|3         | 54/1377 [00:06&lt;02:22,  9.31it/s]  4%|4         | 56/1377 [00:06&lt;02:18,  9.55it/s]  4%|4         | 57/1377 [00:06&lt;02:23,  9.19it/s]  4%|4         | 58/1377 [00:06&lt;02:26,  9.00it/s]  4%|4         | 59/1377 [00:06&lt;02:29,  8.84it/s]  4%|4         | 61/1377 [00:07&lt;02:22,  9.22it/s]  5%|4         | 62/1377 [00:07&lt;02:25,  9.05it/s]  5%|4         | 63/1377 [00:07&lt;02:24,  9.07it/s]  5%|4         | 64/1377 [00:07&lt;02:23,  9.14it/s]  5%|4         | 65/1377 [00:07&lt;02:25,  9.04it/s]  5%|4         | 66/1377 [00:07&lt;02:23,  9.16it/s]  5%|4         | 67/1377 [00:07&lt;02:22,  9.20it/s]  5%|4         | 68/1377 [00:07&lt;02:21,  9.27it/s]  5%|5         | 69/1377 [00:07&lt;02:20,  9.29it/s]  5%|5         | 70/1377 [00:08&lt;02:17,  9.49it/s]  5%|5         | 72/1377 [00:08&lt;02:14,  9.71it/s]  5%|5         | 74/1377 [00:08&lt;02:12,  9.82it/s]  5%|5         | 75/1377 [00:08&lt;02:16,  9.53it/s]  6%|5         | 76/1377 [00:08&lt;02:17,  9.49it/s]  6%|5         | 77/1377 [00:08&lt;02:16,  9.55it/s]  6%|5         | 78/1377 [00:08&lt;02:16,  9.52it/s]  6%|5         | 79/1377 [00:09&lt;02:16,  9.49it/s]  6%|5         | 81/1377 [00:09&lt;02:13,  9.71it/s]  6%|5         | 82/1377 [00:09&lt;02:15,  9.52it/s]  6%|6         | 83/1377 [00:09&lt;02:15,  9.52it/s]  6%|6         | 84/1377 [00:09&lt;02:15,  9.56it/s]  6%|6         | 85/1377 [00:09&lt;02:14,  9.60it/s]  6%|6         | 86/1377 [00:09&lt;02:15,  9.54it/s]  6%|6         | 87/1377 [00:09&lt;02:35,  8.32it/s]  6%|6         | 88/1377 [00:10&lt;02:35,  8.29it/s]  6%|6         | 89/1377 [00:10&lt;02:34,  8.36it/s]  7%|6         | 90/1377 [00:10&lt;02:28,  8.69it/s]  7%|6         | 91/1377 [00:10&lt;02:23,  8.98it/s]  7%|6         | 93/1377 [00:10&lt;02:16,  9.39it/s]  7%|6         | 94/1377 [00:10&lt;02:16,  9.43it/s]  7%|6         | 96/1377 [00:10&lt;02:12,  9.70it/s]  7%|7         | 97/1377 [00:10&lt;02:12,  9.69it/s]  7%|7         | 98/1377 [00:11&lt;02:14,  9.53it/s]  7%|7         | 99/1377 [00:11&lt;02:13,  9.58it/s]  7%|7         | 100/1377 [00:11&lt;02:13,  9.57it/s]  7%|7         | 101/1377 [00:11&lt;02:13,  9.57it/s]  7%|7         | 103/1377 [00:11&lt;02:10,  9.73it/s]  8%|7         | 104/1377 [00:11&lt;02:25,  8.73it/s]  8%|7         | 105/1377 [00:11&lt;02:23,  8.85it/s]  8%|7         | 106/1377 [00:11&lt;02:22,  8.94it/s]  8%|7         | 107/1377 [00:12&lt;02:23,  8.87it/s]  8%|7         | 109/1377 [00:12&lt;02:13,  9.49it/s]  8%|7         | 110/1377 [00:12&lt;02:14,  9.45it/s]  8%|8         | 111/1377 [00:12&lt;02:13,  9.47it/s]  8%|8         | 112/1377 [00:12&lt;02:12,  9.51it/s]  8%|8         | 113/1377 [00:12&lt;02:13,  9.45it/s]  8%|8         | 114/1377 [00:12&lt;02:14,  9.39it/s]  8%|8         | 115/1377 [00:12&lt;02:16,  9.26it/s]  8%|8         | 116/1377 [00:13&lt;02:15,  9.30it/s]  9%|8         | 118/1377 [00:13&lt;02:11,  9.58it/s]  9%|8         | 119/1377 [00:13&lt;02:11,  9.56it/s]  9%|8         | 120/1377 [00:13&lt;02:16,  9.18it/s]  9%|8         | 121/1377 [00:13&lt;02:16,  9.21it/s]  9%|8         | 122/1377 [00:13&lt;02:16,  9.22it/s]  9%|8         | 123/1377 [00:13&lt;02:20,  8.94it/s]  9%|9         | 124/1377 [00:13&lt;02:18,  9.07it/s]  9%|9         | 125/1377 [00:14&lt;02:21,  8.85it/s]  9%|9         | 126/1377 [00:14&lt;02:16,  9.16it/s]  9%|9         | 127/1377 [00:14&lt;02:17,  9.08it/s]  9%|9         | 128/1377 [00:14&lt;02:32,  8.20it/s]  9%|9         | 129/1377 [00:14&lt;02:28,  8.41it/s]  9%|9         | 130/1377 [00:14&lt;02:23,  8.68it/s] 10%|9         | 131/1377 [00:14&lt;02:28,  8.39it/s] 10%|9         | 132/1377 [00:14&lt;02:37,  7.91it/s] 10%|9         | 133/1377 [00:14&lt;02:30,  8.28it/s] 10%|9         | 134/1377 [00:15&lt;02:25,  8.52it/s] 10%|9         | 135/1377 [00:15&lt;02:21,  8.78it/s] 10%|9         | 136/1377 [00:15&lt;02:16,  9.08it/s] 10%|9         | 137/1377 [00:15&lt;02:16,  9.09it/s] 10%|#         | 139/1377 [00:15&lt;02:12,  9.37it/s] 10%|#         | 140/1377 [00:15&lt;02:17,  8.97it/s] 10%|#         | 141/1377 [00:15&lt;02:20,  8.82it/s] 10%|#         | 142/1377 [00:15&lt;02:16,  9.06it/s] 10%|#         | 143/1377 [00:16&lt;02:16,  9.04it/s] 11%|#         | 145/1377 [00:16&lt;02:11,  9.35it/s] 11%|#         | 146/1377 [00:16&lt;02:11,  9.36it/s] 11%|#         | 147/1377 [00:16&lt;02:10,  9.40it/s] 11%|#         | 149/1377 [00:16&lt;02:14,  9.15it/s] 11%|#         | 150/1377 [00:16&lt;02:13,  9.21it/s] 11%|#         | 151/1377 [00:16&lt;02:13,  9.19it/s] 11%|#1        | 152/1377 [00:17&lt;02:14,  9.11it/s] 11%|#1        | 153/1377 [00:17&lt;02:15,  9.02it/s] 11%|#1        | 154/1377 [00:17&lt;02:13,  9.19it/s] 11%|#1        | 155/1377 [00:17&lt;02:20,  8.72it/s] 11%|#1        | 156/1377 [00:17&lt;02:15,  9.04it/s] 11%|#1        | 157/1377 [00:17&lt;02:15,  9.01it/s] 11%|#1        | 158/1377 [00:17&lt;02:14,  9.06it/s] 12%|#1        | 160/1377 [00:17&lt;02:05,  9.70it/s] 12%|#1        | 162/1377 [00:18&lt;02:05,  9.72it/s] 12%|#1        | 163/1377 [00:18&lt;02:05,  9.71it/s] 12%|#1        | 164/1377 [00:18&lt;02:04,  9.74it/s] 12%|#1        | 165/1377 [00:18&lt;02:05,  9.63it/s] 12%|#2        | 166/1377 [00:18&lt;02:08,  9.43it/s] 12%|#2        | 167/1377 [00:18&lt;02:09,  9.35it/s] 12%|#2        | 168/1377 [00:18&lt;02:07,  9.50it/s] 12%|#2        | 169/1377 [00:18&lt;02:07,  9.50it/s] 12%|#2        | 170/1377 [00:18&lt;02:06,  9.51it/s] 12%|#2        | 171/1377 [00:19&lt;02:09,  9.33it/s] 12%|#2        | 172/1377 [00:19&lt;02:07,  9.46it/s] 13%|#2        | 174/1377 [00:19&lt;02:01,  9.88it/s] 13%|#2        | 176/1377 [00:19&lt;02:01,  9.89it/s] 13%|#2        | 177/1377 [00:19&lt;02:02,  9.80it/s] 13%|#2        | 178/1377 [00:19&lt;02:03,  9.73it/s] 13%|#2        | 179/1377 [00:19&lt;02:04,  9.65it/s] 13%|#3        | 180/1377 [00:19&lt;02:05,  9.54it/s] 13%|#3        | 181/1377 [00:20&lt;02:05,  9.53it/s] 13%|#3        | 183/1377 [00:20&lt;02:08,  9.31it/s] 13%|#3        | 184/1377 [00:20&lt;02:07,  9.34it/s] 13%|#3        | 185/1377 [00:20&lt;02:07,  9.38it/s] 14%|#3        | 186/1377 [00:20&lt;02:06,  9.40it/s] 14%|#3        | 187/1377 [00:20&lt;02:04,  9.52it/s] 14%|#3        | 188/1377 [00:20&lt;02:04,  9.51it/s] 14%|#3        | 189/1377 [00:20&lt;02:06,  9.40it/s] 14%|#3        | 190/1377 [00:21&lt;02:06,  9.36it/s] 14%|#3        | 191/1377 [00:21&lt;02:05,  9.43it/s] 14%|#3        | 192/1377 [00:21&lt;02:23,  8.25it/s] 14%|#4        | 193/1377 [00:21&lt;02:16,  8.68it/s] 14%|#4        | 194/1377 [00:21&lt;02:15,  8.72it/s] 14%|#4        | 195/1377 [00:21&lt;02:14,  8.81it/s] 14%|#4        | 196/1377 [00:21&lt;02:11,  8.99it/s] 14%|#4        | 197/1377 [00:21&lt;02:08,  9.17it/s] 14%|#4        | 199/1377 [00:22&lt;02:04,  9.44it/s] 15%|#4        | 200/1377 [00:22&lt;02:05,  9.41it/s] 15%|#4        | 202/1377 [00:22&lt;02:02,  9.57it/s] 15%|#4        | 203/1377 [00:22&lt;02:02,  9.58it/s] 15%|#4        | 204/1377 [00:22&lt;02:03,  9.48it/s] 15%|#4        | 206/1377 [00:22&lt;02:00,  9.73it/s] 15%|#5        | 207/1377 [00:22&lt;02:02,  9.54it/s] 15%|#5        | 208/1377 [00:22&lt;02:03,  9.46it/s] 15%|#5        | 209/1377 [00:23&lt;02:05,  9.33it/s] 15%|#5        | 210/1377 [00:23&lt;02:14,  8.70it/s] 15%|#5        | 211/1377 [00:23&lt;02:13,  8.74it/s] 15%|#5        | 212/1377 [00:23&lt;02:14,  8.66it/s] 16%|#5        | 214/1377 [00:23&lt;02:05,  9.26it/s] 16%|#5        | 215/1377 [00:23&lt;02:05,  9.26it/s] 16%|#5        | 216/1377 [00:23&lt;02:05,  9.27it/s] 16%|#5        | 217/1377 [00:23&lt;02:04,  9.33it/s] 16%|#5        | 219/1377 [00:24&lt;02:01,  9.56it/s] 16%|#5        | 220/1377 [00:24&lt;02:05,  9.24it/s] 16%|#6        | 222/1377 [00:24&lt;02:02,  9.46it/s] 16%|#6        | 223/1377 [00:24&lt;02:02,  9.41it/s] 16%|#6        | 224/1377 [00:24&lt;02:02,  9.42it/s] 16%|#6        | 226/1377 [00:24&lt;01:56,  9.89it/s] 16%|#6        | 227/1377 [00:25&lt;01:57,  9.75it/s] 17%|#6        | 228/1377 [00:25&lt;02:04,  9.23it/s] 17%|#6        | 230/1377 [00:25&lt;02:01,  9.46it/s] 17%|#6        | 231/1377 [00:25&lt;02:01,  9.47it/s] 17%|#6        | 232/1377 [00:25&lt;02:01,  9.45it/s] 17%|#6        | 233/1377 [00:25&lt;02:01,  9.42it/s] 17%|#6        | 234/1377 [00:25&lt;02:04,  9.17it/s] 17%|#7        | 235/1377 [00:25&lt;02:04,  9.20it/s] 17%|#7        | 236/1377 [00:25&lt;02:03,  9.26it/s] 17%|#7        | 238/1377 [00:26&lt;02:00,  9.46it/s] 17%|#7        | 239/1377 [00:26&lt;02:00,  9.46it/s] 17%|#7        | 240/1377 [00:26&lt;01:59,  9.49it/s] 18%|#7        | 241/1377 [00:26&lt;02:11,  8.65it/s] 18%|#7        | 242/1377 [00:26&lt;02:10,  8.70it/s] 18%|#7        | 243/1377 [00:26&lt;02:09,  8.77it/s] 18%|#7        | 244/1377 [00:26&lt;02:08,  8.79it/s] 18%|#7        | 246/1377 [00:27&lt;02:01,  9.29it/s] 18%|#7        | 247/1377 [00:27&lt;02:01,  9.29it/s] 18%|#8        | 248/1377 [00:27&lt;02:02,  9.24it/s] 18%|#8        | 249/1377 [00:27&lt;02:02,  9.20it/s] 18%|#8        | 250/1377 [00:27&lt;02:01,  9.26it/s] 18%|#8        | 251/1377 [00:27&lt;02:00,  9.35it/s] 18%|#8        | 252/1377 [00:27&lt;02:05,  8.96it/s] 18%|#8        | 253/1377 [00:27&lt;02:03,  9.08it/s] 18%|#8        | 254/1377 [00:27&lt;02:04,  9.05it/s] 19%|#8        | 255/1377 [00:28&lt;02:02,  9.17it/s] 19%|#8        | 257/1377 [00:28&lt;01:57,  9.50it/s] 19%|#8        | 258/1377 [00:28&lt;01:57,  9.49it/s] 19%|#8        | 259/1377 [00:28&lt;01:57,  9.54it/s] 19%|#8        | 260/1377 [00:28&lt;01:55,  9.65it/s] 19%|#8        | 261/1377 [00:28&lt;01:57,  9.46it/s] 19%|#9        | 262/1377 [00:28&lt;01:58,  9.39it/s] 19%|#9        | 263/1377 [00:28&lt;01:59,  9.32it/s] 19%|#9        | 264/1377 [00:29&lt;01:58,  9.37it/s] 19%|#9        | 265/1377 [00:29&lt;02:02,  9.04it/s] 19%|#9        | 266/1377 [00:29&lt;02:00,  9.22it/s] 19%|#9        | 267/1377 [00:29&lt;01:59,  9.29it/s] 19%|#9        | 268/1377 [00:29&lt;02:00,  9.18it/s] 20%|#9        | 269/1377 [00:29&lt;02:00,  9.21it/s] 20%|#9        | 270/1377 [00:29&lt;02:00,  9.22it/s] 20%|#9        | 271/1377 [00:29&lt;02:01,  9.14it/s] 20%|#9        | 272/1377 [00:29&lt;02:00,  9.19it/s] 20%|#9        | 274/1377 [00:30&lt;01:55,  9.51it/s] 20%|#9        | 275/1377 [00:30&lt;01:56,  9.50it/s] 20%|##        | 276/1377 [00:30&lt;01:56,  9.47it/s] 20%|##        | 277/1377 [00:30&lt;01:56,  9.43it/s] 20%|##        | 278/1377 [00:30&lt;01:57,  9.39it/s] 20%|##        | 279/1377 [00:30&lt;01:58,  9.29it/s] 20%|##        | 280/1377 [00:30&lt;01:58,  9.23it/s] 20%|##        | 281/1377 [00:30&lt;01:58,  9.28it/s] 21%|##        | 283/1377 [00:31&lt;01:57,  9.32it/s] 21%|##        | 284/1377 [00:31&lt;02:00,  9.07it/s] 21%|##        | 286/1377 [00:31&lt;01:55,  9.41it/s] 21%|##        | 287/1377 [00:31&lt;01:55,  9.44it/s] 21%|##        | 288/1377 [00:31&lt;01:55,  9.45it/s] 21%|##        | 289/1377 [00:31&lt;01:55,  9.39it/s] 21%|##1       | 290/1377 [00:31&lt;01:56,  9.36it/s] 21%|##1       | 291/1377 [00:31&lt;01:55,  9.42it/s] 21%|##1       | 292/1377 [00:32&lt;01:54,  9.45it/s] 21%|##1       | 293/1377 [00:32&lt;01:55,  9.38it/s] 21%|##1       | 294/1377 [00:32&lt;02:00,  9.02it/s] 21%|##1       | 296/1377 [00:32&lt;01:54,  9.41it/s] 22%|##1       | 297/1377 [00:32&lt;01:54,  9.46it/s] 22%|##1       | 299/1377 [00:32&lt;01:52,  9.61it/s] 22%|##1       | 300/1377 [00:32&lt;01:52,  9.57it/s] 22%|##1       | 301/1377 [00:33&lt;02:06,  8.53it/s] 22%|##1       | 302/1377 [00:33&lt;02:03,  8.71it/s] 22%|##2       | 303/1377 [00:33&lt;02:05,  8.53it/s] 22%|##2       | 304/1377 [00:33&lt;02:01,  8.86it/s] 22%|##2       | 305/1377 [00:33&lt;01:58,  9.08it/s] 22%|##2       | 306/1377 [00:33&lt;01:55,  9.25it/s] 22%|##2       | 307/1377 [00:33&lt;01:54,  9.37it/s] 22%|##2       | 308/1377 [00:33&lt;01:52,  9.48it/s] 22%|##2       | 309/1377 [00:33&lt;01:54,  9.32it/s] 23%|##2       | 311/1377 [00:34&lt;01:48,  9.87it/s] 23%|##2       | 312/1377 [00:34&lt;01:48,  9.79it/s] 23%|##2       | 313/1377 [00:34&lt;01:48,  9.79it/s] 23%|##2       | 314/1377 [00:34&lt;01:51,  9.56it/s] 23%|##2       | 315/1377 [00:34&lt;01:52,  9.45it/s] 23%|##2       | 316/1377 [00:34&lt;01:56,  9.11it/s] 23%|##3       | 317/1377 [00:34&lt;01:55,  9.21it/s] 23%|##3       | 318/1377 [00:34&lt;01:53,  9.34it/s] 23%|##3       | 319/1377 [00:34&lt;02:08,  8.22it/s] 23%|##3       | 320/1377 [00:35&lt;02:03,  8.55it/s] 23%|##3       | 321/1377 [00:35&lt;02:00,  8.76it/s] 23%|##3       | 322/1377 [00:35&lt;01:59,  8.80it/s] 23%|##3       | 323/1377 [00:35&lt;01:58,  8.92it/s] 24%|##3       | 325/1377 [00:35&lt;01:53,  9.29it/s] 24%|##3       | 326/1377 [00:35&lt;01:54,  9.19it/s] 24%|##3       | 327/1377 [00:35&lt;01:56,  9.00it/s] 24%|##3       | 328/1377 [00:35&lt;01:55,  9.07it/s] 24%|##3       | 329/1377 [00:36&lt;01:55,  9.06it/s] 24%|##3       | 330/1377 [00:36&lt;01:53,  9.22it/s] 24%|##4       | 332/1377 [00:36&lt;01:51,  9.41it/s] 24%|##4       | 333/1377 [00:36&lt;01:51,  9.39it/s] 24%|##4       | 334/1377 [00:36&lt;01:51,  9.37it/s] 24%|##4       | 335/1377 [00:36&lt;01:58,  8.81it/s] 24%|##4       | 336/1377 [00:36&lt;02:00,  8.64it/s] 24%|##4       | 337/1377 [00:36&lt;01:57,  8.82it/s] 25%|##4       | 338/1377 [00:37&lt;01:56,  8.93it/s] 25%|##4       | 339/1377 [00:37&lt;01:58,  8.78it/s] 25%|##4       | 340/1377 [00:37&lt;01:55,  8.96it/s] 25%|##4       | 342/1377 [00:37&lt;01:49,  9.44it/s] 25%|##4       | 343/1377 [00:37&lt;01:50,  9.37it/s] 25%|##4       | 344/1377 [00:37&lt;01:49,  9.41it/s] 25%|##5       | 345/1377 [00:37&lt;01:52,  9.14it/s] 25%|##5       | 346/1377 [00:37&lt;01:51,  9.21it/s] 25%|##5       | 347/1377 [00:38&lt;01:53,  9.05it/s] 25%|##5       | 348/1377 [00:38&lt;01:52,  9.14it/s] 25%|##5       | 349/1377 [00:38&lt;01:58,  8.70it/s] 25%|##5       | 350/1377 [00:38&lt;01:57,  8.75it/s] 25%|##5       | 351/1377 [00:38&lt;01:55,  8.88it/s] 26%|##5       | 352/1377 [00:38&lt;01:53,  9.06it/s] 26%|##5       | 353/1377 [00:38&lt;01:52,  9.14it/s] 26%|##5       | 355/1377 [00:38&lt;01:48,  9.39it/s] 26%|##5       | 356/1377 [00:39&lt;01:48,  9.39it/s] 26%|##5       | 357/1377 [00:39&lt;01:48,  9.40it/s] 26%|##5       | 358/1377 [00:39&lt;01:49,  9.27it/s] 26%|##6       | 359/1377 [00:39&lt;01:49,  9.27it/s] 26%|##6       | 361/1377 [00:39&lt;01:46,  9.53it/s] 26%|##6       | 362/1377 [00:39&lt;01:45,  9.59it/s] 26%|##6       | 364/1377 [00:39&lt;01:43,  9.80it/s] 27%|##6       | 365/1377 [00:39&lt;01:43,  9.73it/s] 27%|##6       | 366/1377 [00:40&lt;01:45,  9.62it/s] 27%|##6       | 367/1377 [00:40&lt;01:45,  9.57it/s] 27%|##6       | 368/1377 [00:40&lt;01:45,  9.57it/s] 27%|##6       | 369/1377 [00:40&lt;01:45,  9.60it/s] 27%|##6       | 370/1377 [00:40&lt;01:46,  9.45it/s] 27%|##6       | 371/1377 [00:40&lt;01:46,  9.46it/s] 27%|##7       | 372/1377 [00:40&lt;01:47,  9.37it/s] 27%|##7       | 373/1377 [00:40&lt;01:47,  9.30it/s] 27%|##7       | 374/1377 [00:40&lt;01:47,  9.36it/s] 27%|##7       | 375/1377 [00:41&lt;01:51,  8.99it/s] 27%|##7       | 376/1377 [00:41&lt;01:49,  9.12it/s] 27%|##7       | 377/1377 [00:41&lt;01:50,  9.08it/s] 27%|##7       | 378/1377 [00:41&lt;01:49,  9.14it/s] 28%|##7       | 379/1377 [00:41&lt;01:52,  8.89it/s] 28%|##7       | 380/1377 [00:41&lt;01:54,  8.71it/s] 28%|##7       | 381/1377 [00:41&lt;01:51,  8.89it/s] 28%|##7       | 382/1377 [00:41&lt;01:53,  8.75it/s] 28%|##7       | 383/1377 [00:41&lt;01:51,  8.90it/s] 28%|##7       | 384/1377 [00:42&lt;01:51,  8.89it/s] 28%|##7       | 385/1377 [00:42&lt;01:51,  8.88it/s] 28%|##8       | 386/1377 [00:42&lt;01:51,  8.86it/s] 28%|##8       | 387/1377 [00:42&lt;01:49,  9.01it/s] 28%|##8       | 388/1377 [00:42&lt;01:50,  8.99it/s] 28%|##8       | 389/1377 [00:42&lt;01:49,  9.00it/s] 28%|##8       | 390/1377 [00:42&lt;01:49,  9.04it/s] 28%|##8       | 391/1377 [00:42&lt;01:50,  8.91it/s] 28%|##8       | 392/1377 [00:42&lt;01:51,  8.85it/s] 29%|##8       | 394/1377 [00:43&lt;01:48,  9.04it/s] 29%|##8       | 395/1377 [00:43&lt;01:46,  9.20it/s] 29%|##8       | 396/1377 [00:43&lt;01:47,  9.16it/s] 29%|##8       | 397/1377 [00:43&lt;01:45,  9.26it/s] 29%|##8       | 398/1377 [00:43&lt;01:45,  9.29it/s] 29%|##9       | 400/1377 [00:43&lt;01:43,  9.42it/s] 29%|##9       | 401/1377 [00:43&lt;01:43,  9.44it/s] 29%|##9       | 402/1377 [00:44&lt;01:44,  9.30it/s] 29%|##9       | 403/1377 [00:44&lt;01:45,  9.26it/s] 29%|##9       | 405/1377 [00:44&lt;01:40,  9.71it/s] 29%|##9       | 406/1377 [00:44&lt;01:41,  9.59it/s] 30%|##9       | 407/1377 [00:44&lt;01:41,  9.56it/s] 30%|##9       | 408/1377 [00:44&lt;01:42,  9.47it/s] 30%|##9       | 410/1377 [00:44&lt;01:39,  9.72it/s] 30%|##9       | 411/1377 [00:44&lt;01:40,  9.65it/s] 30%|##9       | 413/1377 [00:45&lt;01:41,  9.52it/s] 30%|###       | 414/1377 [00:45&lt;01:40,  9.55it/s] 30%|###       | 415/1377 [00:45&lt;01:40,  9.61it/s] 30%|###       | 416/1377 [00:45&lt;01:40,  9.57it/s] 30%|###       | 417/1377 [00:45&lt;01:41,  9.42it/s] 30%|###       | 418/1377 [00:45&lt;01:44,  9.21it/s] 30%|###       | 419/1377 [00:45&lt;01:43,  9.26it/s] 31%|###       | 420/1377 [00:45&lt;01:43,  9.26it/s] 31%|###       | 421/1377 [00:46&lt;01:42,  9.35it/s] 31%|###       | 422/1377 [00:46&lt;01:41,  9.44it/s] 31%|###       | 423/1377 [00:46&lt;01:40,  9.45it/s] 31%|###       | 425/1377 [00:46&lt;01:39,  9.59it/s] 31%|###       | 426/1377 [00:46&lt;01:50,  8.62it/s] 31%|###1      | 427/1377 [00:46&lt;01:47,  8.86it/s] 31%|###1      | 428/1377 [00:46&lt;01:46,  8.95it/s] 31%|###1      | 429/1377 [00:46&lt;01:47,  8.82it/s] 31%|###1      | 430/1377 [00:47&lt;01:44,  9.03it/s] 31%|###1      | 431/1377 [00:47&lt;01:44,  9.06it/s] 31%|###1      | 432/1377 [00:47&lt;01:45,  9.00it/s] 31%|###1      | 433/1377 [00:47&lt;01:47,  8.79it/s] 32%|###1      | 434/1377 [00:47&lt;01:44,  9.03it/s] 32%|###1      | 436/1377 [00:47&lt;01:43,  9.11it/s] 32%|###1      | 437/1377 [00:47&lt;01:44,  9.00it/s] 32%|###1      | 439/1377 [00:48&lt;01:42,  9.15it/s] 32%|###2      | 441/1377 [00:48&lt;01:40,  9.34it/s] 32%|###2      | 442/1377 [00:48&lt;01:40,  9.26it/s] 32%|###2      | 443/1377 [00:48&lt;01:40,  9.29it/s] 32%|###2      | 444/1377 [00:48&lt;01:40,  9.33it/s] 32%|###2      | 445/1377 [00:48&lt;01:39,  9.34it/s] 32%|###2      | 447/1377 [00:48&lt;01:37,  9.57it/s] 33%|###2      | 448/1377 [00:48&lt;01:38,  9.44it/s] 33%|###2      | 450/1377 [00:49&lt;01:36,  9.56it/s] 33%|###2      | 451/1377 [00:49&lt;01:37,  9.53it/s] 33%|###2      | 452/1377 [00:49&lt;01:38,  9.42it/s] 33%|###2      | 453/1377 [00:49&lt;01:38,  9.38it/s] 33%|###2      | 454/1377 [00:49&lt;01:38,  9.41it/s] 33%|###3      | 456/1377 [00:49&lt;01:35,  9.60it/s] 33%|###3      | 457/1377 [00:49&lt;01:36,  9.57it/s] 33%|###3      | 459/1377 [00:50&lt;01:42,  8.94it/s]
+##   0%|          | 0/51 [00:00&lt;?, ?it/s][A
+##  10%|9         | 5/51 [00:00&lt;00:01, 44.81it/s][A
+##  20%|#9        | 10/51 [00:00&lt;00:01, 39.27it/s][A
+##  27%|##7       | 14/51 [00:00&lt;00:00, 38.70it/s][A
+##  35%|###5      | 18/51 [00:00&lt;00:00, 36.58it/s][A
+##  43%|####3     | 22/51 [00:00&lt;00:00, 37.10it/s][A
+##  51%|#####     | 26/51 [00:00&lt;00:00, 37.80it/s][A
+##  59%|#####8    | 30/51 [00:00&lt;00:00, 37.51it/s][A
+##  69%|######8   | 35/51 [00:00&lt;00:00, 38.44it/s][A
+##  76%|#######6  | 39/51 [00:01&lt;00:00, 38.75it/s][A
+##  84%|########4 | 43/51 [00:01&lt;00:00, 37.22it/s][A
+##  92%|#########2| 47/51 [00:01&lt;00:00, 36.68it/s][A
+## 100%|##########| 51/51 [00:01&lt;00:00, 36.67it/s][A                                                  
+##                                                [A{&#39;eval_loss&#39;: 0.5285799503326416, &#39;eval_accuracy&#39;: 0.7303921568627451, &#39;eval_f1&#39;: 0.8343373493975904, &#39;eval_runtime&#39;: 2.5862, &#39;eval_samples_per_second&#39;: 157.763, &#39;eval_steps_per_second&#39;: 19.72, &#39;epoch&#39;: 1.0}
+##  33%|###3      | 459/1377 [00:52&lt;01:42,  8.94it/s]
+## 100%|##########| 51/51 [00:02&lt;00:00, 36.67it/s][A
+##                                                [A/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+##  33%|###3      | 460/1377 [00:52&lt;10:40,  1.43it/s] 33%|###3      | 461/1377 [00:52&lt;08:30,  1.80it/s] 34%|###3      | 462/1377 [00:53&lt;06:42,  2.27it/s] 34%|###3      | 463/1377 [00:53&lt;05:20,  2.85it/s] 34%|###3      | 464/1377 [00:53&lt;04:19,  3.52it/s] 34%|###3      | 465/1377 [00:53&lt;03:32,  4.29it/s] 34%|###3      | 466/1377 [00:53&lt;02:59,  5.08it/s] 34%|###3      | 467/1377 [00:53&lt;02:36,  5.83it/s] 34%|###4      | 469/1377 [00:53&lt;02:06,  7.17it/s] 34%|###4      | 471/1377 [00:54&lt;01:52,  8.04it/s] 34%|###4      | 472/1377 [00:54&lt;01:49,  8.29it/s] 34%|###4      | 474/1377 [00:54&lt;01:43,  8.70it/s] 34%|###4      | 475/1377 [00:54&lt;01:42,  8.78it/s] 35%|###4      | 476/1377 [00:54&lt;01:41,  8.91it/s] 35%|###4      | 478/1377 [00:54&lt;01:39,  9.07it/s] 35%|###4      | 479/1377 [00:54&lt;01:38,  9.08it/s] 35%|###4      | 480/1377 [00:54&lt;01:37,  9.19it/s] 35%|###4      | 481/1377 [00:55&lt;01:37,  9.16it/s] 35%|###5      | 482/1377 [00:55&lt;01:42,  8.76it/s] 35%|###5      | 483/1377 [00:55&lt;01:40,  8.92it/s] 35%|###5      | 485/1377 [00:55&lt;01:39,  8.95it/s] 35%|###5      | 486/1377 [00:55&lt;01:38,  9.08it/s] 35%|###5      | 487/1377 [00:55&lt;01:37,  9.15it/s] 35%|###5      | 488/1377 [00:55&lt;01:35,  9.33it/s] 36%|###5      | 489/1377 [00:55&lt;01:34,  9.41it/s] 36%|###5      | 491/1377 [00:56&lt;01:30,  9.77it/s] 36%|###5      | 493/1377 [00:56&lt;01:30,  9.79it/s] 36%|###5      | 494/1377 [00:56&lt;01:30,  9.75it/s] 36%|###5      | 495/1377 [00:56&lt;01:33,  9.40it/s] 36%|###6      | 496/1377 [00:56&lt;01:35,  9.26it/s] 36%|###6      | 497/1377 [00:56&lt;01:34,  9.28it/s] 36%|###6      | 498/1377 [00:56&lt;01:33,  9.40it/s] 36%|###6      | 499/1377 [00:57&lt;01:34,  9.32it/s] 36%|###6      | 500/1377 [00:57&lt;01:33,  9.42it/s]                                                  {&#39;loss&#39;: 0.5945, &#39;grad_norm&#39;: 21.74297332763672, &#39;learning_rate&#39;: 3.1880900508351494e-05, &#39;epoch&#39;: 1.09}
+##  36%|###6      | 500/1377 [00:57&lt;01:33,  9.42it/s] 36%|###6      | 501/1377 [00:58&lt;05:35,  2.61it/s] 36%|###6      | 502/1377 [00:58&lt;04:27,  3.27it/s] 37%|###6      | 503/1377 [00:58&lt;03:36,  4.04it/s] 37%|###6      | 505/1377 [00:58&lt;02:39,  5.48it/s] 37%|###6      | 506/1377 [00:58&lt;02:22,  6.10it/s] 37%|###6      | 507/1377 [00:58&lt;02:08,  6.75it/s] 37%|###6      | 509/1377 [00:59&lt;01:50,  7.84it/s] 37%|###7      | 510/1377 [00:59&lt;01:45,  8.25it/s] 37%|###7      | 511/1377 [00:59&lt;01:42,  8.45it/s] 37%|###7      | 512/1377 [00:59&lt;01:40,  8.58it/s] 37%|###7      | 514/1377 [00:59&lt;01:34,  9.12it/s] 37%|###7      | 515/1377 [00:59&lt;01:34,  9.16it/s] 37%|###7      | 516/1377 [00:59&lt;01:34,  9.11it/s] 38%|###7      | 517/1377 [00:59&lt;01:33,  9.16it/s] 38%|###7      | 518/1377 [01:00&lt;01:32,  9.24it/s] 38%|###7      | 519/1377 [01:00&lt;01:33,  9.20it/s] 38%|###7      | 520/1377 [01:00&lt;01:32,  9.25it/s] 38%|###7      | 521/1377 [01:00&lt;01:31,  9.32it/s] 38%|###7      | 522/1377 [01:00&lt;01:31,  9.31it/s] 38%|###7      | 523/1377 [01:00&lt;01:31,  9.33it/s] 38%|###8      | 524/1377 [01:00&lt;01:30,  9.42it/s] 38%|###8      | 525/1377 [01:00&lt;01:37,  8.75it/s] 38%|###8      | 527/1377 [01:00&lt;01:32,  9.18it/s] 38%|###8      | 528/1377 [01:01&lt;01:31,  9.29it/s] 38%|###8      | 529/1377 [01:01&lt;01:30,  9.34it/s] 38%|###8      | 530/1377 [01:01&lt;01:31,  9.29it/s] 39%|###8      | 531/1377 [01:01&lt;01:33,  9.00it/s] 39%|###8      | 532/1377 [01:01&lt;01:31,  9.22it/s] 39%|###8      | 534/1377 [01:01&lt;01:25,  9.82it/s] 39%|###8      | 535/1377 [01:01&lt;01:26,  9.68it/s] 39%|###8      | 536/1377 [01:01&lt;01:28,  9.54it/s] 39%|###9      | 538/1377 [01:02&lt;01:23, 10.02it/s] 39%|###9      | 539/1377 [01:02&lt;01:27,  9.61it/s] 39%|###9      | 540/1377 [01:02&lt;01:27,  9.58it/s] 39%|###9      | 542/1377 [01:02&lt;01:24,  9.88it/s] 39%|###9      | 543/1377 [01:02&lt;01:25,  9.75it/s] 40%|###9      | 544/1377 [01:02&lt;01:26,  9.58it/s] 40%|###9      | 545/1377 [01:02&lt;01:26,  9.61it/s] 40%|###9      | 546/1377 [01:02&lt;01:26,  9.64it/s] 40%|###9      | 547/1377 [01:03&lt;01:26,  9.61it/s] 40%|###9      | 548/1377 [01:03&lt;01:28,  9.39it/s] 40%|###9      | 549/1377 [01:03&lt;01:28,  9.34it/s] 40%|###9      | 550/1377 [01:03&lt;01:28,  9.32it/s] 40%|####      | 551/1377 [01:03&lt;01:28,  9.36it/s] 40%|####      | 552/1377 [01:03&lt;01:27,  9.42it/s] 40%|####      | 553/1377 [01:03&lt;01:26,  9.55it/s] 40%|####      | 554/1377 [01:03&lt;01:28,  9.25it/s] 40%|####      | 555/1377 [01:03&lt;01:34,  8.74it/s] 40%|####      | 556/1377 [01:04&lt;01:32,  8.83it/s] 40%|####      | 557/1377 [01:04&lt;01:34,  8.63it/s] 41%|####      | 558/1377 [01:04&lt;01:44,  7.87it/s] 41%|####      | 559/1377 [01:04&lt;01:42,  8.00it/s] 41%|####      | 560/1377 [01:04&lt;01:37,  8.34it/s] 41%|####      | 561/1377 [01:04&lt;01:33,  8.68it/s] 41%|####      | 562/1377 [01:04&lt;01:32,  8.78it/s] 41%|####      | 563/1377 [01:04&lt;01:31,  8.90it/s] 41%|####      | 564/1377 [01:04&lt;01:30,  9.03it/s] 41%|####1     | 565/1377 [01:05&lt;01:29,  9.11it/s] 41%|####1     | 566/1377 [01:05&lt;01:28,  9.21it/s] 41%|####1     | 567/1377 [01:05&lt;01:27,  9.25it/s] 41%|####1     | 568/1377 [01:05&lt;01:26,  9.31it/s] 41%|####1     | 569/1377 [01:05&lt;01:26,  9.35it/s] 41%|####1     | 570/1377 [01:05&lt;01:26,  9.38it/s] 41%|####1     | 571/1377 [01:05&lt;01:25,  9.46it/s] 42%|####1     | 572/1377 [01:05&lt;01:24,  9.50it/s] 42%|####1     | 573/1377 [01:05&lt;01:24,  9.53it/s] 42%|####1     | 574/1377 [01:06&lt;01:27,  9.14it/s] 42%|####1     | 575/1377 [01:06&lt;01:26,  9.25it/s] 42%|####1     | 576/1377 [01:06&lt;01:25,  9.31it/s] 42%|####1     | 577/1377 [01:06&lt;01:29,  8.97it/s] 42%|####1     | 578/1377 [01:06&lt;01:27,  9.15it/s] 42%|####2     | 579/1377 [01:06&lt;01:26,  9.24it/s] 42%|####2     | 580/1377 [01:06&lt;01:27,  9.14it/s] 42%|####2     | 581/1377 [01:06&lt;01:26,  9.19it/s] 42%|####2     | 582/1377 [01:06&lt;01:27,  9.13it/s] 42%|####2     | 583/1377 [01:07&lt;01:26,  9.21it/s] 42%|####2     | 584/1377 [01:07&lt;01:26,  9.21it/s] 42%|####2     | 585/1377 [01:07&lt;01:24,  9.33it/s] 43%|####2     | 586/1377 [01:07&lt;01:27,  9.05it/s] 43%|####2     | 587/1377 [01:07&lt;01:27,  9.00it/s] 43%|####2     | 588/1377 [01:07&lt;01:25,  9.18it/s] 43%|####2     | 589/1377 [01:07&lt;01:24,  9.28it/s] 43%|####2     | 590/1377 [01:07&lt;01:24,  9.33it/s] 43%|####2     | 591/1377 [01:07&lt;01:24,  9.32it/s] 43%|####2     | 592/1377 [01:08&lt;01:23,  9.44it/s] 43%|####3     | 594/1377 [01:08&lt;01:20,  9.68it/s] 43%|####3     | 595/1377 [01:08&lt;01:22,  9.46it/s] 43%|####3     | 596/1377 [01:08&lt;01:23,  9.39it/s] 43%|####3     | 598/1377 [01:08&lt;01:21,  9.62it/s] 44%|####3     | 599/1377 [01:08&lt;01:21,  9.50it/s] 44%|####3     | 600/1377 [01:08&lt;01:21,  9.52it/s] 44%|####3     | 601/1377 [01:08&lt;01:24,  9.20it/s] 44%|####3     | 603/1377 [01:09&lt;01:24,  9.16it/s] 44%|####3     | 604/1377 [01:09&lt;01:24,  9.14it/s] 44%|####3     | 605/1377 [01:09&lt;01:25,  9.07it/s] 44%|####4     | 606/1377 [01:09&lt;01:25,  9.00it/s] 44%|####4     | 608/1377 [01:09&lt;01:20,  9.51it/s] 44%|####4     | 609/1377 [01:09&lt;01:20,  9.50it/s] 44%|####4     | 610/1377 [01:09&lt;01:19,  9.59it/s] 44%|####4     | 611/1377 [01:10&lt;01:21,  9.43it/s] 45%|####4     | 613/1377 [01:10&lt;01:19,  9.61it/s] 45%|####4     | 614/1377 [01:10&lt;01:19,  9.56it/s] 45%|####4     | 615/1377 [01:10&lt;01:21,  9.38it/s] 45%|####4     | 616/1377 [01:10&lt;01:21,  9.35it/s] 45%|####4     | 617/1377 [01:10&lt;01:20,  9.41it/s] 45%|####4     | 618/1377 [01:10&lt;01:20,  9.39it/s] 45%|####4     | 619/1377 [01:10&lt;01:21,  9.25it/s] 45%|####5     | 620/1377 [01:10&lt;01:21,  9.27it/s] 45%|####5     | 621/1377 [01:11&lt;01:21,  9.25it/s] 45%|####5     | 622/1377 [01:11&lt;01:22,  9.18it/s] 45%|####5     | 623/1377 [01:11&lt;01:26,  8.73it/s] 45%|####5     | 624/1377 [01:11&lt;01:24,  8.87it/s] 45%|####5     | 626/1377 [01:11&lt;01:20,  9.35it/s] 46%|####5     | 627/1377 [01:11&lt;01:22,  9.04it/s] 46%|####5     | 628/1377 [01:11&lt;01:22,  9.11it/s] 46%|####5     | 629/1377 [01:11&lt;01:21,  9.14it/s] 46%|####5     | 630/1377 [01:12&lt;01:21,  9.14it/s] 46%|####5     | 631/1377 [01:12&lt;01:22,  9.05it/s] 46%|####5     | 633/1377 [01:12&lt;01:21,  9.18it/s] 46%|####6     | 634/1377 [01:12&lt;01:21,  9.16it/s] 46%|####6     | 635/1377 [01:12&lt;01:23,  8.89it/s] 46%|####6     | 636/1377 [01:12&lt;01:22,  8.96it/s] 46%|####6     | 637/1377 [01:12&lt;01:21,  9.07it/s] 46%|####6     | 638/1377 [01:12&lt;01:21,  9.08it/s] 46%|####6     | 639/1377 [01:13&lt;01:21,  9.05it/s] 46%|####6     | 640/1377 [01:13&lt;01:20,  9.17it/s] 47%|####6     | 641/1377 [01:13&lt;01:19,  9.26it/s] 47%|####6     | 642/1377 [01:13&lt;01:19,  9.22it/s] 47%|####6     | 643/1377 [01:13&lt;01:18,  9.39it/s] 47%|####6     | 644/1377 [01:13&lt;01:24,  8.72it/s] 47%|####6     | 645/1377 [01:13&lt;01:25,  8.59it/s] 47%|####6     | 647/1377 [01:13&lt;01:20,  9.09it/s] 47%|####7     | 648/1377 [01:14&lt;01:19,  9.14it/s] 47%|####7     | 649/1377 [01:14&lt;01:19,  9.11it/s] 47%|####7     | 651/1377 [01:14&lt;01:18,  9.29it/s] 47%|####7     | 652/1377 [01:14&lt;01:19,  9.12it/s] 47%|####7     | 653/1377 [01:14&lt;01:19,  9.14it/s] 47%|####7     | 654/1377 [01:14&lt;01:19,  9.06it/s] 48%|####7     | 655/1377 [01:14&lt;01:18,  9.18it/s] 48%|####7     | 657/1377 [01:15&lt;01:13,  9.77it/s] 48%|####7     | 658/1377 [01:15&lt;01:14,  9.61it/s] 48%|####7     | 659/1377 [01:15&lt;01:15,  9.50it/s] 48%|####8     | 661/1377 [01:15&lt;01:16,  9.35it/s] 48%|####8     | 662/1377 [01:15&lt;01:16,  9.35it/s] 48%|####8     | 663/1377 [01:15&lt;01:16,  9.37it/s] 48%|####8     | 665/1377 [01:15&lt;01:14,  9.53it/s] 48%|####8     | 666/1377 [01:16&lt;01:16,  9.25it/s] 48%|####8     | 667/1377 [01:16&lt;01:17,  9.17it/s] 49%|####8     | 669/1377 [01:16&lt;01:14,  9.46it/s] 49%|####8     | 670/1377 [01:16&lt;01:15,  9.43it/s] 49%|####8     | 671/1377 [01:16&lt;01:16,  9.28it/s] 49%|####8     | 672/1377 [01:16&lt;01:16,  9.27it/s] 49%|####8     | 673/1377 [01:16&lt;01:15,  9.34it/s] 49%|####8     | 674/1377 [01:16&lt;01:14,  9.38it/s] 49%|####9     | 675/1377 [01:16&lt;01:15,  9.30it/s] 49%|####9     | 676/1377 [01:17&lt;01:15,  9.25it/s] 49%|####9     | 677/1377 [01:17&lt;01:15,  9.29it/s] 49%|####9     | 678/1377 [01:17&lt;01:16,  9.15it/s] 49%|####9     | 679/1377 [01:17&lt;01:19,  8.76it/s] 49%|####9     | 680/1377 [01:17&lt;01:20,  8.61it/s] 49%|####9     | 681/1377 [01:17&lt;01:18,  8.83it/s] 50%|####9     | 682/1377 [01:17&lt;01:17,  8.96it/s] 50%|####9     | 683/1377 [01:17&lt;01:17,  8.93it/s] 50%|####9     | 684/1377 [01:17&lt;01:17,  8.99it/s] 50%|####9     | 685/1377 [01:18&lt;01:16,  9.01it/s] 50%|####9     | 686/1377 [01:18&lt;01:20,  8.53it/s] 50%|####9     | 687/1377 [01:18&lt;01:19,  8.70it/s] 50%|####9     | 688/1377 [01:18&lt;01:17,  8.86it/s] 50%|#####     | 689/1377 [01:18&lt;01:15,  9.15it/s] 50%|#####     | 690/1377 [01:18&lt;01:14,  9.19it/s] 50%|#####     | 691/1377 [01:18&lt;01:19,  8.68it/s] 50%|#####     | 692/1377 [01:18&lt;01:21,  8.37it/s] 50%|#####     | 693/1377 [01:19&lt;01:19,  8.61it/s] 50%|#####     | 694/1377 [01:19&lt;01:18,  8.68it/s] 50%|#####     | 695/1377 [01:19&lt;01:16,  8.92it/s] 51%|#####     | 696/1377 [01:19&lt;01:18,  8.64it/s] 51%|#####     | 697/1377 [01:19&lt;01:20,  8.45it/s] 51%|#####     | 698/1377 [01:19&lt;01:18,  8.68it/s] 51%|#####     | 699/1377 [01:19&lt;01:21,  8.34it/s] 51%|#####     | 700/1377 [01:19&lt;01:19,  8.53it/s] 51%|#####     | 701/1377 [01:19&lt;01:19,  8.50it/s] 51%|#####     | 702/1377 [01:20&lt;01:18,  8.65it/s] 51%|#####1    | 704/1377 [01:20&lt;01:15,  8.97it/s] 51%|#####1    | 705/1377 [01:20&lt;01:14,  9.04it/s] 51%|#####1    | 707/1377 [01:20&lt;01:10,  9.57it/s] 51%|#####1    | 708/1377 [01:20&lt;01:12,  9.28it/s] 51%|#####1    | 709/1377 [01:20&lt;01:12,  9.26it/s] 52%|#####1    | 710/1377 [01:20&lt;01:14,  9.00it/s] 52%|#####1    | 711/1377 [01:21&lt;01:13,  9.09it/s] 52%|#####1    | 712/1377 [01:21&lt;01:11,  9.27it/s] 52%|#####1    | 714/1377 [01:21&lt;01:11,  9.22it/s] 52%|#####1    | 715/1377 [01:21&lt;01:13,  8.97it/s] 52%|#####1    | 716/1377 [01:21&lt;01:14,  8.90it/s] 52%|#####2    | 717/1377 [01:21&lt;01:13,  8.97it/s] 52%|#####2    | 719/1377 [01:21&lt;01:09,  9.45it/s] 52%|#####2    | 720/1377 [01:21&lt;01:09,  9.45it/s] 52%|#####2    | 722/1377 [01:22&lt;01:08,  9.54it/s] 53%|#####2    | 723/1377 [01:22&lt;01:09,  9.40it/s] 53%|#####2    | 724/1377 [01:22&lt;01:10,  9.33it/s] 53%|#####2    | 725/1377 [01:22&lt;01:11,  9.18it/s] 53%|#####2    | 726/1377 [01:22&lt;01:13,  8.91it/s] 53%|#####2    | 728/1377 [01:22&lt;01:08,  9.51it/s] 53%|#####2    | 729/1377 [01:22&lt;01:08,  9.51it/s] 53%|#####3    | 731/1377 [01:23&lt;01:07,  9.63it/s] 53%|#####3    | 733/1377 [01:23&lt;01:05,  9.81it/s] 53%|#####3    | 735/1377 [01:23&lt;01:05,  9.82it/s] 53%|#####3    | 736/1377 [01:23&lt;01:07,  9.51it/s] 54%|#####3    | 738/1377 [01:23&lt;01:06,  9.60it/s] 54%|#####3    | 739/1377 [01:23&lt;01:06,  9.57it/s] 54%|#####3    | 741/1377 [01:24&lt;01:05,  9.74it/s] 54%|#####3    | 743/1377 [01:24&lt;01:04,  9.79it/s] 54%|#####4    | 745/1377 [01:24&lt;01:05,  9.65it/s] 54%|#####4    | 746/1377 [01:24&lt;01:05,  9.61it/s] 54%|#####4    | 748/1377 [01:24&lt;01:05,  9.66it/s] 54%|#####4    | 749/1377 [01:25&lt;01:05,  9.59it/s] 55%|#####4    | 751/1377 [01:25&lt;01:04,  9.72it/s] 55%|#####4    | 752/1377 [01:25&lt;01:05,  9.58it/s] 55%|#####4    | 753/1377 [01:25&lt;01:06,  9.43it/s] 55%|#####4    | 755/1377 [01:25&lt;01:04,  9.64it/s] 55%|#####4    | 756/1377 [01:25&lt;01:04,  9.59it/s] 55%|#####4    | 757/1377 [01:25&lt;01:09,  8.97it/s] 55%|#####5    | 759/1377 [01:26&lt;01:05,  9.45it/s] 55%|#####5    | 761/1377 [01:26&lt;01:03,  9.64it/s] 55%|#####5    | 762/1377 [01:26&lt;01:04,  9.51it/s] 55%|#####5    | 763/1377 [01:26&lt;01:05,  9.36it/s] 55%|#####5    | 764/1377 [01:26&lt;01:04,  9.44it/s] 56%|#####5    | 765/1377 [01:26&lt;01:05,  9.29it/s] 56%|#####5    | 766/1377 [01:26&lt;01:05,  9.30it/s] 56%|#####5    | 767/1377 [01:26&lt;01:06,  9.23it/s] 56%|#####5    | 768/1377 [01:27&lt;01:07,  8.98it/s] 56%|#####5    | 769/1377 [01:27&lt;01:07,  9.03it/s] 56%|#####5    | 770/1377 [01:27&lt;01:06,  9.13it/s] 56%|#####6    | 772/1377 [01:27&lt;01:02,  9.67it/s] 56%|#####6    | 773/1377 [01:27&lt;01:02,  9.64it/s] 56%|#####6    | 774/1377 [01:27&lt;01:02,  9.60it/s] 56%|#####6    | 775/1377 [01:27&lt;01:02,  9.61it/s] 56%|#####6    | 777/1377 [01:27&lt;01:02,  9.60it/s] 57%|#####6    | 779/1377 [01:28&lt;01:01,  9.65it/s] 57%|#####6    | 780/1377 [01:28&lt;01:02,  9.62it/s] 57%|#####6    | 782/1377 [01:28&lt;01:00,  9.79it/s] 57%|#####6    | 784/1377 [01:28&lt;01:01,  9.62it/s] 57%|#####7    | 785/1377 [01:28&lt;01:02,  9.53it/s] 57%|#####7    | 786/1377 [01:28&lt;01:02,  9.51it/s] 57%|#####7    | 787/1377 [01:29&lt;01:02,  9.47it/s] 57%|#####7    | 788/1377 [01:29&lt;01:02,  9.44it/s] 57%|#####7    | 789/1377 [01:29&lt;01:02,  9.42it/s] 57%|#####7    | 790/1377 [01:29&lt;01:02,  9.45it/s] 57%|#####7    | 791/1377 [01:29&lt;01:03,  9.27it/s] 58%|#####7    | 792/1377 [01:29&lt;01:02,  9.33it/s] 58%|#####7    | 793/1377 [01:29&lt;01:02,  9.41it/s] 58%|#####7    | 794/1377 [01:29&lt;01:01,  9.48it/s] 58%|#####7    | 795/1377 [01:29&lt;01:00,  9.57it/s] 58%|#####7    | 796/1377 [01:29&lt;01:01,  9.47it/s] 58%|#####7    | 797/1377 [01:30&lt;01:02,  9.26it/s] 58%|#####7    | 798/1377 [01:30&lt;01:04,  8.91it/s] 58%|#####8    | 799/1377 [01:30&lt;01:04,  8.95it/s] 58%|#####8    | 800/1377 [01:30&lt;01:03,  9.14it/s] 58%|#####8    | 802/1377 [01:30&lt;01:00,  9.54it/s] 58%|#####8    | 803/1377 [01:30&lt;01:02,  9.17it/s] 58%|#####8    | 804/1377 [01:30&lt;01:01,  9.25it/s] 58%|#####8    | 805/1377 [01:30&lt;01:02,  9.13it/s] 59%|#####8    | 807/1377 [01:31&lt;01:01,  9.33it/s] 59%|#####8    | 808/1377 [01:31&lt;01:01,  9.29it/s] 59%|#####8    | 809/1377 [01:31&lt;01:01,  9.24it/s] 59%|#####8    | 810/1377 [01:31&lt;01:01,  9.26it/s] 59%|#####8    | 811/1377 [01:31&lt;01:00,  9.34it/s] 59%|#####9    | 813/1377 [01:31&lt;00:59,  9.56it/s] 59%|#####9    | 815/1377 [01:32&lt;00:57,  9.71it/s] 59%|#####9    | 817/1377 [01:32&lt;00:56,  9.86it/s] 59%|#####9    | 818/1377 [01:32&lt;00:57,  9.74it/s] 59%|#####9    | 819/1377 [01:32&lt;00:57,  9.68it/s] 60%|#####9    | 821/1377 [01:32&lt;00:57,  9.62it/s] 60%|#####9    | 822/1377 [01:32&lt;00:58,  9.51it/s] 60%|#####9    | 823/1377 [01:32&lt;00:58,  9.42it/s] 60%|#####9    | 824/1377 [01:32&lt;00:59,  9.31it/s] 60%|#####9    | 825/1377 [01:33&lt;00:59,  9.29it/s] 60%|#####9    | 826/1377 [01:33&lt;00:59,  9.25it/s] 60%|######    | 827/1377 [01:33&lt;00:59,  9.28it/s] 60%|######    | 828/1377 [01:33&lt;00:59,  9.18it/s] 60%|######    | 829/1377 [01:33&lt;00:59,  9.25it/s] 60%|######    | 830/1377 [01:33&lt;00:58,  9.33it/s] 60%|######    | 832/1377 [01:33&lt;00:57,  9.55it/s] 61%|######    | 834/1377 [01:34&lt;00:58,  9.25it/s] 61%|######    | 835/1377 [01:34&lt;00:58,  9.34it/s] 61%|######    | 836/1377 [01:34&lt;00:58,  9.26it/s] 61%|######    | 837/1377 [01:34&lt;00:58,  9.24it/s] 61%|######    | 838/1377 [01:34&lt;00:58,  9.26it/s] 61%|######    | 839/1377 [01:34&lt;00:57,  9.31it/s] 61%|######1   | 840/1377 [01:34&lt;00:57,  9.30it/s] 61%|######1   | 841/1377 [01:34&lt;00:57,  9.33it/s] 61%|######1   | 842/1377 [01:34&lt;00:57,  9.30it/s] 61%|######1   | 843/1377 [01:35&lt;00:56,  9.37it/s] 61%|######1   | 844/1377 [01:35&lt;00:56,  9.46it/s] 61%|######1   | 845/1377 [01:35&lt;00:55,  9.52it/s] 61%|######1   | 846/1377 [01:35&lt;00:55,  9.50it/s] 62%|######1   | 847/1377 [01:35&lt;00:58,  9.08it/s] 62%|######1   | 848/1377 [01:35&lt;00:57,  9.15it/s] 62%|######1   | 849/1377 [01:35&lt;00:59,  8.91it/s] 62%|######1   | 850/1377 [01:35&lt;00:58,  9.07it/s] 62%|######1   | 851/1377 [01:35&lt;00:57,  9.18it/s] 62%|######1   | 852/1377 [01:35&lt;00:57,  9.12it/s] 62%|######1   | 853/1377 [01:36&lt;00:56,  9.26it/s] 62%|######2   | 854/1377 [01:36&lt;00:56,  9.29it/s] 62%|######2   | 855/1377 [01:36&lt;00:55,  9.38it/s] 62%|######2   | 856/1377 [01:36&lt;00:58,  8.89it/s] 62%|######2   | 857/1377 [01:36&lt;00:56,  9.15it/s] 62%|######2   | 858/1377 [01:36&lt;00:58,  8.89it/s] 62%|######2   | 859/1377 [01:36&lt;00:57,  9.07it/s] 62%|######2   | 860/1377 [01:36&lt;00:56,  9.15it/s] 63%|######2   | 861/1377 [01:36&lt;00:55,  9.25it/s] 63%|######2   | 862/1377 [01:37&lt;00:55,  9.22it/s] 63%|######2   | 863/1377 [01:37&lt;00:55,  9.30it/s] 63%|######2   | 865/1377 [01:37&lt;00:54,  9.39it/s] 63%|######2   | 866/1377 [01:37&lt;00:54,  9.46it/s] 63%|######2   | 867/1377 [01:37&lt;00:55,  9.17it/s] 63%|######3   | 868/1377 [01:37&lt;00:55,  9.25it/s] 63%|######3   | 870/1377 [01:37&lt;00:54,  9.37it/s] 63%|######3   | 871/1377 [01:38&lt;00:55,  9.14it/s] 63%|######3   | 872/1377 [01:38&lt;00:55,  9.16it/s] 63%|######3   | 873/1377 [01:38&lt;00:54,  9.19it/s] 63%|######3   | 874/1377 [01:38&lt;00:54,  9.25it/s] 64%|######3   | 875/1377 [01:38&lt;00:54,  9.24it/s] 64%|######3   | 876/1377 [01:38&lt;00:54,  9.25it/s] 64%|######3   | 877/1377 [01:38&lt;00:53,  9.31it/s] 64%|######3   | 878/1377 [01:38&lt;00:53,  9.41it/s] 64%|######3   | 879/1377 [01:38&lt;00:52,  9.41it/s] 64%|######3   | 880/1377 [01:39&lt;00:53,  9.33it/s] 64%|######3   | 881/1377 [01:39&lt;00:53,  9.31it/s] 64%|######4   | 882/1377 [01:39&lt;00:52,  9.37it/s] 64%|######4   | 883/1377 [01:39&lt;00:52,  9.32it/s] 64%|######4   | 884/1377 [01:39&lt;00:52,  9.37it/s] 64%|######4   | 885/1377 [01:39&lt;00:53,  9.28it/s] 64%|######4   | 886/1377 [01:39&lt;00:52,  9.27it/s] 64%|######4   | 887/1377 [01:39&lt;00:54,  8.96it/s] 64%|######4   | 888/1377 [01:39&lt;00:54,  9.05it/s] 65%|######4   | 890/1377 [01:40&lt;00:55,  8.82it/s] 65%|######4   | 892/1377 [01:40&lt;00:52,  9.28it/s] 65%|######4   | 893/1377 [01:40&lt;00:52,  9.22it/s] 65%|######4   | 894/1377 [01:40&lt;00:52,  9.20it/s] 65%|######4   | 895/1377 [01:40&lt;00:51,  9.35it/s] 65%|######5   | 897/1377 [01:40&lt;00:51,  9.31it/s] 65%|######5   | 898/1377 [01:40&lt;00:51,  9.33it/s] 65%|######5   | 899/1377 [01:41&lt;00:51,  9.32it/s] 65%|######5   | 900/1377 [01:41&lt;00:50,  9.36it/s] 65%|######5   | 901/1377 [01:41&lt;00:50,  9.42it/s] 66%|######5   | 902/1377 [01:41&lt;00:50,  9.41it/s] 66%|######5   | 903/1377 [01:41&lt;00:50,  9.47it/s] 66%|######5   | 904/1377 [01:41&lt;00:50,  9.32it/s] 66%|######5   | 905/1377 [01:41&lt;00:50,  9.29it/s] 66%|######5   | 906/1377 [01:41&lt;00:49,  9.44it/s] 66%|######5   | 908/1377 [01:42&lt;00:49,  9.56it/s] 66%|######6   | 909/1377 [01:42&lt;00:48,  9.58it/s] 66%|######6   | 910/1377 [01:42&lt;00:48,  9.57it/s] 66%|######6   | 912/1377 [01:42&lt;00:47,  9.81it/s] 66%|######6   | 913/1377 [01:42&lt;00:49,  9.43it/s] 66%|######6   | 914/1377 [01:42&lt;00:48,  9.48it/s] 66%|######6   | 915/1377 [01:42&lt;00:48,  9.53it/s] 67%|######6   | 916/1377 [01:42&lt;00:48,  9.53it/s] 67%|######6   | 917/1377 [01:42&lt;00:48,  9.58it/s] 67%|######6   | 918/1377 [01:43&lt;00:50,  9.15it/s]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## 
+##   0%|          | 0/51 [00:00&lt;?, ?it/s][A
+##  10%|9         | 5/51 [00:00&lt;00:01, 45.90it/s][A
+##  20%|#9        | 10/51 [00:00&lt;00:01, 39.64it/s][A
+##  29%|##9       | 15/51 [00:00&lt;00:00, 38.03it/s][A
+##  37%|###7      | 19/51 [00:00&lt;00:00, 36.65it/s][A
+##  45%|####5     | 23/51 [00:00&lt;00:00, 37.10it/s][A
+##  53%|#####2    | 27/51 [00:00&lt;00:00, 37.62it/s][A
+##  61%|######    | 31/51 [00:00&lt;00:00, 37.69it/s][A
+##  69%|######8   | 35/51 [00:00&lt;00:00, 38.28it/s][A
+##  78%|#######8  | 40/51 [00:01&lt;00:00, 38.83it/s][A
+##  86%|########6 | 44/51 [00:01&lt;00:00, 38.67it/s][A
+##  94%|#########4| 48/51 [00:01&lt;00:00, 37.90it/s][A                                                  
+##                                                [A{&#39;eval_loss&#39;: 0.4038815200328827, &#39;eval_accuracy&#39;: 0.8578431372549019, &#39;eval_f1&#39;: 0.8986013986013986, &#39;eval_runtime&#39;: 2.4861, &#39;eval_samples_per_second&#39;: 164.109, &#39;eval_steps_per_second&#39;: 20.514, &#39;epoch&#39;: 2.0}
+##  67%|######6   | 918/1377 [01:45&lt;00:50,  9.15it/s]
+## 100%|##########| 51/51 [00:02&lt;00:00, 37.90it/s][A
+##                                                [A/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+##  67%|######6   | 919/1377 [01:45&lt;06:21,  1.20it/s] 67%|######6   | 920/1377 [01:45&lt;04:42,  1.62it/s] 67%|######6   | 921/1377 [01:45&lt;03:34,  2.13it/s] 67%|######7   | 923/1377 [01:46&lt;02:16,  3.32it/s] 67%|######7   | 925/1377 [01:46&lt;01:40,  4.52it/s] 67%|######7   | 926/1377 [01:46&lt;01:28,  5.11it/s] 67%|######7   | 928/1377 [01:46&lt;01:11,  6.31it/s] 67%|######7   | 929/1377 [01:46&lt;01:06,  6.74it/s] 68%|######7   | 930/1377 [01:46&lt;01:01,  7.23it/s] 68%|######7   | 931/1377 [01:46&lt;00:58,  7.58it/s] 68%|######7   | 932/1377 [01:47&lt;00:55,  7.97it/s] 68%|######7   | 933/1377 [01:47&lt;00:52,  8.40it/s] 68%|######7   | 934/1377 [01:47&lt;00:52,  8.43it/s] 68%|######7   | 935/1377 [01:47&lt;00:50,  8.74it/s] 68%|######8   | 937/1377 [01:47&lt;00:47,  9.31it/s] 68%|######8   | 938/1377 [01:47&lt;00:46,  9.35it/s] 68%|######8   | 939/1377 [01:47&lt;00:48,  9.05it/s] 68%|######8   | 940/1377 [01:47&lt;00:47,  9.15it/s] 68%|######8   | 941/1377 [01:48&lt;00:46,  9.34it/s] 68%|######8   | 942/1377 [01:48&lt;00:46,  9.36it/s] 68%|######8   | 943/1377 [01:48&lt;00:48,  9.03it/s] 69%|######8   | 944/1377 [01:48&lt;00:48,  8.89it/s] 69%|######8   | 945/1377 [01:48&lt;00:48,  9.00it/s] 69%|######8   | 947/1377 [01:48&lt;00:46,  9.24it/s] 69%|######8   | 948/1377 [01:48&lt;00:48,  8.80it/s] 69%|######8   | 949/1377 [01:48&lt;00:47,  9.00it/s] 69%|######8   | 950/1377 [01:49&lt;00:46,  9.13it/s] 69%|######9   | 951/1377 [01:49&lt;00:46,  9.21it/s] 69%|######9   | 953/1377 [01:49&lt;00:44,  9.45it/s] 69%|######9   | 954/1377 [01:49&lt;00:46,  9.16it/s] 69%|######9   | 955/1377 [01:49&lt;00:46,  9.16it/s] 69%|######9   | 957/1377 [01:49&lt;00:44,  9.45it/s] 70%|######9   | 958/1377 [01:49&lt;00:44,  9.34it/s] 70%|######9   | 959/1377 [01:49&lt;00:44,  9.35it/s] 70%|######9   | 960/1377 [01:50&lt;00:45,  9.09it/s] 70%|######9   | 961/1377 [01:50&lt;00:45,  9.15it/s] 70%|######9   | 962/1377 [01:50&lt;00:45,  9.19it/s] 70%|######9   | 963/1377 [01:50&lt;00:45,  9.09it/s] 70%|#######   | 964/1377 [01:50&lt;00:44,  9.18it/s] 70%|#######   | 966/1377 [01:50&lt;00:43,  9.51it/s] 70%|#######   | 967/1377 [01:50&lt;00:42,  9.57it/s] 70%|#######   | 969/1377 [01:51&lt;00:42,  9.69it/s] 70%|#######   | 970/1377 [01:51&lt;00:42,  9.63it/s] 71%|#######   | 971/1377 [01:51&lt;00:42,  9.56it/s] 71%|#######   | 972/1377 [01:51&lt;00:42,  9.45it/s] 71%|#######   | 973/1377 [01:51&lt;00:42,  9.48it/s] 71%|#######   | 974/1377 [01:51&lt;00:42,  9.52it/s] 71%|#######   | 975/1377 [01:51&lt;00:42,  9.53it/s] 71%|#######   | 976/1377 [01:51&lt;00:42,  9.52it/s] 71%|#######   | 977/1377 [01:51&lt;00:42,  9.47it/s] 71%|#######1  | 978/1377 [01:51&lt;00:44,  9.06it/s] 71%|#######1  | 979/1377 [01:52&lt;00:43,  9.13it/s] 71%|#######1  | 981/1377 [01:52&lt;00:43,  9.18it/s] 71%|#######1  | 982/1377 [01:52&lt;00:42,  9.24it/s] 71%|#######1  | 983/1377 [01:52&lt;00:42,  9.25it/s] 71%|#######1  | 984/1377 [01:52&lt;00:41,  9.39it/s] 72%|#######1  | 985/1377 [01:52&lt;00:43,  9.03it/s] 72%|#######1  | 986/1377 [01:52&lt;00:42,  9.10it/s] 72%|#######1  | 987/1377 [01:52&lt;00:42,  9.16it/s] 72%|#######1  | 988/1377 [01:53&lt;00:42,  9.12it/s] 72%|#######1  | 989/1377 [01:53&lt;00:42,  9.03it/s] 72%|#######1  | 991/1377 [01:53&lt;00:40,  9.42it/s] 72%|#######2  | 992/1377 [01:53&lt;00:41,  9.35it/s] 72%|#######2  | 994/1377 [01:53&lt;00:40,  9.47it/s] 72%|#######2  | 995/1377 [01:53&lt;00:40,  9.41it/s] 72%|#######2  | 997/1377 [01:54&lt;00:40,  9.49it/s] 72%|#######2  | 998/1377 [01:54&lt;00:40,  9.33it/s] 73%|#######2  | 1000/1377 [01:54&lt;00:39,  9.58it/s]                                                   {&#39;loss&#39;: 0.3878, &#39;grad_norm&#39;: 0.28455084562301636, &#39;learning_rate&#39;: 1.3725490196078432e-05, &#39;epoch&#39;: 2.18}
+##  73%|#######2  | 1000/1377 [01:54&lt;00:39,  9.58it/s] 73%|#######2  | 1001/1377 [01:55&lt;01:59,  3.14it/s] 73%|#######2  | 1002/1377 [01:55&lt;01:40,  3.72it/s] 73%|#######2  | 1004/1377 [01:55&lt;01:15,  4.95it/s] 73%|#######2  | 1005/1377 [01:55&lt;01:07,  5.51it/s] 73%|#######3  | 1006/1377 [01:55&lt;01:00,  6.15it/s] 73%|#######3  | 1007/1377 [01:56&lt;00:54,  6.80it/s] 73%|#######3  | 1008/1377 [01:56&lt;00:49,  7.40it/s] 73%|#######3  | 1010/1377 [01:56&lt;00:44,  8.22it/s] 73%|#######3  | 1011/1377 [01:56&lt;00:43,  8.48it/s] 73%|#######3  | 1012/1377 [01:56&lt;00:41,  8.73it/s] 74%|#######3  | 1013/1377 [01:56&lt;00:41,  8.79it/s] 74%|#######3  | 1014/1377 [01:56&lt;00:40,  8.98it/s] 74%|#######3  | 1015/1377 [01:56&lt;00:39,  9.09it/s] 74%|#######3  | 1016/1377 [01:57&lt;00:39,  9.22it/s] 74%|#######3  | 1017/1377 [01:57&lt;00:38,  9.35it/s] 74%|#######3  | 1018/1377 [01:57&lt;00:39,  9.00it/s] 74%|#######4  | 1020/1377 [01:57&lt;00:38,  9.28it/s] 74%|#######4  | 1021/1377 [01:57&lt;00:37,  9.40it/s] 74%|#######4  | 1022/1377 [01:57&lt;00:37,  9.40it/s] 74%|#######4  | 1023/1377 [01:57&lt;00:37,  9.41it/s] 74%|#######4  | 1024/1377 [01:57&lt;00:38,  9.26it/s] 74%|#######4  | 1025/1377 [01:57&lt;00:37,  9.33it/s] 75%|#######4  | 1026/1377 [01:58&lt;00:37,  9.32it/s] 75%|#######4  | 1028/1377 [01:58&lt;00:36,  9.48it/s] 75%|#######4  | 1029/1377 [01:58&lt;00:36,  9.55it/s] 75%|#######4  | 1030/1377 [01:58&lt;00:36,  9.45it/s] 75%|#######4  | 1031/1377 [01:58&lt;00:36,  9.48it/s] 75%|#######4  | 1032/1377 [01:58&lt;00:36,  9.55it/s] 75%|#######5  | 1033/1377 [01:58&lt;00:37,  9.18it/s] 75%|#######5  | 1034/1377 [01:58&lt;00:37,  9.10it/s] 75%|#######5  | 1035/1377 [01:59&lt;00:36,  9.29it/s] 75%|#######5  | 1036/1377 [01:59&lt;00:36,  9.37it/s] 75%|#######5  | 1038/1377 [01:59&lt;00:34,  9.83it/s] 75%|#######5  | 1039/1377 [01:59&lt;00:34,  9.76it/s] 76%|#######5  | 1040/1377 [01:59&lt;00:34,  9.64it/s] 76%|#######5  | 1041/1377 [01:59&lt;00:35,  9.57it/s] 76%|#######5  | 1043/1377 [01:59&lt;00:34,  9.74it/s] 76%|#######5  | 1044/1377 [01:59&lt;00:34,  9.57it/s] 76%|#######5  | 1045/1377 [02:00&lt;00:34,  9.49it/s] 76%|#######5  | 1046/1377 [02:00&lt;00:35,  9.23it/s] 76%|#######6  | 1047/1377 [02:00&lt;00:35,  9.36it/s] 76%|#######6  | 1048/1377 [02:00&lt;00:35,  9.30it/s] 76%|#######6  | 1049/1377 [02:00&lt;00:35,  9.14it/s] 76%|#######6  | 1050/1377 [02:00&lt;00:35,  9.22it/s] 76%|#######6  | 1051/1377 [02:00&lt;00:35,  9.23it/s] 76%|#######6  | 1052/1377 [02:00&lt;00:36,  8.97it/s] 76%|#######6  | 1053/1377 [02:00&lt;00:36,  8.92it/s] 77%|#######6  | 1054/1377 [02:01&lt;00:37,  8.61it/s] 77%|#######6  | 1056/1377 [02:01&lt;00:35,  9.13it/s] 77%|#######6  | 1057/1377 [02:01&lt;00:34,  9.25it/s] 77%|#######6  | 1058/1377 [02:01&lt;00:34,  9.28it/s] 77%|#######6  | 1059/1377 [02:01&lt;00:33,  9.36it/s] 77%|#######6  | 1060/1377 [02:01&lt;00:33,  9.51it/s] 77%|#######7  | 1061/1377 [02:01&lt;00:33,  9.52it/s] 77%|#######7  | 1062/1377 [02:01&lt;00:33,  9.45it/s] 77%|#######7  | 1063/1377 [02:02&lt;00:33,  9.29it/s] 77%|#######7  | 1064/1377 [02:02&lt;00:33,  9.30it/s] 77%|#######7  | 1065/1377 [02:02&lt;00:33,  9.24it/s] 77%|#######7  | 1067/1377 [02:02&lt;00:32,  9.44it/s] 78%|#######7  | 1069/1377 [02:02&lt;00:31,  9.84it/s] 78%|#######7  | 1070/1377 [02:02&lt;00:31,  9.78it/s] 78%|#######7  | 1071/1377 [02:02&lt;00:31,  9.70it/s] 78%|#######7  | 1072/1377 [02:02&lt;00:31,  9.54it/s] 78%|#######7  | 1073/1377 [02:03&lt;00:31,  9.50it/s] 78%|#######7  | 1074/1377 [02:03&lt;00:32,  9.46it/s] 78%|#######8  | 1075/1377 [02:03&lt;00:32,  9.27it/s] 78%|#######8  | 1076/1377 [02:03&lt;00:31,  9.45it/s] 78%|#######8  | 1077/1377 [02:03&lt;00:31,  9.46it/s] 78%|#######8  | 1078/1377 [02:03&lt;00:32,  9.08it/s] 78%|#######8  | 1079/1377 [02:03&lt;00:32,  9.14it/s] 78%|#######8  | 1080/1377 [02:03&lt;00:32,  9.15it/s] 79%|#######8  | 1081/1377 [02:03&lt;00:31,  9.29it/s] 79%|#######8  | 1082/1377 [02:04&lt;00:31,  9.43it/s] 79%|#######8  | 1083/1377 [02:04&lt;00:30,  9.58it/s] 79%|#######8  | 1084/1377 [02:04&lt;00:31,  9.37it/s] 79%|#######8  | 1085/1377 [02:04&lt;00:30,  9.42it/s] 79%|#######8  | 1086/1377 [02:04&lt;00:30,  9.48it/s] 79%|#######8  | 1087/1377 [02:04&lt;00:30,  9.40it/s] 79%|#######9  | 1089/1377 [02:04&lt;00:29,  9.68it/s] 79%|#######9  | 1090/1377 [02:04&lt;00:29,  9.61it/s] 79%|#######9  | 1092/1377 [02:05&lt;00:28,  9.83it/s] 79%|#######9  | 1094/1377 [02:05&lt;00:29,  9.58it/s] 80%|#######9  | 1095/1377 [02:05&lt;00:29,  9.48it/s] 80%|#######9  | 1097/1377 [02:05&lt;00:29,  9.63it/s] 80%|#######9  | 1098/1377 [02:05&lt;00:28,  9.63it/s] 80%|#######9  | 1099/1377 [02:05&lt;00:29,  9.53it/s] 80%|#######9  | 1100/1377 [02:05&lt;00:29,  9.46it/s] 80%|#######9  | 1101/1377 [02:06&lt;00:29,  9.51it/s] 80%|########  | 1102/1377 [02:06&lt;00:29,  9.33it/s] 80%|########  | 1104/1377 [02:06&lt;00:28,  9.47it/s] 80%|########  | 1105/1377 [02:06&lt;00:28,  9.44it/s] 80%|########  | 1106/1377 [02:06&lt;00:28,  9.35it/s] 80%|########  | 1107/1377 [02:06&lt;00:28,  9.37it/s] 80%|########  | 1108/1377 [02:06&lt;00:28,  9.43it/s] 81%|########  | 1109/1377 [02:06&lt;00:28,  9.41it/s] 81%|########  | 1110/1377 [02:06&lt;00:28,  9.41it/s] 81%|########  | 1111/1377 [02:07&lt;00:28,  9.47it/s] 81%|########  | 1112/1377 [02:07&lt;00:28,  9.35it/s] 81%|########  | 1113/1377 [02:07&lt;00:28,  9.42it/s] 81%|########  | 1114/1377 [02:07&lt;00:27,  9.43it/s] 81%|########  | 1115/1377 [02:07&lt;00:27,  9.51it/s] 81%|########1 | 1116/1377 [02:07&lt;00:27,  9.55it/s] 81%|########1 | 1117/1377 [02:07&lt;00:27,  9.46it/s] 81%|########1 | 1118/1377 [02:07&lt;00:28,  9.13it/s] 81%|########1 | 1119/1377 [02:07&lt;00:28,  9.19it/s] 81%|########1 | 1120/1377 [02:08&lt;00:27,  9.22it/s] 81%|########1 | 1121/1377 [02:08&lt;00:27,  9.27it/s] 81%|########1 | 1122/1377 [02:08&lt;00:28,  8.99it/s] 82%|########1 | 1123/1377 [02:08&lt;00:27,  9.15it/s] 82%|########1 | 1124/1377 [02:08&lt;00:27,  9.18it/s] 82%|########1 | 1125/1377 [02:08&lt;00:27,  9.26it/s] 82%|########1 | 1126/1377 [02:08&lt;00:27,  8.98it/s] 82%|########1 | 1127/1377 [02:08&lt;00:27,  9.12it/s] 82%|########1 | 1128/1377 [02:08&lt;00:26,  9.29it/s] 82%|########1 | 1129/1377 [02:09&lt;00:27,  9.06it/s] 82%|########2 | 1130/1377 [02:09&lt;00:27,  9.10it/s] 82%|########2 | 1131/1377 [02:09&lt;00:27,  9.07it/s] 82%|########2 | 1132/1377 [02:09&lt;00:26,  9.24it/s] 82%|########2 | 1133/1377 [02:09&lt;00:26,  9.15it/s] 82%|########2 | 1134/1377 [02:09&lt;00:26,  9.16it/s] 82%|########2 | 1135/1377 [02:09&lt;00:26,  9.24it/s] 82%|########2 | 1136/1377 [02:09&lt;00:26,  9.17it/s] 83%|########2 | 1137/1377 [02:09&lt;00:25,  9.31it/s] 83%|########2 | 1138/1377 [02:10&lt;00:25,  9.30it/s] 83%|########2 | 1139/1377 [02:10&lt;00:25,  9.45it/s] 83%|########2 | 1140/1377 [02:10&lt;00:25,  9.31it/s] 83%|########2 | 1141/1377 [02:10&lt;00:25,  9.37it/s] 83%|########2 | 1142/1377 [02:10&lt;00:25,  9.37it/s] 83%|########3 | 1143/1377 [02:10&lt;00:26,  8.73it/s] 83%|########3 | 1144/1377 [02:10&lt;00:26,  8.93it/s] 83%|########3 | 1145/1377 [02:10&lt;00:25,  9.13it/s] 83%|########3 | 1147/1377 [02:11&lt;00:24,  9.25it/s] 83%|########3 | 1148/1377 [02:11&lt;00:24,  9.17it/s] 83%|########3 | 1149/1377 [02:11&lt;00:24,  9.16it/s] 84%|########3 | 1150/1377 [02:11&lt;00:24,  9.24it/s] 84%|########3 | 1151/1377 [02:11&lt;00:24,  9.25it/s] 84%|########3 | 1153/1377 [02:11&lt;00:22,  9.75it/s] 84%|########3 | 1154/1377 [02:11&lt;00:23,  9.64it/s] 84%|########3 | 1155/1377 [02:11&lt;00:23,  9.50it/s] 84%|########3 | 1156/1377 [02:11&lt;00:23,  9.43it/s] 84%|########4 | 1158/1377 [02:12&lt;00:22,  9.79it/s] 84%|########4 | 1159/1377 [02:12&lt;00:23,  9.42it/s] 84%|########4 | 1160/1377 [02:12&lt;00:23,  9.39it/s] 84%|########4 | 1161/1377 [02:12&lt;00:23,  9.31it/s] 84%|########4 | 1162/1377 [02:12&lt;00:23,  9.31it/s] 84%|########4 | 1163/1377 [02:12&lt;00:23,  9.25it/s] 85%|########4 | 1165/1377 [02:12&lt;00:22,  9.48it/s] 85%|########4 | 1166/1377 [02:13&lt;00:22,  9.39it/s] 85%|########4 | 1167/1377 [02:13&lt;00:22,  9.32it/s] 85%|########4 | 1168/1377 [02:13&lt;00:22,  9.37it/s] 85%|########4 | 1169/1377 [02:13&lt;00:22,  9.36it/s] 85%|########4 | 1170/1377 [02:13&lt;00:22,  9.24it/s] 85%|########5 | 1171/1377 [02:13&lt;00:22,  9.29it/s] 85%|########5 | 1172/1377 [02:13&lt;00:22,  8.96it/s] 85%|########5 | 1173/1377 [02:13&lt;00:22,  8.92it/s] 85%|########5 | 1174/1377 [02:13&lt;00:22,  9.09it/s] 85%|########5 | 1175/1377 [02:14&lt;00:22,  9.13it/s] 85%|########5 | 1176/1377 [02:14&lt;00:22,  9.12it/s] 85%|########5 | 1177/1377 [02:14&lt;00:21,  9.16it/s] 86%|########5 | 1178/1377 [02:14&lt;00:21,  9.29it/s] 86%|########5 | 1179/1377 [02:14&lt;00:21,  9.41it/s] 86%|########5 | 1180/1377 [02:14&lt;00:20,  9.40it/s] 86%|########5 | 1181/1377 [02:14&lt;00:20,  9.52it/s] 86%|########5 | 1183/1377 [02:14&lt;00:20,  9.65it/s] 86%|########6 | 1185/1377 [02:15&lt;00:19,  9.89it/s] 86%|########6 | 1186/1377 [02:15&lt;00:19,  9.73it/s] 86%|########6 | 1187/1377 [02:15&lt;00:19,  9.67it/s] 86%|########6 | 1188/1377 [02:15&lt;00:19,  9.49it/s] 86%|########6 | 1189/1377 [02:15&lt;00:19,  9.55it/s] 86%|########6 | 1190/1377 [02:15&lt;00:20,  9.13it/s] 86%|########6 | 1191/1377 [02:15&lt;00:20,  8.90it/s] 87%|########6 | 1192/1377 [02:15&lt;00:20,  8.91it/s] 87%|########6 | 1193/1377 [02:15&lt;00:20,  9.05it/s] 87%|########6 | 1195/1377 [02:16&lt;00:19,  9.42it/s] 87%|########6 | 1196/1377 [02:16&lt;00:19,  9.40it/s] 87%|########6 | 1197/1377 [02:16&lt;00:19,  9.38it/s] 87%|########7 | 1198/1377 [02:16&lt;00:19,  9.09it/s] 87%|########7 | 1199/1377 [02:16&lt;00:19,  9.19it/s] 87%|########7 | 1200/1377 [02:16&lt;00:20,  8.61it/s] 87%|########7 | 1201/1377 [02:16&lt;00:20,  8.55it/s] 87%|########7 | 1202/1377 [02:16&lt;00:20,  8.68it/s] 87%|########7 | 1203/1377 [02:17&lt;00:19,  8.93it/s] 87%|########7 | 1204/1377 [02:17&lt;00:19,  9.09it/s] 88%|########7 | 1205/1377 [02:17&lt;00:19,  8.97it/s] 88%|########7 | 1206/1377 [02:17&lt;00:18,  9.13it/s] 88%|########7 | 1207/1377 [02:17&lt;00:18,  9.10it/s] 88%|########7 | 1208/1377 [02:17&lt;00:19,  8.86it/s] 88%|########7 | 1209/1377 [02:17&lt;00:18,  9.05it/s] 88%|########7 | 1210/1377 [02:17&lt;00:18,  9.25it/s] 88%|########7 | 1211/1377 [02:17&lt;00:18,  9.22it/s] 88%|########8 | 1212/1377 [02:18&lt;00:18,  9.05it/s] 88%|########8 | 1213/1377 [02:18&lt;00:18,  9.03it/s] 88%|########8 | 1214/1377 [02:18&lt;00:17,  9.11it/s] 88%|########8 | 1215/1377 [02:18&lt;00:18,  8.94it/s] 88%|########8 | 1216/1377 [02:18&lt;00:17,  9.03it/s] 88%|########8 | 1217/1377 [02:18&lt;00:17,  9.20it/s] 88%|########8 | 1218/1377 [02:18&lt;00:17,  9.30it/s] 89%|########8 | 1220/1377 [02:18&lt;00:16,  9.46it/s] 89%|########8 | 1221/1377 [02:19&lt;00:17,  8.83it/s] 89%|########8 | 1222/1377 [02:19&lt;00:17,  9.02it/s] 89%|########8 | 1223/1377 [02:19&lt;00:17,  8.97it/s] 89%|########8 | 1224/1377 [02:19&lt;00:16,  9.10it/s] 89%|########8 | 1225/1377 [02:19&lt;00:17,  8.91it/s] 89%|########9 | 1226/1377 [02:19&lt;00:16,  8.89it/s] 89%|########9 | 1227/1377 [02:19&lt;00:17,  8.69it/s] 89%|########9 | 1228/1377 [02:19&lt;00:16,  8.94it/s] 89%|########9 | 1229/1377 [02:19&lt;00:16,  9.12it/s] 89%|########9 | 1231/1377 [02:20&lt;00:15,  9.60it/s] 89%|########9 | 1232/1377 [02:20&lt;00:15,  9.50it/s] 90%|########9 | 1233/1377 [02:20&lt;00:15,  9.55it/s] 90%|########9 | 1234/1377 [02:20&lt;00:15,  9.48it/s] 90%|########9 | 1235/1377 [02:20&lt;00:15,  9.37it/s] 90%|########9 | 1236/1377 [02:20&lt;00:14,  9.52it/s] 90%|########9 | 1237/1377 [02:20&lt;00:14,  9.54it/s] 90%|########9 | 1238/1377 [02:20&lt;00:14,  9.43it/s] 90%|########9 | 1239/1377 [02:20&lt;00:14,  9.57it/s] 90%|######### | 1241/1377 [02:21&lt;00:14,  9.58it/s] 90%|######### | 1242/1377 [02:21&lt;00:14,  9.64it/s] 90%|######### | 1244/1377 [02:21&lt;00:13,  9.75it/s] 90%|######### | 1245/1377 [02:21&lt;00:13,  9.75it/s] 90%|######### | 1246/1377 [02:21&lt;00:13,  9.76it/s] 91%|######### | 1247/1377 [02:21&lt;00:13,  9.59it/s] 91%|######### | 1248/1377 [02:21&lt;00:13,  9.48it/s] 91%|######### | 1249/1377 [02:21&lt;00:13,  9.49it/s] 91%|######### | 1250/1377 [02:22&lt;00:13,  9.37it/s] 91%|######### | 1251/1377 [02:22&lt;00:13,  9.28it/s] 91%|######### | 1252/1377 [02:22&lt;00:13,  9.27it/s] 91%|######### | 1253/1377 [02:22&lt;00:13,  9.31it/s] 91%|#########1| 1254/1377 [02:22&lt;00:13,  9.30it/s] 91%|#########1| 1255/1377 [02:22&lt;00:13,  9.00it/s] 91%|#########1| 1256/1377 [02:22&lt;00:13,  9.20it/s] 91%|#########1| 1258/1377 [02:22&lt;00:12,  9.43it/s] 91%|#########1| 1259/1377 [02:23&lt;00:12,  9.45it/s] 92%|#########1| 1260/1377 [02:23&lt;00:12,  9.34it/s] 92%|#########1| 1261/1377 [02:23&lt;00:12,  9.36it/s] 92%|#########1| 1262/1377 [02:23&lt;00:12,  9.27it/s] 92%|#########1| 1264/1377 [02:23&lt;00:11,  9.52it/s] 92%|#########1| 1266/1377 [02:23&lt;00:11,  9.86it/s] 92%|#########2| 1267/1377 [02:23&lt;00:11,  9.73it/s] 92%|#########2| 1268/1377 [02:24&lt;00:11,  9.56it/s] 92%|#########2| 1269/1377 [02:24&lt;00:11,  9.40it/s] 92%|#########2| 1270/1377 [02:24&lt;00:11,  9.11it/s] 92%|#########2| 1272/1377 [02:24&lt;00:11,  9.38it/s] 92%|#########2| 1273/1377 [02:24&lt;00:11,  9.21it/s] 93%|#########2| 1275/1377 [02:24&lt;00:10,  9.77it/s] 93%|#########2| 1276/1377 [02:24&lt;00:10,  9.65it/s] 93%|#########2| 1277/1377 [02:24&lt;00:10,  9.47it/s] 93%|#########2| 1278/1377 [02:25&lt;00:10,  9.52it/s] 93%|#########2| 1279/1377 [02:25&lt;00:10,  9.46it/s] 93%|#########2| 1280/1377 [02:25&lt;00:10,  9.47it/s] 93%|#########3| 1281/1377 [02:25&lt;00:10,  9.45it/s] 93%|#########3| 1282/1377 [02:25&lt;00:10,  9.32it/s] 93%|#########3| 1283/1377 [02:25&lt;00:10,  8.83it/s] 93%|#########3| 1284/1377 [02:25&lt;00:10,  8.93it/s] 93%|#########3| 1286/1377 [02:25&lt;00:10,  9.04it/s] 93%|#########3| 1287/1377 [02:26&lt;00:09,  9.13it/s] 94%|#########3| 1288/1377 [02:26&lt;00:09,  9.28it/s] 94%|#########3| 1289/1377 [02:26&lt;00:09,  9.32it/s] 94%|#########3| 1290/1377 [02:26&lt;00:09,  9.26it/s] 94%|#########3| 1291/1377 [02:26&lt;00:09,  9.31it/s] 94%|#########3| 1292/1377 [02:26&lt;00:09,  9.35it/s] 94%|#########3| 1293/1377 [02:26&lt;00:09,  9.21it/s] 94%|#########3| 1294/1377 [02:26&lt;00:08,  9.29it/s] 94%|#########4| 1295/1377 [02:26&lt;00:08,  9.27it/s] 94%|#########4| 1296/1377 [02:27&lt;00:08,  9.39it/s] 94%|#########4| 1297/1377 [02:27&lt;00:08,  9.30it/s] 94%|#########4| 1298/1377 [02:27&lt;00:08,  9.25it/s] 94%|#########4| 1299/1377 [02:27&lt;00:08,  9.30it/s] 94%|#########4| 1300/1377 [02:27&lt;00:08,  9.28it/s] 94%|#########4| 1301/1377 [02:27&lt;00:08,  9.34it/s] 95%|#########4| 1303/1377 [02:27&lt;00:07,  9.41it/s] 95%|#########4| 1304/1377 [02:27&lt;00:07,  9.45it/s] 95%|#########4| 1305/1377 [02:27&lt;00:07,  9.40it/s] 95%|#########4| 1306/1377 [02:28&lt;00:07,  8.88it/s] 95%|#########4| 1308/1377 [02:28&lt;00:07,  9.44it/s] 95%|#########5| 1309/1377 [02:28&lt;00:07,  9.35it/s] 95%|#########5| 1310/1377 [02:28&lt;00:07,  9.34it/s] 95%|#########5| 1311/1377 [02:28&lt;00:07,  9.23it/s] 95%|#########5| 1313/1377 [02:28&lt;00:07,  9.01it/s] 95%|#########5| 1314/1377 [02:28&lt;00:07,  8.81it/s] 95%|#########5| 1315/1377 [02:29&lt;00:06,  8.91it/s] 96%|#########5| 1316/1377 [02:29&lt;00:06,  9.02it/s] 96%|#########5| 1317/1377 [02:29&lt;00:06,  9.18it/s] 96%|#########5| 1318/1377 [02:29&lt;00:06,  9.17it/s] 96%|#########5| 1320/1377 [02:29&lt;00:06,  9.49it/s] 96%|#########5| 1321/1377 [02:29&lt;00:06,  9.19it/s] 96%|#########6| 1322/1377 [02:29&lt;00:06,  8.95it/s] 96%|#########6| 1323/1377 [02:29&lt;00:06,  8.85it/s] 96%|#########6| 1324/1377 [02:30&lt;00:06,  8.41it/s] 96%|#########6| 1325/1377 [02:30&lt;00:05,  8.70it/s] 96%|#########6| 1326/1377 [02:30&lt;00:05,  8.66it/s] 96%|#########6| 1328/1377 [02:30&lt;00:05,  8.79it/s] 97%|#########6| 1330/1377 [02:30&lt;00:05,  9.12it/s] 97%|#########6| 1331/1377 [02:30&lt;00:05,  8.89it/s] 97%|#########6| 1332/1377 [02:30&lt;00:04,  9.01it/s] 97%|#########6| 1333/1377 [02:31&lt;00:04,  8.86it/s] 97%|#########6| 1334/1377 [02:31&lt;00:04,  9.03it/s] 97%|#########7| 1336/1377 [02:31&lt;00:04,  9.56it/s] 97%|#########7| 1337/1377 [02:31&lt;00:04,  9.55it/s] 97%|#########7| 1339/1377 [02:31&lt;00:03,  9.68it/s] 97%|#########7| 1340/1377 [02:31&lt;00:03,  9.61it/s] 97%|#########7| 1341/1377 [02:31&lt;00:03,  9.48it/s] 97%|#########7| 1342/1377 [02:32&lt;00:03,  9.56it/s] 98%|#########7| 1344/1377 [02:32&lt;00:03,  9.70it/s] 98%|#########7| 1345/1377 [02:32&lt;00:03,  9.46it/s] 98%|#########7| 1346/1377 [02:32&lt;00:03,  9.34it/s] 98%|#########7| 1348/1377 [02:32&lt;00:03,  9.61it/s] 98%|#########7| 1349/1377 [02:32&lt;00:02,  9.65it/s] 98%|#########8| 1351/1377 [02:32&lt;00:02,  9.93it/s] 98%|#########8| 1353/1377 [02:33&lt;00:02,  9.89it/s] 98%|#########8| 1354/1377 [02:33&lt;00:02,  9.80it/s] 98%|#########8| 1355/1377 [02:33&lt;00:02,  9.73it/s] 98%|#########8| 1356/1377 [02:33&lt;00:02,  9.69it/s] 99%|#########8| 1358/1377 [02:33&lt;00:01,  9.74it/s] 99%|#########8| 1360/1377 [02:33&lt;00:01,  9.82it/s] 99%|#########8| 1362/1377 [02:34&lt;00:01,  9.65it/s] 99%|#########8| 1363/1377 [02:34&lt;00:01,  9.54it/s] 99%|#########9| 1364/1377 [02:34&lt;00:01,  9.46it/s] 99%|#########9| 1365/1377 [02:34&lt;00:01,  9.43it/s] 99%|#########9| 1366/1377 [02:34&lt;00:01,  9.50it/s] 99%|#########9| 1367/1377 [02:34&lt;00:01,  9.50it/s] 99%|#########9| 1368/1377 [02:34&lt;00:00,  9.56it/s] 99%|#########9| 1370/1377 [02:34&lt;00:00,  9.58it/s]100%|#########9| 1371/1377 [02:35&lt;00:00,  9.56it/s]100%|#########9| 1372/1377 [02:35&lt;00:00,  9.63it/s]100%|#########9| 1373/1377 [02:35&lt;00:00,  9.54it/s]100%|#########9| 1374/1377 [02:35&lt;00:00,  9.64it/s]100%|#########9| 1375/1377 [02:35&lt;00:00,  9.50it/s]100%|#########9| 1376/1377 [02:35&lt;00:00,  9.31it/s]100%|##########| 1377/1377 [02:35&lt;00:00,  9.13it/s]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## 
+##   0%|          | 0/51 [00:00&lt;?, ?it/s][A
+##  10%|9         | 5/51 [00:00&lt;00:00, 46.23it/s][A
+##  20%|#9        | 10/51 [00:00&lt;00:01, 35.11it/s][A
+##  27%|##7       | 14/51 [00:00&lt;00:01, 36.17it/s][A
+##  35%|###5      | 18/51 [00:00&lt;00:00, 34.80it/s][A
+##  43%|####3     | 22/51 [00:00&lt;00:00, 35.88it/s][A
+##  51%|#####     | 26/51 [00:00&lt;00:00, 36.99it/s][A
+##  59%|#####8    | 30/51 [00:00&lt;00:00, 36.42it/s][A
+##  69%|######8   | 35/51 [00:00&lt;00:00, 37.70it/s][A
+##  76%|#######6  | 39/51 [00:01&lt;00:00, 38.27it/s][A
+##  84%|########4 | 43/51 [00:01&lt;00:00, 38.44it/s][A
+##  92%|#########2| 47/51 [00:01&lt;00:00, 37.82it/s][A
+## 100%|##########| 51/51 [00:01&lt;00:00, 38.09it/s][A                                                   
+##                                                [A{&#39;eval_loss&#39;: 0.5561794638633728, &#39;eval_accuracy&#39;: 0.8700980392156863, &#39;eval_f1&#39;: 0.9109243697478991, &#39;eval_runtime&#39;: 2.6498, &#39;eval_samples_per_second&#39;: 153.971, &#39;eval_steps_per_second&#39;: 19.246, &#39;epoch&#39;: 3.0}
+## 100%|##########| 1377/1377 [02:39&lt;00:00,  9.13it/s]
+## 100%|##########| 51/51 [00:02&lt;00:00, 38.09it/s][A
+##                                                [A                                                   {&#39;train_runtime&#39;: 159.2888, &#39;train_samples_per_second&#39;: 69.082, &#39;train_steps_per_second&#39;: 8.645, &#39;train_loss&#39;: 0.42026308678853486, &#39;epoch&#39;: 3.0}
+## 100%|##########| 1377/1377 [02:39&lt;00:00,  9.13it/s]100%|##########| 1377/1377 [02:39&lt;00:00,  8.64it/s]
+## TrainOutput(global_step=1377, training_loss=0.42026308678853486, metrics={&#39;train_runtime&#39;: 159.2888, &#39;train_samples_per_second&#39;: 69.082, &#39;train_steps_per_second&#39;: 8.645, &#39;total_flos&#39;: 405114969714960.0, &#39;train_loss&#39;: 0.42026308678853486, &#39;epoch&#39;: 3.0})</code></pre>
+</div>
+<ul>
+<li>The model will now:
+<ul>
+<li>Report validation loss and metrics (accuracy, F1 score) at the end
+of each epoch.</li>
+<li>Continue reporting training loss.</li>
+</ul></li>
+<li>Note:
+<ul>
+<li>The exact accuracy/F1 score may vary slightly due to the model’s
+random head initialization.</li>
+<li>Despite this variability, results should remain close to the
+expected range.</li>
+</ul></li>
+</ul>
+<div class="python">
+<pre class="python"><code>test_pred = trainer.predict(tokenized_datasets[&quot;test&quot;])
+## /Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+##   0%|          | 0/216 [00:00&lt;?, ?it/s]  2%|2         | 5/216 [00:00&lt;00:04, 44.43it/s]  5%|4         | 10/216 [00:00&lt;00:05, 40.50it/s]  7%|6         | 15/216 [00:00&lt;00:05, 36.72it/s]  9%|8         | 19/216 [00:00&lt;00:05, 36.61it/s] 11%|#         | 23/216 [00:00&lt;00:05, 37.16it/s] 12%|#2        | 27/216 [00:00&lt;00:05, 37.20it/s] 14%|#4        | 31/216 [00:00&lt;00:05, 35.26it/s] 16%|#6        | 35/216 [00:00&lt;00:05, 35.82it/s] 18%|#8        | 39/216 [00:01&lt;00:04, 35.72it/s] 20%|#9        | 43/216 [00:01&lt;00:04, 36.19it/s] 22%|##1       | 47/216 [00:01&lt;00:05, 33.30it/s] 24%|##3       | 51/216 [00:01&lt;00:04, 34.40it/s] 25%|##5       | 55/216 [00:01&lt;00:04, 34.68it/s] 27%|##7       | 59/216 [00:01&lt;00:04, 35.69it/s] 29%|##9       | 63/216 [00:01&lt;00:04, 36.41it/s] 31%|###1      | 67/216 [00:01&lt;00:04, 36.65it/s] 33%|###2      | 71/216 [00:01&lt;00:04, 36.15it/s] 35%|###4      | 75/216 [00:02&lt;00:03, 36.39it/s] 37%|###6      | 79/216 [00:02&lt;00:03, 36.20it/s] 38%|###8      | 83/216 [00:02&lt;00:03, 35.98it/s] 40%|####      | 87/216 [00:02&lt;00:03, 36.50it/s] 42%|####2     | 91/216 [00:02&lt;00:03, 35.46it/s] 44%|####3     | 95/216 [00:02&lt;00:03, 36.42it/s] 46%|####5     | 99/216 [00:02&lt;00:03, 36.63it/s] 48%|####7     | 103/216 [00:02&lt;00:03, 36.40it/s] 50%|####9     | 107/216 [00:02&lt;00:02, 36.34it/s] 51%|#####1    | 111/216 [00:03&lt;00:02, 35.93it/s] 53%|#####3    | 115/216 [00:03&lt;00:02, 36.47it/s] 55%|#####5    | 119/216 [00:03&lt;00:02, 37.00it/s] 57%|#####6    | 123/216 [00:03&lt;00:02, 37.13it/s] 59%|#####8    | 127/216 [00:03&lt;00:02, 35.08it/s] 61%|######    | 131/216 [00:03&lt;00:02, 35.85it/s] 62%|######2   | 135/216 [00:03&lt;00:02, 36.24it/s] 64%|######4   | 139/216 [00:03&lt;00:02, 36.70it/s] 66%|######6   | 143/216 [00:03&lt;00:01, 37.48it/s] 68%|######8   | 147/216 [00:04&lt;00:01, 37.60it/s] 70%|######9   | 151/216 [00:04&lt;00:01, 36.96it/s] 72%|#######1  | 155/216 [00:04&lt;00:01, 37.35it/s] 74%|#######3  | 159/216 [00:04&lt;00:01, 37.50it/s] 75%|#######5  | 163/216 [00:04&lt;00:01, 37.51it/s] 77%|#######7  | 167/216 [00:04&lt;00:01, 35.36it/s] 79%|#######9  | 171/216 [00:04&lt;00:01, 36.45it/s] 81%|########1 | 175/216 [00:04&lt;00:01, 36.21it/s] 83%|########2 | 179/216 [00:04&lt;00:01, 36.09it/s] 85%|########4 | 183/216 [00:05&lt;00:00, 35.96it/s] 87%|########6 | 187/216 [00:05&lt;00:00, 35.90it/s] 88%|########8 | 191/216 [00:05&lt;00:00, 36.45it/s] 90%|######### | 195/216 [00:05&lt;00:00, 36.64it/s] 92%|#########2| 199/216 [00:05&lt;00:00, 36.55it/s] 94%|#########3| 203/216 [00:05&lt;00:00, 36.80it/s] 96%|#########5| 207/216 [00:05&lt;00:00, 37.13it/s] 98%|#########7| 211/216 [00:05&lt;00:00, 36.28it/s]100%|#########9| 215/216 [00:05&lt;00:00, 37.21it/s]100%|##########| 216/216 [00:06&lt;00:00, 31.13it/s]
+preds = np.argmax(test_pred.predictions, axis=-1)
+metric = evaluate.load(&quot;glue&quot;, &quot;mrpc&quot;)
+metric.compute(predictions=preds, references=test_pred.label_ids)
+## {&#39;accuracy&#39;: 0.8202898550724638, &#39;f1&#39;: 0.8724279835390947}
+
+
+print(&quot;Preds:&quot;, preds[:10])
+## Preds: [1 0 1 1 0 1 0 0 1 0]
+print(&quot;Labels:&quot;, predictions.label_ids[:10])
+## Labels: [1 0 0 1 0 1 0 1 1 1]
+print(&quot;Preds type:&quot;, type(preds[0]))
+## Preds type: &lt;class &#39;numpy.int64&#39;&gt;
+print(&quot;Labels type:&quot;, type(predictions.label_ids[0]))
+## Labels type: &lt;class &#39;numpy.int64&#39;&gt;
+print(&quot;Unique values in preds:&quot;, np.unique(preds))
+## Unique values in preds: [0 1]
+print(&quot;Unique values in labels:&quot;, np.unique(predictions.label_ids))
+## Unique values in labels: [0 1]</code></pre>
+</div>
+</div>
+</div>
+<div id="bert-full-training-script" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> BERT Full Training
+Script</h1>
+<div class="python">
+<pre class="python"><code>from transformers import AutoTokenizer, DataCollatorWithPadding, Trainer, TrainingArguments
+from transformers import AutoModelForSequenceClassification, EarlyStoppingCallback
+from datasets import load_from_disk
+from evaluate import load
+import numpy as np
+import torch
+
+datasets = load_from_disk(&#39;Data/test_novelty&#39;)
+
+checkpoint = &quot;bert-base-uncased&quot;
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+def tokenize_function(example):
+    return tokenizer(example[&quot;text&quot;], truncation=True)
+
+tokenized_datasets = datasets.map(tokenize_function, batched=True)
+data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+tokenized_datasets = tokenized_datasets.remove_columns([&quot;text&quot;, &quot;id&quot;])
+tokenized_datasets = tokenized_datasets.rename_column(&quot;score&quot;, &quot;labels&quot;)
+tokenized_datasets.set_format(&quot;torch&quot;)
+
+def compute_metrics(eval_preds):
+    logits, labels = eval_preds
+    predictions = np.argmax(logits, axis=-1)
+    
+    accuracy = load(&#39;accuracy&#39;)
+    f1 = load(&#39;f1&#39;)
+    precision = load(&#39;precision&#39;)
+    recall = load(&#39;recall&#39;)
+    
+    accuracy_result = accuracy.compute(predictions=predictions, references=labels)
+    f1_result = f1.compute(predictions=predictions, references=labels)
+    precision_result = precision.compute(predictions=predictions, references=labels)
+    recall_result = recall.compute(predictions=predictions, references=labels)
+    
+    return {
+        &#39;accuracy&#39;: accuracy_result[&#39;accuracy&#39;],
+        &#39;f1&#39;: f1_result[&#39;f1&#39;],
+        &#39;precision&#39;: precision_result[&#39;precision&#39;],
+        &#39;recall&#39;: recall_result[&#39;recall&#39;]
+    }
+
+# device = torch.device(&quot;cuda&quot;) if torch.cuda.is_available() else torch.device(&quot;cpu&quot;)
+device =  torch.device(&quot;mps&quot;) if torch.backends.mps.is_available()  else torch.device(&quot;cpu&quot;)</code></pre>
+</div>
+<div class="python">
+<pre class="python"><code>
+model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=2)
+model.to(device)
+
+training_args = TrainingArguments(
+    output_dir=&#39;./novelty_bert_checkpoints&#39;, 
+
+    eval_strategy=&quot;steps&quot;,  # Evaluate the model every N steps (not per epoch)
+    eval_steps=200,  # Run evaluation on validation set every 200 training steps
+    save_steps=400,  # Save model checkpoint every 400 training steps
+    learning_rate=2e-5,  # Learning rate for the optimizer
+
+    per_device_train_batch_size=16,  # Number of training samples processed per device before updating weights
+    per_device_eval_batch_size=16,  # Number of evaluation samples processed per device
+    
+    num_train_epochs=1,  # Total number of complete passes through the training dataset
+    
+    weight_decay=0.01,  # L2 regularization coefficient to prevent overfitting
+    
+    load_best_model_at_end=True,  # After training, load the checkpoint with the best validation performance
+    metric_for_best_model=&quot;f1&quot;,  # Use F1 score to determine which checkpoint is &quot;best&quot;
+    greater_is_better=True,
+    
+    warmup_steps=100,  # Number of steps to gradually increase learning rate from 0 to learning_rate (helps training stability)
+    
+    logging_steps=50,  # Log training metrics (loss, learning rate) every 50 steps
+    
+    report_to=&quot;none&quot;,  # Disable automatic logging to external tools (wandb, tensorboard, etc.)
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args, 
+    train_dataset=tokenized_datasets[&quot;train&quot;], 
+    eval_dataset=tokenized_datasets[&quot;validation&quot;],  
+    compute_metrics=compute_metrics,  # Calculate metrics on validation set
+    processing_class=tokenizer,  # Tokenizer for processing
+    data_collator=data_collator,  # Handles dynamic padding of batches
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]  # Stop training if validation metric doesn&#39;t improve for 3 consecutive evaluations
+)
+
+trainer.train()
+
+trainer.save_model(&#39;./novelty_bert_final&#39;)
+tokenizer.save_pretrained(&#39;./novelty_bert_final&#39;)
+
+
+## 
+## Map: 100%|██████████████████████████████████████████████████████████████████████████████| 12706/12706 [00:01&lt;00:00, 8906.47 examples/s]
+## Some weights of BertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: [&#39;classifier.bias&#39;, &#39;classifier.weight&#39;]
+## You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+##   0%|                                                                                                         | 0/2383 [00:00&lt;?, ?it/s]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## {&#39;loss&#39;: 0.7648, &#39;grad_norm&#39;: 12.595635414123535, &#39;learning_rate&#39;: 9.800000000000001e-06, &#39;epoch&#39;: 0.02}
+## {&#39;loss&#39;: 0.6888, &#39;grad_norm&#39;: 5.888716697692871, &#39;learning_rate&#39;: 1.98e-05, &#39;epoch&#39;: 0.04}
+## {&#39;loss&#39;: 0.6858, &#39;grad_norm&#39;: 2.0533313751220703, &#39;learning_rate&#39;: 1.9570740254051688e-05, &#39;epoch&#39;: 0.06}
+## {&#39;loss&#39;: 0.6569, &#39;grad_norm&#39;: 3.2530934810638428, &#39;learning_rate&#39;: 1.9132720105124838e-05, &#39;epoch&#39;: 0.08}
+## Downloading builder script: 7.56kB [00:00, 1.44MB/s]                                                | 200/2383 [04:30&lt;46:13,  1.27s/it]
+## Downloading builder script: 7.38kB [00:00, 5.48MB/s]█████████████████████████████████████████████████| 795/795 [04:57&lt;00:00,  3.05it/s]
+## {&#39;eval_loss&#39;: 0.6507338881492615, &#39;eval_accuracy&#39;: 0.6109405745769382, &#39;eval_f1&#39;: 0.47532109117928034, &#39;eval_precision&#39;: 0.7180885182809493, &#39;eval_recall&#39;: 0.355227669363795, &#39;eval_runtime&#39;: 309.63, &#39;eval_samples_per_second&#39;: 41.033, &#39;eval_steps_per_second&#39;: 2.568, &#39;epoch&#39;: 0.08}
+## {&#39;loss&#39;: 0.6463, &#39;grad_norm&#39;: 3.86037015914917, &#39;learning_rate&#39;: 1.8694699956197987e-05, &#39;epoch&#39;: 0.1}
+## {&#39;loss&#39;: 0.6469, &#39;grad_norm&#39;: 7.634893417358398, &#39;learning_rate&#39;: 1.8256679807271137e-05, &#39;epoch&#39;: 0.13}
+## {&#39;loss&#39;: 0.6517, &#39;grad_norm&#39;: 2.9199094772338867, &#39;learning_rate&#39;: 1.7818659658344287e-05, &#39;epoch&#39;: 0.15}
+## {&#39;loss&#39;: 0.6356, &#39;grad_norm&#39;: 6.318357944488525, &#39;learning_rate&#39;: 1.7380639509417433e-05, &#39;epoch&#39;: 0.17}
+##  17%|███████████████▉                                                                               | 400/2383 [14:25&lt;43:57,  1.33s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## Downloading builder script: 7.56kB [00:00, 3.58MB/s]
+## Downloading builder script: 7.38kB [00:00, 3.77MB/s]████████████████████████████████████████████████▉| 794/795 [04:54&lt;00:00,  2.65it/s]
+## {&#39;eval_loss&#39;: 0.6258542537689209, &#39;eval_accuracy&#39;: 0.657693821330185, &#39;eval_f1&#39;: 0.6632597754548974, &#39;eval_precision&#39;: 0.6477616454930429, &#39;eval_recall&#39;: 0.6795176899888942, &#39;eval_runtime&#39;: 298.9649, &#39;eval_samples_per_second&#39;: 42.497, &#39;eval_steps_per_second&#39;: 2.659, &#39;epoch&#39;: 0.17}
+## {&#39;loss&#39;: 0.6368, &#39;grad_norm&#39;: 2.8214261531829834, &#39;learning_rate&#39;: 1.6942619360490583e-05, &#39;epoch&#39;: 0.19}
+## {&#39;loss&#39;: 0.6433, &#39;grad_norm&#39;: 6.014491558074951, &#39;learning_rate&#39;: 1.6504599211563733e-05, &#39;epoch&#39;: 0.21}
+## {&#39;loss&#39;: 0.6428, &#39;grad_norm&#39;: 6.863008499145508, &#39;learning_rate&#39;: 1.6066579062636882e-05, &#39;epoch&#39;: 0.23}
+## {&#39;loss&#39;: 0.6229, &#39;grad_norm&#39;: 4.182170867919922, &#39;learning_rate&#39;: 1.5628558913710032e-05, &#39;epoch&#39;: 0.25}
+##  25%|███████████████████████▉                                                                       | 600/2383 [24:40&lt;36:58,  1.24s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## {&#39;eval_loss&#39;: 0.622889518737793, &#39;eval_accuracy&#39;: 0.6445493900039354, &#39;eval_f1&#39;: 0.6951120712935458, &#39;eval_precision&#39;: 0.6050064637442708, &#39;eval_recall&#39;: 0.8167539267015707, &#39;eval_runtime&#39;: 312.7921, &#39;eval_samples_per_second&#39;: 40.618, &#39;eval_steps_per_second&#39;: 2.542, &#39;epoch&#39;: 0.25}
+## {&#39;loss&#39;: 0.6093, &#39;grad_norm&#39;: 4.26153039932251, &#39;learning_rate&#39;: 1.519053876478318e-05, &#39;epoch&#39;: 0.27}
+## {&#39;loss&#39;: 0.6248, &#39;grad_norm&#39;: 3.7737467288970947, &#39;learning_rate&#39;: 1.475251861585633e-05, &#39;epoch&#39;: 0.29}
+## {&#39;loss&#39;: 0.6273, &#39;grad_norm&#39;: 7.192020416259766, &#39;learning_rate&#39;: 1.431449846692948e-05, &#39;epoch&#39;: 0.31}
+## {&#39;loss&#39;: 0.6266, &#39;grad_norm&#39;: 5.350361347198486, &#39;learning_rate&#39;: 1.3876478318002628e-05, &#39;epoch&#39;: 0.34}
+##  34%|███████████████████████████████▉                                                               | 800/2383 [34:26&lt;35:29,  1.35s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## {&#39;eval_loss&#39;: 0.6135651469230652, &#39;eval_accuracy&#39;: 0.6554112554112554, &#39;eval_f1&#39;: 0.6299239222316145, &#39;eval_precision&#39;: 0.6741451058440383, &#39;eval_recall&#39;: 0.5911470728224655, &#39;eval_runtime&#39;: 300.898, &#39;eval_samples_per_second&#39;: 42.224, &#39;eval_steps_per_second&#39;: 2.642, &#39;epoch&#39;: 0.34}
+## {&#39;loss&#39;: 0.6263, &#39;grad_norm&#39;: 4.366634845733643, &#39;learning_rate&#39;: 1.343845816907578e-05, &#39;epoch&#39;: 0.36}
+## {&#39;loss&#39;: 0.6162, &#39;grad_norm&#39;: 6.9116950035095215, &#39;learning_rate&#39;: 1.3000438020148929e-05, &#39;epoch&#39;: 0.38}
+## {&#39;loss&#39;: 0.633, &#39;grad_norm&#39;: 2.419966220855713, &#39;learning_rate&#39;: 1.2562417871222077e-05, &#39;epoch&#39;: 0.4}
+## {&#39;loss&#39;: 0.619, &#39;grad_norm&#39;: 3.9776971340179443, &#39;learning_rate&#39;: 1.2124397722295227e-05, &#39;epoch&#39;: 0.42}
+##  42%|███████████████████████████████████████▍                                                      | 1000/2383 [43:37&lt;27:23,  1.19s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## {&#39;eval_loss&#39;: 0.6167282462120056, &#39;eval_accuracy&#39;: 0.6605273514364424, &#39;eval_f1&#39;: 0.663808558734118, &#39;eval_precision&#39;: 0.6524670548574931, &#39;eval_recall&#39;: 0.6755513247659845, &#39;eval_runtime&#39;: 291.3567, &#39;eval_samples_per_second&#39;: 43.606, &#39;eval_steps_per_second&#39;: 2.729, &#39;epoch&#39;: 0.42}
+## {&#39;loss&#39;: 0.6176, &#39;grad_norm&#39;: 2.9242210388183594, &#39;learning_rate&#39;: 1.1686377573368375e-05, &#39;epoch&#39;: 0.44}
+## {&#39;loss&#39;: 0.6312, &#39;grad_norm&#39;: 8.742416381835938, &#39;learning_rate&#39;: 1.1248357424441525e-05, &#39;epoch&#39;: 0.46}
+## {&#39;loss&#39;: 0.6317, &#39;grad_norm&#39;: 5.807154178619385, &#39;learning_rate&#39;: 1.0810337275514674e-05, &#39;epoch&#39;: 0.48}
+## {&#39;loss&#39;: 0.6111, &#39;grad_norm&#39;: 6.02040433883667, &#39;learning_rate&#39;: 1.0372317126587823e-05, &#39;epoch&#39;: 0.5}
+##  50%|█████████████████████████████████████████████████████████████████████████████████████                                                                                    | 1200/2383 [52:34&lt;25:09,  1.28s/it]/Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## {&#39;eval_loss&#39;: 0.6142168641090393, &#39;eval_accuracy&#39;: 0.6557260920897284, &#39;eval_f1&#39;: 0.6404734506000329, &#39;eval_precision&#39;: 0.6645062254818352, &#39;eval_recall&#39;: 0.6181183563382516, &#39;eval_runtime&#39;: 294.665, &#39;eval_samples_per_second&#39;: 43.117, &#39;eval_steps_per_second&#39;: 2.698, &#39;epoch&#39;: 0.5}
+## {&#39;train_runtime&#39;: 3451.0748, &#39;train_samples_per_second&#39;: 11.044, &#39;train_steps_per_second&#39;: 0.691, &#39;train_loss&#39;: 0.6415314928690592, &#39;epoch&#39;: 0.5}
+##  50%|█████████████████████████████████████████████████████████████████████████████████████                                                                                    | 1200/2383 [57:31&lt;56:42,  2.88s/it]
+## /Users/peltouz/Documents/GitHub/M2-Py-DS2E/hf/lib/python3.13/site-packages/torch/utils/data/dataloader.py:692: UserWarning: &#39;pin_memory&#39; argument is set as true but not supported on MPS now, device pinned memory won&#39;t be used.
+##   warnings.warn(warn_msg)
+## 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 795/795 [04:53&lt;00:00,  2.71it/s]</code></pre>
+</div>
+<ul>
+<li>Evaluate on Test Set</li>
+</ul>
+<div class="python">
+<pre class="python"><code>
+from transformers import AutoModelForSequenceClassification
+from torch.utils.data import DataLoader
+import evaluate
+from tqdm import tqdm
+import torch
+import numpy as np
+
+def get_model_eval_testset(checkpoint):
+  model = AutoModelForSequenceClassification.from_pretrained(checkpoint)
+  model.to(device)
+  
+  eval_dataloader = DataLoader(
+      tokenized_datasets[&quot;test&quot;], batch_size=16, collate_fn=data_collator
+  )
+  
+  # Collect all predictions and labels
+  all_logits = []
+  all_labels = []
+  
+  model.eval()
+  
+  for batch in eval_dataloader:
+      batch = {k: v.to(device) for k, v in batch.items()}
+      with torch.no_grad():
+          outputs = model(**batch)
+          logits = outputs.logits
+      
+      all_logits.append(logits.cpu().numpy())
+      all_labels.append(batch[&quot;labels&quot;].cpu().numpy())
+  
+  all_logits = np.concatenate(all_logits, axis=0)
+  all_labels = np.concatenate(all_labels, axis=0)
+  
+  results = compute_metrics((all_logits, all_labels))
+  
+  print(&quot;\nTest Set Results:&quot;)
+  print(&quot;=&quot; * 50)
+  for metric_name, value in results.items():
+      print(f&quot;{metric_name}: {value:.4f}&quot;)
+  print(&quot;=&quot; * 50)</code></pre>
+</div>
+<ul>
+<li>Before Training</li>
+</ul>
+<div class="python">
+<pre class="python"><code>get_model_eval_testset(&#39;bert-base-uncased&#39;)
+## 
+## Test Set Results:
+## ==================================================
+## accuracy: 0.5026
+## f1: 0.0427
+## precision: 0.4947
+## recall: 0.0223
+## ==================================================</code></pre>
+</div>
+<ul>
+<li>After Training</li>
+</ul>
+<div class="python">
+<pre class="python"><code>get_model_eval_testset(&#39;./novelty_bert_final&#39;)
+## 
+## Test Set Results:
+## ==================================================
+## accuracy: 0.6585
+## f1: 0.6666
+## precision: 0.6477
+## recall: 0.6867
+## ==================================================</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

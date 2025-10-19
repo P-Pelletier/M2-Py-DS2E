@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pierre Pelletier [p.pelletier@unistra.fr]" />
+
+
+<title>Advanced Programming</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">M2 DS2E</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="2_HF.html">HF</a>
+</li>
+<li>
+  <a href="3_MCP.html">MCP</a>
+</li>
+<li>
+  <a href="4_Training.html">Training</a>
+</li>
+<li>
+  <a href="5_Parallelization.html">Parallelization</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/master-ds2e/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Advanced Programming</h1>
+<h4 class="author">Pierre Pelletier [<a
+href="mailto:p.pelletier@unistra.fr"
+class="email">p.pelletier@unistra.fr</a>]</h4>
+
+</div>
+
+
+<p>
+ 
+</p>
+<div id="final-project-building-an-ai-agent-with-tools"
+class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Final Project: Building
+an AI Agent with Tools</h1>
+<p>Your goal is to create an AI agent that can understand a user’s
+question, use a set of custom tools to work with data, and produce
+intelligent answers. This project brings together everything you’ve
+learned in this course: Python organization, data structures, database
+interaction, command-line interfaces, and version control.</p>
+<p>
+ 
+</p>
+<div id="project-overview" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Project Overview</h2>
+<p><strong>Teams</strong>: Groups of 3 students</p>
+<p><strong>Project Proposal Deadline</strong>: November 10th - One team
+member emails Kevin and me with: - All team members’ names and email
+addresses - Your chosen domain and dataset - Brief outline of your
+agent’s capabilities (3-5 bullet points) - List of planned tool
+functions (5-8 tools minimum)</p>
+<p><strong>Final Presentation</strong>: January 12th at 9:00 AM - Live
+demo of your agent (10 minutes) - Code walkthrough (5 minutes) - Q&amp;A
+session (5 minutes)</p>
+<hr />
+<p>
+ 
+</p>
+</div>
+<div id="what-youre-building" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> What You’re
+Building</h2>
+<p>You’ll create an AI agent that connects a Large Language Model (LLM)
+to a custom toolkit you build in Python. The agent takes natural
+language questions, determines which tools to use, retrieves, and
+processes data, and returns comprehensive answers.</p>
+<p><strong>Your main task is designing and implementing the tools the
+LLM can use.</strong> Think of the LLM as the brain that decides what to
+do, and your tools as the hands that actually do the work.</p>
+<hr />
+<p>
+ 
+</p>
+</div>
+<div id="agent-capabilities-what-questions-should-it-answer"
+class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Agent Capabilities:
+What Questions Should It Answer?</h2>
+<p>Your agent should handle multi-step questions that require combining
+multiple tools. Here are examples across different domains:</p>
+<p>
+ 
+</p>
+<div id="quick-examples" class="section level3" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> Quick Examples</h3>
+<p><strong>E-commerce Analytics:</strong> - “Show me last month’s sales
+trends by category and compare them to the same period last year.”</p>
+<p><strong>Chess Database Analysis:</strong> - “What’s the win rate for
+players rated above 2000 who open with the King’s Indian Defense as
+Black?”</p>
+<p><strong>Machine Learning Benchmarking:</strong> - “Benchmark
+RandomForest, XGBoost, and LightGBM for predicting house prices. Use
+cross-validation and compare training time and accuracy.”</p>
+<p><strong>Financial Report Generation:</strong> - “Generate a quarterly
+financial report with revenue by product line, top 10 customers, profit
+margins, and growth analysis.”</p>
+<p><strong>Research Data Analysis:</strong> - “Analyze the correlation
+between study hours and exam scores, controlling for prior GPA. Identify
+outliers.”</p>
+<hr />
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="understanding-ai-agents" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Understanding AI
+Agents</h2>
+<p>Before diving into the example, let’s clarify what an <strong>AI
+agent</strong> is. Unlike a simple chatbot that just answers questions,
+an agent can:</p>
+<ul>
+<li><p><strong>Plan</strong>: Break down complex questions into
+steps</p></li>
+<li><p><strong>Use tools</strong>: Call functions you’ve written to get
+data, compute results, or perform actions</p></li>
+<li><p><strong>Reason</strong>: Decide which tools to use and in what
+order</p></li>
+<li><p><strong>Iterate</strong>: If one approach doesn’t work, try
+another</p></li>
+<li><p><strong>Synthesize</strong>: Combine results from multiple tools
+into a coherent answer</p></li>
+</ul>
+<p>Think of it like this: You ask a question → The LLM (brain) decides
+what to do → It calls your tools (hands) → Tools return results → LLM
+interprets and responds.</p>
+<p>
+ 
+</p>
+</div>
+<div id="detailed-example-movie-recommendation-agent"
+class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> Detailed Example:
+Movie Recommendation Agent</h2>
+<p>Let’s walk through a complete example to understand the level of
+sophistication expected.</p>
+<p>
+ 
+</p>
+<div id="the-scenario" class="section level3" number="1.5.1">
+<h3><span class="header-section-number">1.5.1</span> The Scenario</h3>
+<p>You build a personalized movie recommendation agent. The user has a
+database of movies they’ve watched with their ratings and comments. The
+agent helps them decide what to watch next based on what’s currently
+showing in their city.</p>
+<p>
+ 
+</p>
+</div>
+<div id="example-interaction" class="section level3" number="1.5.2">
+<h3><span class="header-section-number">1.5.2</span> Example
+Interaction</h3>
+<p><strong>User:</strong> “What movies are showing in Strasbourg this
+weekend? Recommend one based on what I’ve enjoyed before.”</p>
+<p><strong>Agent’s Workflow:</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Query Cinema Listings</strong> (API Tool)
+<ul>
+<li>Call AlloCiné or similar API</li>
+<li>Filter for Strasbourg, this weekend</li>
+<li>Extract: titles, directors, genres, actors, showtimes</li>
+<li>Result: List of 12 currently showing movies</li>
+</ul></li>
+<li><strong>Analyze User’s Watch History</strong> (Database Tool)
+<ul>
+<li>Query user’s movie database:
+<code>SELECT * FROM watched_movies</code></li>
+<li>Calculate user preferences:
+<ul>
+<li>Favorite genres (user rated comedies 4.2/5 avg, dramas 3.8/5)</li>
+<li>Preferred directors (loves Denis Villeneuve, rates 4.5/5 avg)</li>
+<li>Actor preferences (enjoys movies with Timothée Chalamet)</li>
+<li>Rating patterns (rarely rates below 3, average is 3.9)</li>
+</ul></li>
+</ul></li>
+<li><strong>Gather Movie Details</strong> (Multiple API Tools)
+<ul>
+<li>For each cinema movie, call TMDB/IMDB API</li>
+<li>Get: full cast, director filmography, critic ratings, synopsis</li>
+<li>Extract themes and keywords</li>
+</ul></li>
+<li><strong>Compare and Score</strong> (Analysis Tool)
+<ul>
+<li>Match cinema movies against user preferences:
+<ul>
+<li>Genre overlap: +2 points</li>
+<li>Director match: +3 points</li>
+<li>Actor from favorite movies: +1 point</li>
+<li>Similar themes to high-rated movies: +1 point</li>
+</ul></li>
+<li>Weight by critic ratings and user’s rating tendencies</li>
+</ul></li>
+<li><strong>Generate Recommendation</strong> (Report Tool)
+<ul>
+<li>Rank movies by score</li>
+<li>Create explanation: “I recommend ‘Dune: Part Two’ because:
+<ul>
+<li>Denis Villeneuve directed it (you rated Arrival and Blade Runner
+2049 both 5/5)</li>
+<li>Features Timothée Chalamet (you enjoyed Call Me By Your Name)</li>
+<li>Sci-fi genre matches 70% of your top-rated films</li>
+<li>Shows at UGC Ciné Cité at 20:30 and 22:15”</li>
+</ul></li>
+</ul></li>
+<li><strong>Update Database</strong> (Database Write Tool)
+<ul>
+<li>After user watches it, tool adds entry:
+<code>INSERT INTO watched_movies (title, date, rating, comments) VALUES (...)</code></li>
+<li>User can say: “Add Dune 2, rated 5 stars, comment: ‘Visually
+stunning, best sci-fi in years’”</li>
+</ul></li>
+</ol>
+<p>
+ 
+</p>
+</div>
+<div id="the-tools-youd-build" class="section level3" number="1.5.3">
+<h3><span class="header-section-number">1.5.3</span> The Tools You’d
+Build</h3>
+<p>For this movie recommendation agent, here’s a example of tools you
+could create</p>
+<p><strong>1. Database Tools</strong> These tools interact with your
+local database of watched movies. You might use SQLite for this, with a
+simple schema like
+<code>watched_movies(id, title, director, genre, rating, date_watched, user_comment)</code>.</p>
+<ul>
+<li><code>get_user_watch_history()</code> - Query all watched movies,
+return as DataFrame</li>
+<li><code>get_favorite_genres()</code> - Analyze which genres the user
+rates highest</li>
+<li><code>get_favorite_directors()</code> - Calculate average ratings
+per director</li>
+<li><code>add_watched_movie(title, rating, comment)</code> - Insert new
+viewing record</li>
+<li><code>update_movie_rating(title, new_rating)</code> - Modify
+existing entry if user changes their mind</li>
+</ul>
+<p><strong>2. API Integration Tools</strong> These tools make HTTP
+requests to external services to fetch real-time data. You’ll need API
+keys (store them in <code>.env</code>!).</p>
+<ul>
+<li><code>get_cinema_listings(city, date)</code> - Call AlloCiné or
+similar API to fetch current showings in the specified city</li>
+<li><code>get_movie_details(title)</code> - Query TMDB/IMDB for
+comprehensive movie information (cast, crew, plot, ratings)</li>
+<li><code>get_director_filmography(director_name)</code> - Retrieve all
+movies by a director with their ratings</li>
+<li><code>get_critic_reviews(movie_title)</code> - Fetch professional
+reviews from Rotten Tomatoes or Metacritic APIs</li>
+</ul>
+<p><strong>3. Analysis Tools</strong> These tools process data and
+perform calculations. This is where Polars shines for fast data
+manipulation.</p>
+<ul>
+<li><code>calculate_genre_preferences(watch_history)</code> - Group by
+genre, calculate average ratings, return ranked preferences</li>
+<li><code>match_movie_to_preferences(movie, user_prefs)</code> - Scoring
+algorithm that compares a movie’s attributes to user preferences</li>
+<li><code>find_similar_movies(movie_title, database)</code> -
+Content-based filtering using genre, director, actors to find
+matches</li>
+</ul>
+<p><strong>4. Report Tools</strong> These tools format and present
+results to the user. The output format depends on your project’s
+design.</p>
+<ul>
+<li><code>create_comparison_table(movies, scores)</code> - Format
+multiple movie options with scores in a readable table</li>
+</ul>
+<p><strong>Why This Structure Works:</strong> The LLM can chain these
+tools together. When you ask “Based on movies I’ve watched before, can
+you recommend some films showing in Strasbourg cinemas this week?”, it:
+1. Calls <code>get_cinema_listings()</code> to see options 2. Calls
+<code>get_user_watch_history()</code> to understand preferences 3. For
+top cinema options, calls <code>get_movie_details()</code> to get full
+info 4. Calls <code>match_movie_to_preferences()</code> to score each
+option 5. Calls <code>create_comparison_table()</code> to explain the
+top choice</p>
+<p>Each tool is independent, testable, and reusable in different
+combinations.</p>
+<hr />
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="your-toolbox-what-to-build" class="section level2"
+number="1.6">
+<h2><span class="header-section-number">1.6</span> Your Toolbox: What to
+Build</h2>
+<p>The core of your project is creating Python functions that serve as
+tools for the LLM. Your tools should be: - <strong>Modular</strong>:
+Each tool does one thing well - <strong>Composable</strong>: Tools can
+be combined in different ways</p>
+<p>
+ 
+</p>
+<div id="essential-tool-categories" class="section level3"
+number="1.6.1">
+<h3><span class="header-section-number">1.6.1</span> Essential Tool
+Categories</h3>
+<p>
+ 
+</p>
+<div id="database-tools" class="section level4" number="1.6.1.1">
+<h4><span class="header-section-number">1.6.1.1</span> Database
+Tools</h4>
+<p>You need a database to store your data (<strong>mandatory</strong>).
+The format is your choice: - <strong>SQL</strong> (SQLite, PostgreSQL,
+MySQL) - <strong>NoSQL</strong> (MongoDB, JSON files) -
+<strong>File-based</strong> (Parquet, CSV, Pickle, text)</p>
+<p><strong>The format must be justified by your project needs.</strong>
+For example: - Relational data with complex queries → SQL -
+Nested/flexible structures → NoSQL/JSON - Large analytical datasets →
+Parquet - Simple, small data → CSV</p>
+<p>Your database can be: - <strong>Static</strong>: Pre-populated data
+that’s only read - <strong>Dynamic</strong>: Updated by your tools as
+the agent runs</p>
+<p>You’ll need tools to: - Query/read from the database - Optionally:
+Insert, update, or delete records</p>
+<p>
+ 
+</p>
+</div>
+<div id="external-api-tools" class="section level4" number="1.6.1.2">
+<h4><span class="header-section-number">1.6.1.2</span> External API
+Tools</h4>
+<p>Fetch data from external sources to enrich your agent’s knowledge.
+Most APIs require registration for a free API key.</p>
+<p><strong>Common use cases:</strong> - Movie databases (TMDB, IMDB) -
+Get film information, cast, reviews - Weather APIs (OpenWeatherMap) -
+Current conditions, forecasts - Financial data (Alpha Vantage, Yahoo
+Finance) - Stock prices, company data - Geographic data (OpenStreetMap,
+Google Maps) - Locations, distances, routes - News APIs (NewsAPI) -
+Current articles, headlines by topic - Social media APIs (Twitter,
+Reddit) - Posts, trends, sentiment - Domain-specific APIs for your
+project (sports stats, recipe databases, etc.)</p>
+<p>
+ 
+</p>
+</div>
+<div id="data-processing-tools" class="section level4" number="1.6.1.3">
+<h4><span class="header-section-number">1.6.1.3</span> Data Processing
+Tools</h4>
+<p>Analyze and transform data to extract insights. These tools often
+work with DataFrames returned by your database or API tools.</p>
+<p><strong>What these tools do:</strong> - <strong>Statistical
+calculations</strong> - Mean, median, standard deviation, correlations -
+<strong>Aggregations and grouping</strong> - Use Polars to group by
+categories, time periods, etc. - <strong>Filtering and ranking</strong>
+- Top N results, threshold filtering, sorting - <strong>Machine learning
+predictions</strong> - Train simple models, make predictions -
+<strong>Text analysis</strong> - Sentiment analysis, keyword extraction,
+summarization - <strong>Time series analysis</strong> - Trends,
+seasonality, forecasting</p>
+<p><strong>Example:</strong> A tool that takes sales data and calculates
+month-over-month growth rates, then identifies which products are
+trending up or down.</p>
+<p>
+ 
+</p>
+</div>
+<div id="visualization-tools" class="section level4" number="1.6.1.4">
+<h4><span class="header-section-number">1.6.1.4</span> Visualization
+Tools</h4>
+<p>Create test, tables, charts, and plots to make data easier to
+understand.</p>
+<p><strong>Consider your output medium:</strong> - <strong>Text,
+tables</strong>: simple python print() - <strong>Image files</strong>:
+Generate PNG/JPG plots with matplotlib or plotly, save to disk -
+<strong>Interactive</strong>: Create HTML plots with plotly that allow
+zoom/pan - <strong>Embedded in reports</strong>: Generate images that
+get inserted into PDFs or documents</p>
+<p>
+ 
+</p>
+</div>
+<div id="report-generation-tools" class="section level4"
+number="1.6.1.5">
+<h4><span class="header-section-number">1.6.1.5</span> Report Generation
+Tools</h4>
+<p>Compile results into structured, shareable outputs. Think about how
+your user wants to consume the final answer.</p>
+<p><strong>Output format options:</strong> - <strong>Markdown
+reports</strong> - Easy to read in terminal, convertible to other
+formats - <strong>HTML pages</strong> - Rich formatting, can embed
+images and tables, viewable in browser - <strong>PDF documents</strong>
+- Professional reports for sharing/printing (use libraries like
+reportlab or convert from HTML) - <strong>JSON/CSV exports</strong> -
+Structured data for further processing or import into other tools -
+<strong>Word documents</strong> - Editable reports using python-docx -
+<strong>Email reports</strong> - Send results via email with attachments
+—</p>
+<p>
+ 
+</p>
+</div>
+</div>
+<div id="project-structure" class="section level3" number="1.6.2">
+<h3><span class="header-section-number">1.6.2</span> Project
+Structure</h3>
+<p>Structure your code logically.</p>
+<pre><code>my_agent_project/
+├── src/
+│   └── agent_tools/              # Your package
+│       ├── __init__.py
+│       ├── database.py           # Database tools
+│       ├── api_clients.py        # API integration
+│       ├── analysis.py           # Data processing
+│       ├── visualization.py      # Plotting tools
+│       └── reports.py            # Report generation
+├── scripts/
+│   ├── server.py                 # Main CLI script
+│   └── setup_database.py         # Initialize database
+├── data/
+│   ├── raw/                      # Original datasets
+│   └── processed/                # Cleaned data
+├── config/
+│   └── config.yaml               # Configuration files
+├── .env                          # API keys (DON&#39;T commit!)
+├── .gitignore                    # Ignore patterns
+├── requirements.txt              # Dependencies
+└── README.md                     # Documentation</code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

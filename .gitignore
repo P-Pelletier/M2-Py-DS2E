@@ -1,0 +1,17 @@
+.env
+
+tests/
+test-trainer/
+
+hub/
+novelty_bert_checkpoints/
+novelty_bert_final/
+
+hf/
+MCP/
+Data/
+*.Rproj*
+
+_site/
+
+.DS_Store

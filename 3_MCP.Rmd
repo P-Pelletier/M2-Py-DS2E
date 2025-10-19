@@ -1,0 +1,501 @@
+---
+title: "MCP"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,collapse = T)
+library(reticulate)
+use_virtualenv("/Users/peltouz/Documents/GitHub/M2-Py-DS2E/MCP", required=TRUE)
+py_config()
+#  md_document:
+#    variant: markdown_github
+#
+#
+#<div class = "row">
+#<div class = "row">
+#<div class = "python">
+#  
+#
+#</div>
+#</div>
+#<div class = "row">
+#<div class = "r">  
+#  
+#  
+#</div>
+#</div>
+#</div>
+
+
+#<style>
+#div.blue pre { background-color:lightblue; }
+#div.blue pre.r { background-color:blue; }
+#</style>
+#
+```
+
+<style>
+div.python pre { 
+  background-color: #f5eff8; }
+</style>
+
+<style>
+div.r pre { background-color: #fff5fd; }
+</style>
+
+
+<style>
+div.exo pre { background-color: #e3e9ea; }
+</style>
+
+
+<p>&nbsp;</p>
+
+# What is a MCP?
+
+Think of MCP as a universal standard or a "common language" that allows LLMs to use external tools. While many platforms like OpenAI or frameworks like LangChain allow LLMs to use tools, MCP takes it a step further.
+
+
+MCP (Model Context Protocol) is an open-source specification designed to bridge AI applications with external systems. This standardized protocol allows AI assistants like Claude and ChatGPT to integrate with various resources including data repositories (such as local files and databases), utility tools (like search engines and calculators), and custom workflows (including specialized prompts).
+
+![](img/mcp-simple-diagram.avif)
+
+<p>&nbsp;</p>
+
+## How MCP Works
+
+Imagine you have an application that uses an LLM.
+
+- **Without MCP**: If you want to add a new tool (like a web search or a connection to a specific database), you typically have to modify your application's source code. You need to define the new tool, handle how the LLM calls it, and manage its execution directly within your codebase.
+
+- **With MCP**: MCP works like a REST API for LLM tools. It creates a standard for communication between your main application and the tools, which can be running as completely separate applications. Your application doesn't need to know the internal details of the tool. It just needs to know how to "talk" to it using the MCP standard.
+
+In short, MCP is a specification that decouples the LLM application from the tools it uses.
+
+<p>&nbsp;</p>
+
+## Why MCP Matters
+
+The primary importance of MCP lies in its architectural approach, which provides significant benefits:
+
+- **Extensibility without Code Changes**: You can add new capabilities and tools to an application without ever touching its original source code. If someone develops a new tool that follows the MCP standard, your existing application can use it immediately.
+
+- **Decoupling**: Tools are not part of the main application. They are independent, modular services. This makes your system cleaner, easier to maintain, and allows tool developers and application developers to work independently.
+
+- **Interoperability**: It fosters a standardized ecosystem. Anyone can create a tool, and as long as it adheres to the MCP standard, any MCP-compliant application can discover and use it. This is similar to how any web browser can access any web server because they both follow the HTTP standard.
+
+**MCP delivers distinct advantages to different stakeholders**
+
+- **Developers**: MCP reduces development time and complexity when building, or integrating with, an AI application or agent.
+AI applications or agents: MCP provides access to an ecosystem of data sources, tools and apps which will enhance capabilities and improve the end-user experience.
+
+- **End-users**: MCP results in more capable AI applications or agents which can access your data and take actions on your behalf when necessary.
+
+
+<p>&nbsp;</p>
+
+# Creating your own MCP
+
+<p>&nbsp;</p>
+
+## Initialisation
+
+**Create a Virtual Environment**:
+It's best practice to use a virtual environment.
+
+`python -m venv MCP`
+
+**Activate the Environment**:
+- On Windows: `MCP\Scripts\activate`
+- On macOS/Linux: `source MCP/bin/activate`
+
+**Install Dependencies**:
+`pip install -r requirements_mcp.txt`
+
+The following packages are listed in the requirements_mcp.txt for this project:
+
+```text
+fastmcp==2.12.2
+
+langchain==0.3.27
+langchain-anthropic==0.3.19
+langchain-cerebras==0.5.0
+langchain-community==0.3.29
+langchain-core==0.3.75
+langchain-google-genai==2.1.10
+langchain-groq==0.3.7
+langchain-ibm==0.3.17
+langchain-mcp-adapters==0.1.9
+langchain-mcp-tools==0.2.13
+langchain-ollama==0.3.7
+langchain-openai==0.3.32
+langchain-text-splitters==0.3.11
+langchain-xai==0.2.5
+langgraph==0.6.6
+langgraph-checkpoint==2.1.1
+langgraph-prebuilt==0.6.4
+langgraph-sdk==0.2.6
+langsmith==0.4.23
+ollama==0.5.3
+
+loguru==0.7.3
+
+mcp==1.13.1
+mcp-chat==0.2.14
+mcp-use==1.3.10
+uv
+```
+
+In your terminal install llama.cpp: `brew install llama.cpp`
+
+
+<p>&nbsp;</p>
+
+
+## Using Different LLMs with MCP
+You can interact with MCP using various LLMs, either running locally or via an API.
+
+<p>&nbsp;</p>
+
+### Local
+Download from https://ollama.com/download
+
+After installation, you can run Ollama locally and use supported models.
+
+To use a local model with Ollama:
+
+
+<div class = "python">
+```{python}
+from langchain_ollama import ChatOllama
+llm = ChatOllama(model="gpt-oss:20b")
+```
+</div>
+
+<p>&nbsp;</p>
+
+### API
+- You need a Groq API key to use Groq-hosted models.
+- Store your API key in a `.env` file in your project directory:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+- Load the key in your Python code using the `dotenv` package:
+
+<div class = "python">
+```{python}
+from dotenv import load_dotenv
+load_dotenv()  # This loads environment variables from .env file
+# Now you can use ChatGroq and it will pick up the GROQ_API_KEY automatically
+```
+</div>
+- Make sure to install the `python-dotenv` package if you haven't already:
+
+```sh
+pip install python-dotenv
+```
+
+To use a cloud model with Groq:
+
+
+
+<div class = "python">
+```{python}
+from langchain_groq import ChatGroq
+llm = ChatGroq(model="openai/gpt-oss-120b")
+```
+
+</div>
+<p>&nbsp;</p>
+
+
+# MCP Architecture
+
+The code should be organized into two parts:
+- **client.py**: This script executes your code and makes calls to the LLM. It acts as the client, sending requests and receiving responses.
+- **server.py**: This is the MCP server, which hosts all the tools you want to provide to the LLM. The server exposes these tools via a REST API.
+
+A REST API (Representational State Transfer Application Programming Interface) is a standard way for different software systems to communicate. It allows clients (like your client.py) to send requests to a server (like your MCP server), which processes the requests and returns responses, often in JSON format.
+
+This separation makes your system modular:
+- You can add or update tools on the server without changing the client code.
+- The client can interact with any server that follows the MCP REST API standard.
+
+1. **Set up the MCP server**: We will first create a basic server.py that provides simple tools to our client.
+2. **Connect the client**: The client.py script will send requests to the server, allowing the LLM to use the tools provided by the server.
+
+This architecture enables easy extensibility and clean separation between the LLM application logic and the tools it can use.
+
+This small example is inspired from this post: https://medium.com/@smrati.katiyar/building-mcp-server-and-client-in-python-and-using-ollama-as-llm-provider-dd79fe3a2b16
+
+
+<p>&nbsp;</p>
+
+# Create your toolbox
+
+We will now create a small function that reads a PDF file. This function takes a file path as input and returns the pages of the PDF stored in a Python list, with each page as a separate string.
+
+
+<div class = "python">
+```{python}
+from PyPDF2 import PdfReader
+
+def pdf_to_page_list(pdf_path):
+    """
+    Reads a PDF file and returns a list of strings, one per page.
+    Args:
+        pdf_path (str): Path to the PDF file.
+    Returns:
+        list[str]: List where each element is the text of a page.
+    """
+    reader = PdfReader(pdf_path)
+    pages = []
+    for page in reader.pages:
+        pages.append(page.extract_text())
+    return pages
+
+pdf_pages = pdf_to_page_list("/Users/peltouz/Downloads/Fake CV.pdf")
+pdf_pages
+```
+</div>
+
+The following code sets up an MCP server using the FastMCP class:
+
+<div class = "python">
+```{python}
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("PDF-reader")
+```
+</div>
+`mcp = FastMCP("PDF-reader")` creates an instance of the MCP server and gives it the name "PDF-reader". This name identifies your server and its set of tools when interacting with clients or other services.
+
+
+<p>&nbsp;</p>
+
+## Decorators
+
+Before defining a function as a tool for the MCP server, you need to use a decorator. In Python, a decorator is a special syntax (using the @ symbol) that allows you to modify or enhance the behavior of a function or class.
+
+**What is a Decorator?**
+A decorator is a function that takes another function as input and returns a new function with added or changed behavior. Decorators are commonly used for logging, access control, registering functions, and more.
+
+**Why use a Decorator here?**
+The `@mcp.tool()` decorator tells the MCP server that the decorated function should be exposed as a tool via the API. This makes it discoverable and callable by clients or LLMs.
+
+
+<div class = "python">
+```{python}
+import time
+
+def get_time(func):
+    def wrapper(*args, **kwargs):
+        t = time.time()
+        result = func(*args, **kwargs)
+        print(f"It took {time.time() - t:.2f} seconds")
+        return result
+    return wrapper
+
+@get_time
+def say_hello():
+    time.sleep(1)
+    print("Hello!")
+
+say_hello()
+```
+
+</div>
+
+In the context of MCP, you will use:
+
+<div class = "python">
+```{python,eval=F}
+@mcp.tool()
+def my_tool_function(...):
+    ...
+```
+</div>
+This registers `my_tool_function` as a tool that can be accessed through the MCP server.
+
+<p>&nbsp;</p>
+
+# Full Example
+<p>&nbsp;</p>
+
+## server.py
+
+
+<div class = "python">
+```{python,eval=F}
+from PyPDF2 import PdfReader
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("PDF-reader")
+
+@mcp.tool()
+def pdf_to_page_list(pdf_path):
+    """
+    Reads a PDF file and returns a list of strings, one per page.
+    Args:
+        pdf_path (str): Path to the PDF file.
+    Returns:
+        list[str]: List where each element is the text of a page.
+    """
+    reader = PdfReader(pdf_path)
+    pages = []
+    for page in reader.pages:
+        pages.append(page.extract_text())
+    return pages
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+```
+</div>
+<p>&nbsp;</p>
+
+## client.py
+
+<div class = "python">
+```{python,eval =F}
+import asyncio
+import os
+from langchain_ollama.chat_models import ChatOllama
+from langchain_groq import ChatGroq
+from mcp_use import MCPAgent, MCPClient
+from dotenv import load_dotenv
+import warnings
+
+warnings.filterwarnings("ignore", category=ResourceWarning)
+
+load_dotenv()
+
+server_path = os.path.join("scripts/server.py")
+CONFIG = {
+    "mcpServers": {
+        "fii-demo": {
+            "command": "/Users/peltouz/Documents/GitHub/M2-Py-DS2E/MCP/bin/python3",
+            "args": [server_path]
+        }
+    }
+}
+
+async def run_chatbot():
+    """Running a chat using MCPAgent's built-in conversation memory"""
+    
+    client = MCPClient.from_dict(CONFIG)
+    # llm = ChatOllama(model="qwen3:8b")
+    llm = ChatGroq(model="openai/gpt-oss-120b")
+    
+    agent = MCPAgent(
+        llm=llm,
+        client=client,
+        max_steps=20,
+        memory_enabled=True,  # This enables conversation memory
+        verbose=False
+    )
+    
+    print("Type 'exit' or 'quit' to end the conversation")
+    print("Type 'clear' to clear conversation history\n")
+    
+    try:
+        while True:
+            user_input = input("You: ").strip()
+            
+            if user_input.lower() in ["exit", "quit"]:
+                print("Ending conversation...")
+                break
+            
+            if user_input.lower() == "clear":
+                agent.clear_conversation_history()
+                print("Conversation history cleared.\n")
+                continue
+            
+            if not user_input:
+                continue
+            
+            print("\nAssistant: ", end="", flush=True)
+            
+            try:
+                # Just call agent.run() - memory is handled internally
+                response = await agent.run(user_input)
+                print(response)
+            except Exception as e:
+                print(f"\nError: {e}")
+    
+    finally:
+        if client and client.sessions:
+            await client.close_all_sessions()
+
+if __name__ == "__main__":
+    asyncio.run(run_chatbot())
+     
+## Type 'exit' or 'quit' to end the conversation
+## Type 'clear' to clear conversation history
+## 
+## You:  Do a summary of the CV located at: /Users/peltouz/Downloads/Fake CV.pdf
+## 
+## Assistant: 2025-10-19 22:14:39,369 - mcp_use - INFO - 🚀 Initializing MCP agent and connecting to services...
+## 2025-10-19 22:14:39,370 - mcp_use - INFO - 🔌 Found 0 existing sessions
+## 2025-10-19 22:14:39,370 - mcp_use - INFO - 🔄 No active sessions found, creating new ones...
+## [10/19/25 22:14:39] INFO     Processing request of type ListToolsRequest                                                                      server.py:624
+##                     INFO     Processing request of type ListResourcesRequest                                                                  server.py:624
+##                     INFO     Processing request of type ListPromptsRequest                                                                    server.py:624
+## 2025-10-19 22:14:39,598 - mcp_use - INFO - ✅ Created 1 new sessions
+##                     INFO     Processing request of type ListToolsRequest                                                                      server.py:624
+##                     INFO     Processing request of type ListResourcesRequest                                                                  server.py:624
+##                     INFO     Processing request of type ListPromptsRequest                                                                    server.py:624
+## 2025-10-19 22:14:39,602 - mcp_use - INFO - 🛠️ Created 1 LangChain tools from client
+## 2025-10-19 22:14:39,602 - mcp_use - INFO - 🧰 Found 1 tools across all connectors
+## 2025-10-19 22:14:39,603 - mcp_use - INFO - 🧠 Agent ready with tools: pdf_to_page_list
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - ✨ Agent initialization complete
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 💬 Received query: 'Do a summary of the CV located at: /Users/peltouz/...'
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 🏁 Starting agent execution with max_steps=20
+## 2025-10-19 22:14:39,604 - mcp_use - INFO - 👣 Step 1/20
+## [10/19/25 22:14:40] INFO     Processing request of type CallToolRequest                                                                       server.py:624
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 💭 Reasoning:  Invoking: `pdf_to_page_list` with `{'pdf_path': '/Users/peltouz/Downloads/Fake CV.pdf'}`   
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 🔧 Tool call: pdf_to_page_list with input: {'pdf_path': '/Users/peltouz/Downloads/Fake CV.pdf'}
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 📄 Tool result: FAKE NAME Phone:  emailADDRESS I'm a student studying Aerospace Engineering at the University of ...
+## 2025-10-19 22:14:40,726 - mcp_use - INFO - 👣 Step 2/20
+## 2025-10-19 22:14:42,496 - mcp_use - INFO - ✅ Agent finished at step 2
+## 2025-10-19 22:14:42,496 - mcp_use - INFO - 🎉 Agent execution complete in 3.127031087875366 seconds
+## **Summary of CV – FAKE NAME**
+## 
+## **Profile**  
+## Aerospace Engineering student at the University of Manchester seeking an engineering internship. Describes himself as honest, reliable, punctual, and able to work well under pressure.
+## 
+## **Education**  
+## - **University of Manchester (2015‑Present)** – BEng/MEng in Aerospace Engineering (with Foundation Year).  
+## - **Level 3 Access to Higher Education (2014‑2015)** – Engineering Science (9 Distinctions, 6 Merits), Physics (15 Distinctions), Maths (6 Distinctions, 9 Merits).  
+## - **Level 2 NVQ (2010‑2012)** – Diploma in HGV Vehicle Maintenance & Repair.  
+## - **GCSE (2006‑2010)** – Grades: English C, Business Studies B, Maths C, Catering C, Additional Science C, Engineering Double Award B/C.
+## 
+## **Work Experience**  
+## 1. **Penventon Park Hotel (May 2009)** – 2‑week work‑experience; assisted kitchen, restaurant, housekeeping, reception, and functions.  
+## 2. **NAME Commercials – Apprentice/Technician (Jun 2010‑Jun 2013)** – Assisted senior technicians, performed routine servicing/maintenance of heavy‑goods vehicles; earned Level 2 NVQ.  
+## 3. **NAME Commercials – Parts Manager (Jun 2013‑Aug 2014)** – Managed warehouse stock, handled sales/warranty issues, sourced parts, maintained records and profit margins.  
+## 4. **NAME Restaurant – Kitchen Porter (Aug‑Dec 2014)** – Operated industrial dishwasher, kept kitchen clean, assisted head chef, prepared vegetables.  
+## 5. **NAME Spar Shop – Shop Assistant (Nov 2014‑Sep 2015)** – Managed tills, handled cash, assisted customers, stocked shelves; later helped owner with a paper round.  
+## 
+## **Leadership & Extracurricular**  
+## - Deputy Chair of the Residents Association for student residences at Manchester: helps oversee the association, organise events, manage administration, and support charity fundraisers.
+## 
+## **Interests & Hobbies**  
+## - Playing guitar, martial arts, kayaking, badminton.  
+## - Keen on UK space industry development, renewable energy, and biotechnology.
+## 
+## **Key Attributes**  
+## - Strong work ethic and reliability across retail, catering, and commercial transport roles.  
+## - Experience in technical maintenance, parts inventory, and customer service.  
+## - Leadership experience in student housing association.  
+## - Passion for aerospace and emerging technologies, aligning with internship goals.
+## You: Without rerunning any function, what is the name of the candidate ?
+## 
+## Assistant: 2025-10-19 22:14:57,254 - mcp_use - INFO - 💬 Received query: 'Without rerunning any function, what is the name o...'
+## 2025-10-19 22:14:57,255 - mcp_use - INFO - 🏁 Starting agent execution with max_steps=20
+## 2025-10-19 22:14:57,255 - mcp_use - INFO - 👣 Step 1/20
+## 2025-10-19 22:14:57,846 - mcp_use - INFO - ✅ Agent finished at step 1
+## 2025-10-19 22:14:57,846 - mcp_use - INFO - 🎉 Agent execution complete in 0.5922238826751709 seconds
+## The CV lists the candidate’s name as **FAKE NAME**.
+```
+</div>
