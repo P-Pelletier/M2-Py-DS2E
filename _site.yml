@@ -17,7 +17,7 @@ navbar:
       href: 5_Parallelization.html
   right:
     - icon: fa-github fa-lg
-      href: https://github.com/master-ds2e/
+      href: https://github.com/P-Pelletier/M2-Py-DS2E/tree/gh-pages
 output:
   html_document:
     theme: flatly

@@ -53,6 +53,346 @@ div.exo pre { background-color: #e3e9ea; }
 
 <p>&nbsp;</p>
 
+# The Transformer Archictecture 
+
+- **Model Composition**:
+  - **Encoder**:
+    - Receives input and builds its representation (features).
+    - Optimized for understanding the input.
+  - **Decoder**:
+    - Uses the encoder's representation (features) and other inputs to generate a target sequence.
+    - Optimized for generating outputs.
+
+
+- **Usage**:
+  - **Encoder-only models**:
+    - Suitable for tasks requiring input understanding (e.g., sentence classification, named entity recognition).
+  - **Decoder-only models**:
+    - Suitable for generative tasks (e.g., text generation).
+  - **Encoder-decoder models (sequence-to-sequence models)**:
+    - Suitable for generative tasks that require an input (e.g., translation, summarization).
+
+
+![](img/eco-deco.png)
+
+<p>&nbsp;</p>
+
+## Attention layers
+
+Attention layers are integral to the Transformer architecture. The paper introducing the Transformer was titled “Attention Is All You Need,” highlighting the importance of attention layers.
+
+- **Function of attention layers**: These layers direct the model to focus on specific words in a sentence, while downplaying the importance of others.
+
+- **Contextual meaning**: The meaning of a word depends not only on the word itself but also on its context, which includes other words around it.
+
+
+
+
+<p>&nbsp;</p>
+
+### The original architecture
+
+The Transformer architecture was initially designed for translation.
+
+- **Encoder**:
+  - Receives inputs (sentences) in a certain language during training.
+  - Attention layers can use all the words in a sentence, considering both preceding and following words.
+
+- **Decoder**:
+  - Receives the same sentences in the desired target language.
+  - Works sequentially, paying attention only to the words that have already been translated (i.e., the preceding words).
+  - For instance, after predicting the first three words of the translated target, the decoder uses these words and the inputs from the encoder to predict the fourth word.
+
+
+- **Initial Embedding Lookup**:
+  - The raw embeddings for each token are **context-independent**.
+  - Example: The same embedding is used for "bank" whether it refers to a financial institution or a riverbank.
+
+
+- **Transformer Layers**:
+  - After the initial embedding lookup, token embeddings (e.g., **768-dimensional vectors**) are passed through the **transformer's self-attention layers**.
+  - These layers enable the model to attend to other tokens in the sequence, capturing relationships and interactions between words.
+
+
+- **Context-Sensitive Representations**:
+  - As the token embeddings pass through multiple transformer layers, each token's representation becomes **context-sensitive** based on surrounding words.
+
+<p>&nbsp;</p>
+
+## Architectures vs. checkpoints
+
+- **Architecture**: 
+  - Refers to the skeleton of the model, defining each layer and operation within it.
+  
+  
+- **Checkpoints**: 
+  - Weights that are loaded into a given architecture.
+
+
+- **Model**: 
+  - An umbrella term that can refer to both architecture and checkpoints.
+  
+
+- **Example**: 
+  - BERT is an architecture.
+  - bert-base-cased, a set of weights trained by the Google team for the first release of BERT, is a checkpoint.
+  - The term "model" can be used to refer to both the architecture (e.g., "BERT model") and the checkpoint (e.g., "bert-base-cased model").
+
+<p>&nbsp;</p>
+
+
+### Decoder models
+
+- **Decoder models** use only the decoder part of a Transformer model.
+
+
+- **Attention mechanism**: At each stage, the attention layers can only access the words that are positioned before the current word in the sentence.
+
+
+- These models are often referred to as **auto-regressive models**.
+
+
+- **Pretraining**: Typically focuses on predicting the next word in a sentence.
+
+
+- **Best suited for**: Tasks involving text generation.
+
+
+- **Examples** of decoder models:
+    - CTRL
+    - GPT
+    - GPT-2
+    - Transformer XL
+    
+
+![](img/eco-deco.png)
+
+**Step 1**: Input Embedding
+Converts words into numerical vectors:
+
+```
+Text: "The cat eats"
+↓
+Tokens: [The] [cat] [eats]
+↓
+Each becomes a dense vector (e.g., 768 numbers)
+[The] → [0.23, -0.45, 0.67, ..., 0.12]
+```
+
+**Step 2: Positional Encoding**
+Adds position information since transformers don't inherently understand word order:
+```
+Position 0: Gets encoding vector
+Position 1: Gets different encoding vector
+Position 2: Gets another different encoding vector
+
+Final = Word Embedding + Position Encoding
+```
+
+**Step 3: Transformer Block (repeated N times)**
+
+**3.1 - *Masked* Multi-Head Attention**
+
+**The Causal Mask:**
+```
+When processing "eats" at position 2:
+Can see: [The] [cat] [eats]
+Cannot see: [the] [mouse] (future tokens)
+
+Attention mask matrix:
+         The  cat  eats  the  mouse
+The     [ ✓   ✗    ✗    ✗    ✗   ]
+cat     [ ✓   ✓    ✗    ✗    ✗   ]
+eats    [ ✓   ✓    ✓    ✗    ✗   ]
+the     [ ✓   ✓    ✓    ✓    ✗   ]
+mouse   [ ✓   ✓    ✓    ✓    ✓   ]
+
+(✓ = can see, ✗ = blocked)
+```
+
+**Why "Multi-Head"?**
+Having multiple attention heads (e.g., 12) allows the model to focus on different aspects simultaneously:
+- Head 1: Subject-verb relationships
+- Head 2: Semantic meaning
+- Head 3: Long-range dependencies
+- etc.
+
+**3.2 - Add & Norm**
+Two important techniques:
+- **Residual Connection**: Adds the input back to the output (prevents information loss in deep networks)
+- **Layer Normalization**: Stabilizes the numbers to prevent them from getting too large or small
+
+Think of it as: "Keep the original information and just add the new insights"
+
+**3.3 - Feed Forward Network**
+A simple neural network applied to each position independently:
+- Expands the representation (768 → 3072 dimensions)
+- Applies non-linear transformation
+- Compresses back (3072 → 768 dimensions)
+
+This allows the model to process the attended information and extract higher-level features.
+
+
+**Step 4: Stacking Layers**
+
+These blocks repeat many times:
+- GPT-2: 12-48 layers
+- GPT-3: 96 layers
+
+Each layer refines understanding:
+- **Early layers**: Grammar, syntax, word relationships
+- **Middle layers**: Meaning, context, semantic relationships  
+- **Late layers**: Abstract reasoning, global context
+
+
+**Step 5: Output Prediction**
+
+The final layer produces probabilities for the next word:
+```
+Current text: "The cat eats"
+
+Probability for next word:
+  [the]   : 0.001
+  [a]     : 0.089
+  [fish]  : 0.156
+  [mice]  : 0.234  ← Most likely
+  [quickly]: 0.078
+  ...
+```
+
+<p>&nbsp;</p>
+
+
+### Encoder models
+
+- **Encoder models** use only the encoder part of a Transformer model.
+
+
+- **Attention mechanism**: At each stage, the attention layers can access all the words in the sentence.
+
+
+- These models are characterized by **bi-directional attention** and are often referred to as **auto-encoding models**. Processes text **bidirectionally** - can see both past and future words. Designed for understanding, not generation.
+
+
+- **Pretraining**: Typically involves corrupting a sentence (e.g., by masking random words) and tasking the model with reconstructing the original sentence.
+
+
+- **Best suited for**: Tasks requiring a full understanding of the sentence, such as:
+    - Sentence classification
+    - Named entity recognition (word classification)
+    - Extractive question answering
+
+
+- **Examples** of encoder models:
+    - ALBERT
+    - BERT
+    - DistilBERT
+    - ELECTRA
+    - RoBERTa
+
+
+![](img/eco-deco.png)
+
+**Step 1: Input Embedding**
+Similar to GPT, but adds special tokens:
+```
+Text: "The cat eats the mouse"
+↓
+Tokens: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+
+[CLS] = Classification token (for sentence-level tasks)
+[SEP] = Separator (for sentence pairs)
+```
+
+**Step 2: Positional Encoding**
+Same as GPT - adds position information.
+
+
+**Step 3: Transformer Block**
+
+**3.1 - Multi-Head Attention (NO MASK)**
+
+**KEY DIFFERENCE: Bidirectional attention**
+```
+When processing "cat" at position 2:
+Can see: [CLS] [The] [cat] [eats] [the] [mouse] [SEP]
+         ↑     ↑     ↑      ↑     ↑      ↑       ↑
+         ALL tokens visible (past AND future)
+
+Attention matrix (no masking):
+          CLS The cat eats the mouse SEP
+CLS      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+The      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+cat      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ] ← Can see everything!
+eats     [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+the      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+mouse    [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+SEP      [ ✓   ✓   ✓   ✓   ✓   ✓    ✓  ]
+```
+
+**Example attention for "eats":**
+```
+Can attend to:
+  - "cat" (subject before): 0.35
+  - "mouse" (object after): 0.40  ← Can see future!
+  - "the" (determiner after): 0.15
+  - others: 0.10
+```
+
+The model understands **full context** from both directions, making it better at understanding what words mean in context.
+
+**3.2 - Add & Norm**
+Same as GPT - residual connections and normalization.
+
+**3.3 - Feed Forward**
+Same as GPT - expand, transform, compress.
+
+
+**Step 4: Stacking Layers**
+- BERT-base: 12 layers
+- BERT-large: 24 layers
+
+Each layer builds deeper understanding of the full sentence context.
+
+
+**Step 5: Task-Specific Output**
+
+**No autoregressive generation!**
+
+BERT produces a rich representation for each token:
+
+```
+[CLS]   → vector  ← Used for sentence classification
+[The]   → vector  ← Used for word-level tasks
+[cat]   → vector  ← Used for named entity recognition
+[eats]  → vector  
+...
+```
+
+<p>&nbsp;</p>
+
+### Sequence-to-sequence models
+
+- **Encoder-decoder models** (also known as **sequence-to-sequence models**) use both parts of the Transformer architecture.
+
+
+- **Attention mechanism**:
+    - Encoder: The attention layers can access all the words in the input sentence.
+    - Decoder: The attention layers can only access the words positioned before the current word in the input.
+
+
+- **Best suited for**: Tasks that involve generating new sentences based on a given input, such as:
+    - Summarization
+    - Translation
+    - Generative question answering
+
+
+- **Examples** of encoder-decoder models:
+    - BART
+    - mBART
+    - Marian
+    - T5
+
 
 #  Fine-tuning a pretrained model
 
