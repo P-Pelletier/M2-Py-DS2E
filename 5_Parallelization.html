@@ -345,7 +345,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/master-ds2e/">
+  <a href="https://github.com/P-Pelletier/M2-Py-DS2E/tree/gh-pages">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -377,6 +377,1167 @@ div.exo pre { background-color: #e3e9ea; }
 <p>
  
 </p>
+<div id="parallel-computing" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Parallel Computing</h1>
+<div id="what-is-parallel-computing" class="section level2"
+number="1.1">
+<h2><span class="header-section-number">1.1</span> What is Parallel
+Computing?</h2>
+<div id="sequential-computing" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> Sequential
+Computing</h3>
+<p><strong>Historical context:</strong></p>
+<ul>
+<li>Software traditionally written for sequential execution</li>
+<li>Single CPU executes instructions one at a time, in order</li>
+<li>Next instruction only starts after previous one completes</li>
+</ul>
+<p><strong>Analogy:</strong> Single chef preparing a three-course meal
+must finish appetizer completely before starting main course, then
+dessert.</p>
+<p align="center">
+<img alt="Sequential Computing" src="img/Gemini_Generated_Image_4cuue24cuue24cuu.png" width="500">
+</p>
+</div>
+<div id="concurrency-vs.-parallelism" class="section level3"
+number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> Concurrency
+vs. Parallelism</h3>
+<p><strong>Critical distinction for Python performance:</strong></p>
+<p><strong>Concurrency:</strong></p>
+<ul>
+<li>Managing multiple tasks at once</li>
+<li>Single worker rapidly switches between tasks</li>
+<li>Creates illusion of simultaneous execution</li>
+<li>Multiple tasks “in progress” but only one actively worked on</li>
+</ul>
+<p><strong>Analogy:</strong> One chef making soup and steak, puts soup
+to simmer, sears steak while soup cooks, switches back to stir soup.</p>
+<p align="center">
+<img alt="Concurrency" src="img/Gemini_Generated_Image_qnjitcqnjitcqnji.png" width="500">
+</p>
+</div>
+<div id="parallel-computing-1" class="section level3" number="1.1.3">
+<h3><span class="header-section-number">1.1.3</span> Parallel
+Computing</h3>
+<p><strong>Core concept:</strong></p>
+<ul>
+<li>Simultaneous use of multiple processing elements for one
+problem</li>
+<li>Large task broken into smaller, independent sub-tasks</li>
+<li>Sub-tasks executed concurrently on different processors</li>
+<li>Results combined for final solution</li>
+</ul>
+<p><strong>Analogy:</strong> Head chef brings two assistants, three
+separate stations working simultaneously on appetizer, main course, and
+dessert. Meal ready in fraction of the time.</p>
+<p align="center">
+<img alt="Parallel Computing" src="img/Gemini_Generated_Image_wse25awse25awse2.png" width="500">
+</p>
+<p><strong>Parallelism:</strong></p>
+<ul>
+<li>Executing multiple tasks at exact same time</li>
+<li>Requires multiple physical workers (processor cores)</li>
+<li>True simultaneous execution</li>
+</ul>
+</div>
+</div>
+<div id="cpu-architecture" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> CPU Architecture</h2>
+<div id="cpu-components" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> CPU Components</h3>
+<p><strong>Main parts:</strong></p>
+<ul>
+<li><strong>Control Unit (CU):</strong> Manages data flow and
+coordinates CPU actions</li>
+<li><strong>Arithmetic Logic Unit (ALU):</strong> Performs mathematical
+operations and logical comparisons</li>
+<li><strong>Registers:</strong> Small, fast memory locations inside CPU
+for current data/instructions</li>
+</ul>
+</div>
+<div id="multi-core-processors" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Multi-core
+Processors</h3>
+<p><strong>Definition:</strong></p>
+<ul>
+<li>Single CPU chip with 2+ independent processing units (cores)</li>
+<li>Each core has own CU, ALU, and registers</li>
+<li>Functions as independent CPU</li>
+<li>Enables true simultaneous instruction execution</li>
+</ul>
+<p><strong>Physical vs. Logical Cores:</strong></p>
+<p><strong>Physical Cores:</strong></p>
+<ul>
+<li>Real, tangible processing units in CPU</li>
+<li>Source of true parallelism</li>
+<li>Example: Quad-core = four separate, complete processing units</li>
+</ul>
+<p><strong>Logical Cores:</strong></p>
+<ul>
+<li>Software abstraction via Hyper-Threading/SMT</li>
+<li>Makes one physical core appear as two to OS</li>
+<li>Uses idle parts of physical core simultaneously</li>
+<li>Performance boost: ~20-30%, not double</li>
+<li>Example: One thread uses math unit while another uses memory
+unit</li>
+</ul>
+</div>
+</div>
+<div id="python-specific-challenges" class="section level2"
+number="1.3">
+<h2><span class="header-section-number">1.3</span> Python-Specific
+Challenges</h2>
+<div id="the-global-interpreter-lock-gil" class="section level3"
+number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> The Global
+Interpreter Lock (GIL)</h3>
+<p><strong>What it is:</strong></p>
+<ul>
+<li>Lock in CPython interpreter</li>
+<li>Only one thread executes Python bytecode at any moment</li>
+<li>Problem for CPU-bound tasks</li>
+</ul>
+</div>
+<div id="multithreading-one-kitchen-many-chefs" class="section level3"
+number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> Multithreading (One
+Kitchen, Many Chefs)</h3>
+<p><strong>The setup:</strong></p>
+<ul>
+<li>Python program = one kitchen</li>
+<li>Threads = chefs in that kitchen</li>
+<li>Shared memory = tools and ingredients</li>
+</ul>
+<p><strong>The problem:</strong></p>
+<ul>
+<li>GIL = strict rule: only one chef in kitchen at a time</li>
+<li>Multiple threads work concurrently, not in parallel</li>
+<li>Can’t utilize multiple CPU cores for heavy computation</li>
+</ul>
+</div>
+<div id="multiprocessing-many-kitchens-many-chefs"
+class="section level3" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> Multiprocessing
+(Many Kitchens, Many Chefs)</h3>
+<p><strong>The solution:</strong></p>
+<ul>
+<li>Creates completely separate processes (kitchens)</li>
+<li>Each process = full copy with own memory</li>
+<li>Each has own GIL (own door lock)</li>
+<li>OS assigns processes to different CPU cores</li>
+<li>True parallel execution for heavy computational work</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="parallel-computing-libraries-in-python" class="section level1"
+number="2">
+<h1><span class="header-section-number">2</span> Parallel Computing
+Libraries in Python</h1>
+<div id="checking-your-cpu-cores" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Checking Your CPU
+Cores</h2>
+<p><strong>Logical cores (total workers available to
+system):</strong></p>
+<pre class="python"><code>import os
+nombre_coeurs_logiques = os.cpu_count()
+print(f&quot;Number of logical cores: {nombre_coeurs_logiques}&quot;)
+# Number of logical cores: 14</code></pre>
+<p><strong>Physical cores (actual computing units):</strong></p>
+<p>Install external library:</p>
+<pre class="bash"><code>pip install psutil</code></pre>
+<p>Then check:</p>
+<pre class="python"><code>import psutil
+nb_cores = psutil.cpu_count(logical=False)
+print(f&quot;Number of physical cores: {nb_cores}&quot;)
+# Number of physical cores: 14</code></pre>
+</div>
+<div id="framework-comparison" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Framework
+Comparison</h2>
+<p>We’ll compare 5 parallel processing approaches against sequential
+baseline:</p>
+<ol style="list-style-type: decimal">
+<li><strong><code>1_single_process.py</code></strong> - Sequential
+baseline</li>
+<li><strong><code>1_multiprocessing.py</code></strong> - Built-in
+multiprocessing module</li>
+<li><strong><code>1_concurrent.py</code></strong> -
+concurrent.futures.ProcessPoolExecutor</li>
+<li><strong><code>1_joblib.py</code></strong> - Joblib library</li>
+<li><strong><code>1_mpire.py</code></strong> - MPIRE library</li>
+</ol>
+</div>
+<div id="library-details" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Library Details</h2>
+<div id="multiprocessing" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> 1.
+multiprocessing</h3>
+<pre class="python"><code>with Pool(workers) as p:
+    results = p.map(f, iterable)</code></pre>
+<p><strong>What it is:</strong></p>
+<ul>
+<li>Python’s built-in solution for parallel execution on multiple
+cores</li>
+<li>Uses separate processes instead of threads</li>
+<li>Each process has own memory space and Python interpreter</li>
+</ul>
+<p><strong>Key feature:</strong></p>
+<ul>
+<li>Enables true parallelism for CPU-heavy tasks</li>
+<li>Low-level API: Process, Pool, Queue</li>
+</ul>
+</div>
+<div id="concurrent.futures" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> 2.
+concurrent.futures</h3>
+<pre class="python"><code>with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
+    results = list(executor.map(f, iterable))</code></pre>
+<p><strong>What it is:</strong></p>
+<ul>
+<li>High-level interface for thread/process pools</li>
+<li>Unified API for both threading and multiprocessing</li>
+<li>Returns Future objects as result placeholders</li>
+</ul>
+<p><strong>Key feature:</strong></p>
+<ul>
+<li>Choose ThreadPoolExecutor or ProcessPoolExecutor</li>
+<li>Simple methods: <code>submit()</code>, <code>map()</code></li>
+<li>Minimal code changes needed</li>
+</ul>
+</div>
+<div id="joblib" class="section level3" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> 3. joblib</h3>
+<pre class="python"><code>results = Parallel(n_jobs=workers)(delayed(f)(i) for i in iterable)</code></pre>
+<p><strong>What it is:</strong></p>
+<ul>
+<li>Third-party library for data science/scientific computing</li>
+<li>Optimized for NumPy arrays and large datasets</li>
+</ul>
+<p><strong>Key features:</strong></p>
+<ul>
+<li>Smart caching (memoization), saves results to disk</li>
+<li>Memory mapping for large arrays</li>
+<li>Efficient data handling between processes</li>
+</ul>
+</div>
+<div id="mpire-multiprocessing-is-really-easy" class="section level3"
+number="2.3.4">
+<h3><span class="header-section-number">2.3.4</span> 4. mpire
+(MultiProcessing Is Really Easy)</h3>
+<pre class="python"><code>with WorkerPool(n_jobs=workers) as pool:
+    results = pool.map(f, iterable)</code></pre>
+<p><strong>What it is:</strong></p>
+<ul>
+<li>High-performance library built on multiprocessing</li>
+<li>Enhanced version of multiprocessing.Pool</li>
+</ul>
+<p><strong>Key features:</strong></p>
+<ul>
+<li>Built-in progress bars for long tasks</li>
+<li>Easy worker state management</li>
+<li>Performance optimizations</li>
+<li>Better developer experience</li>
+</ul>
+</div>
+</div>
+<div id="running-scripts" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Running scripts</h2>
+<ul>
+<li><p>Use a virtual environment.
+<code>python -m venv adv_prog</code></p></li>
+<li><p>You can then activate your new env:</p>
+<pre><code>   -  On Windows: `adv_prog\Scripts\activate`
+   -  On macOS/Linux: `source adv_prog/bin/activate`</code></pre></li>
+<li><p>Once activated, install all the library necessary using :
+<code>pip3 install -r requirements.txt</code></p></li>
+</ul>
+<pre class="python"><code>import time
+from utils import f, workers, iterable</code></pre>
+<ul>
+<li><strong><code>run_all_1.sh</code></strong> - Shell script to execute
+all parallel processing benchmarks</li>
+</ul>
+<pre class="bash"><code>#!/bin/bash
+
+for f in 1_*.py; do
+    echo &quot;--- Running $f ---&quot;
+    python3 &quot;$f&quot;
+    echo
+    echo &quot;==============================&quot;
+done</code></pre>
+<ul>
+<li>This way we can just change the iterable and the function and rerun
+our comparisaon between paralelle computing libraries in python.</li>
+</ul>
+</div>
+</div>
+<div id="benchmark-categories" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Benchmark
+Categories</h1>
+<div id="io-bound-tasks-network-latency-simulation"
+class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> 1. I/O-Bound Tasks
+(Network Latency Simulation)</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>Network/database/API response waiting, No intensive computation,
+just waiting time</li>
+</ul>
+<p><strong>Results:</strong></p>
+<pre class="python"><code>def f(x):
+    time.sleep(1)
+    return x*x
+
+n= 25
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 3.080 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 3.125 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 3.034 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 3.076 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 25.115 seconds
+
+# ==============================
+
+def f(x):
+    time.sleep(0.01)
+    return x*x
+n = 2500
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 3.085 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 3.120 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 3.130 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 3.075 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 25.099 seconds
+
+# ==============================</code></pre>
+<ul>
+<li>All parallel frameworks perform similarly (~3s vs 25s
+sequential)</li>
+<li>CPU nearly idle during waiting periods</li>
+<li>OS switches between waiting tasks efficiently</li>
+</ul>
+</div>
+<div id="cpu-bound-tasks-equal-duration" class="section level2"
+number="3.2">
+<h2><span class="header-section-number">3.2</span> 2. CPU-Bound Tasks
+(Equal Duration)</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>Computation-intensive tasks (CPU-bound)</li>
+<li>Equal computation time per iteration</li>
+<li>Tests pure parallel computation distribution</li>
+</ul>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>Prime number checking with fixed large number</li>
+</ul>
+<p><strong>Results:</strong></p>
+<pre class="python"><code>def f(n):
+    n = 9999991
+    if n &lt; 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+
+    sqrt_n = int(math.floor(math.sqrt(n)))
+    for i in range(3, sqrt_n + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+
+n=1000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 0.111 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 0.135 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 0.119 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.051 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.037 seconds
+
+# ==============================
+
+n=100000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 6.959 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 0.534 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 1.479 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.447 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 3.761 seconds
+
+# ==============================</code></pre>
+<ul>
+<li><strong>Best performers:</strong> multiprocessing, joblib</li>
+<li>concurrent.futures: Higher-level abstractions introduce slight
+overhead</li>
+<li><strong>Important:</strong> For n=1000, sequential (0.037s) beats
+parallel, process creation overhead exceeds time saved <span
+class="math inline">\(-&gt;\)</span> Parallelization only worthwhile if
+tasks are long enough</li>
+</ul>
+</div>
+<div id="cpu-bound-tasks-variable-duration" class="section level2"
+number="3.3">
+<h2><span class="header-section-number">3.3</span> 3. CPU-Bound Tasks
+(Variable Duration)</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>Variable complexity across tasks</li>
+<li>Dynamic vs. static task distribution comparison. Some tasks fast
+(even numbers), others slow (large primes)</li>
+</ul>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>Prime checking across range</li>
+</ul>
+<p><strong>Results:</strong></p>
+<pre class="python"><code>def f(n):
+    if n &lt; 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+
+    sqrt_n = int(math.floor(math.sqrt(n)))
+    for i in range(3, sqrt_n + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+n=1000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 0.108 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 0.096 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 0.118 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.044 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.000 seconds
+
+
+n=1000000
+iterable = range(n)
+
+# --- Running 1_concurrent.py ---
+# Took 70.225 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 1.204 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 11.225 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.147 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.863 seconds</code></pre>
+<ul>
+<li><strong>Best performers:</strong> multiprocessing, joblib</li>
+<li><strong>Dynamic task distribution:</strong> Send small chunks to
+workers; workers request new chunks when finished</li>
+<li>concurrent.futures (70s), divides tasks into large fixed chunks
+upfront</li>
+<li>Workers with long-running tasks create bottleneck while others sit
+idle</li>
+</ul>
+</div>
+<div id="disk-io-operations" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> 4. Disk I/O
+Operations</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>File system operations (read/write logs, dataset processing)</li>
+<li>I/O-bound tasks where disk speed is bottleneck</li>
+</ul>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>File creation/deletion operations</li>
+</ul>
+<div id="small-files" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Small files</h3>
+<pre class="python"><code>import random
+import string
+import os
+
+def f(x):
+    filename = f&quot;{x}.txt&quot;
+    path = &#39;data/&#39;
+    letters = &#39;&#39;.join(random.choices(string.ascii_letters, k=200))
+    with open(path + filename, &quot;w&quot;) as file:
+        file.write(letters)
+    os.remove(path + filename)
+    return filename
+
+n = 1000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 0.141 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 0.152 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 0.119 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.118 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.099 seconds
+
+# ==============================
+
+
+n = 100000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 8.297 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 7.609 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 7.312 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 7.418 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 9.762 seconds</code></pre>
+</div>
+<div id="large-files" class="section level3" number="3.4.2">
+<h3><span class="header-section-number">3.4.2</span> Large files</h3>
+<pre class="python"><code>def f(x):
+    filename = f&quot;{x}.txt&quot;
+    path = &#39;data/&#39;
+    letters = &#39;&#39;.join(random.choices(string.ascii_letters, k=20000))
+    with open(path + filename, &quot;w&quot;) as file:
+        file.write(letters)
+    os.remove(path + filename)
+    return filename
+
+n = 1000
+iterable = range(n)
+# -- Running 1_concurrent.py ---
+# Took 0.162 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 0.184 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 0.225 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.140 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.630 seconds
+
+# ==============================
+
+
+n = 100000
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 10.911 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 8.809 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 10.175 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 9.417 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 61.839 seconds
+
+# ==============================</code></pre>
+<ul>
+<li><strong>Bottleneck:</strong> Disk controller, not CPU</li>
+<li><strong>Moderate gains:</strong> Processes compete for same physical
+resource (disk)</li>
+<li><strong>Small files:</strong> Minimal/negative gain,write time so
+short that parallelization overhead dominates</li>
+<li><strong>Large files:</strong> Clear benefit, longer write time
+allows parallel work and hides disk latency</li>
+</ul>
+</div>
+</div>
+<div id="memory-intensive-tasks" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> 5. Memory-Intensive
+Tasks</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>Memory consumption in multiprocessing, unlike multithreading (shared
+memory), multiprocessing duplicates resources</li>
+</ul>
+<div id="small-arrays" class="section level3" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Small arrays</h3>
+<pre class="python"><code>import numpy as np
+
+def f(x):
+    size_in_mb = 500
+    num_elements = (size_in_mb * 1024 * 1024) // 8
+    big_array = np.random.rand(num_elements) 
+    return len(big_array)
+
+n = 100
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 2.660 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 1.822 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 2.086 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 2.052 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 13.789 seconds
+
+# ==============================</code></pre>
+</div>
+<div id="large-arrays" class="section level3" number="3.5.2">
+<h3><span class="header-section-number">3.5.2</span> Large arrays</h3>
+<pre class="python"><code>def f(x):
+    size_in_mb = 5000
+    num_elements = (size_in_mb * 1024 * 1024) // 8
+    big_array = np.random.rand(num_elements) 
+    return len(big_array)
+
+n = 10
+iterable = range(n)
+# --- Running 1_concurrent.py ---
+# Took 8.304 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 7.740 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 7.183 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 7.253 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 13.624 seconds
+
+# ==============================
+</code></pre>
+<ul>
+<li>Gain from multiple cores generating arrays simultaneously</li>
+<li><strong>RAM danger:</strong> Each process allocates memory
+independently</li>
+<li>joblib can optimize with memory mapping (not in this test)</li>
+</ul>
+</div>
+</div>
+<div id="data-serialization-overhead" class="section level2"
+number="3.6">
+<h2><span class="header-section-number">3.6</span> 6. Data Serialization
+Overhead</h2>
+<p><strong>What it simulates:</strong></p>
+<ul>
+<li>Inter-process communication (IPC) costs</li>
+<li>Serialization/deserialization overhead</li>
+<li>Python must serialize data (convert to byte stream via pickle) to
+send between processes</li>
+</ul>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>Processing large NumPy arrays with inter-process communication</li>
+<li>Comparison includes vectorized NumPy operations</li>
+</ul>
+<pre class="python"><code>import numpy as np
+
+def f(x):
+    return np.mean(x)
+
+n = 100000
+big_array = np.random.rand(100000000)
+iterable =np.array_split(big_array, n)
+
+# --- Running 1_concurrent.py ---
+# Took 7.952 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 1.563 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 1.475 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.985 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.162 seconds
+
+# ==============================
+
+matrix = big_array.reshape(n, -1)  
+means = matrix.mean(axis=1)
+
+# -- Numpy
+# Took 0.043 seconds
+
+# ==============================
+
+
+n = 1000
+iterable = np.array_split(big_array, n)
+
+# --- Running 1_concurrent.py ---
+# Took 0.650 seconds
+
+# ==============================
+# --- Running 1_joblib.py ---
+# Took 1.037 seconds
+
+# ==============================
+# --- Running 1_mpire.py ---
+# Took 0.229 seconds
+
+# ==============================
+# --- Running 1_multiprocessing.py ---
+# Took 0.865 seconds
+
+# ==============================
+# --- Running 1_single_process.py ---
+# Took 0.034 seconds
+
+# ==============================
+# -- Numpy
+# Took 0.026 seconds
+
+# ==============================
+</code></pre>
+<ul>
+<li><strong>Best performers:</strong> Vectorized NumPy (0.043s),
+single_process (0.162s)</li>
+<li><strong>Vectorized NumPy lesson:</strong> Operations executed in
+compiled C/Fortran code, if vectorization possible, try it!</li>
+<li>Serialization cost so high, faster to compute in one process than
+transfer data</li>
+</ul>
+</div>
+</div>
+<div id="gpu-vs-cpu-for-matrix-operations" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> GPU vs CPU for Matrix
+Operations</h1>
+<p><strong>from Part 1:</strong> CPU parallelism is not efficient due to
+data transfer overhead between cores.</p>
+<pre class="python"><code>n = 100000
+size = 100000000
+
+big_array = np.random.rand(size)
+iterable =np.array_split(big_array, n)
+matrix = big_array.reshape(n, -1)  
+means = matrix.mean(axis=1)
+# Took 0.033 seconds</code></pre>
+<p><strong>GPU solution for matrix operations:</strong></p>
+<pre class="python"><code>import torch
+import time
+import numpy as np
+
+if torch.cuda.is_available():
+    device = torch.device(&quot;cuda&quot;)
+elif torch.backends.mps.is_available():
+    device = torch.device(&quot;mps&quot;)
+else:
+    device = torch.device(&quot;cpu&quot;)
+    print(&quot;No GPU detected&quot;)
+
+
+big_tensor = torch.rand(size, device=device)
+
+t = time.time()
+matrix_tensor = big_tensor.reshape(n, -1)
+means_tensor = matrix_tensor.mean(dim=1)
+# Took 0.003 seconds</code></pre>
+<p><strong>10x more data:</strong></p>
+<pre class="python"><code>n = 100000
+size = 1000000000
+
+big_array = np.random.rand(size)
+iterable =np.array_split(big_array, n)
+
+matrix = big_array.reshape(n, -1)  
+means = matrix.mean(axis=1)
+# Took 0.330 seconds (x10)
+
+
+big_tensor = torch.rand(size, device=device)
+
+t = time.time()
+matrix_tensor = big_tensor.reshape(n, -1)
+means_tensor = matrix_tensor.mean(dim=1)
+#Took 0.005 seconds</code></pre>
+<ul>
+<li>NumPy scales almost linearly with data size</li>
+<li>GPU computation less than 2x slower despite 10x more data</li>
+</ul>
+<div id="gpu-architecture" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> GPU Architecture</h2>
+<p><strong>Core concept:</strong></p>
+<ul>
+<li>CPU: Few very powerful, smart cores</li>
+<li>GPU: Hundreds/thousands of simpler, specialized cores</li>
+</ul>
+<p><strong>Analogy:</strong></p>
+<ul>
+<li><strong>CPU:</strong> Head chef managing complex, overarching
+tasks</li>
+<li><strong>GPU:</strong> Army of 1,000 kitchen assistants for
+repetitive tasks</li>
+<li><strong>Task:</strong> Finely chop 10,000 carrots</li>
+<li><strong>Process:</strong> Single command (“chop”) executed by all
+1,000 assistants simultaneously</li>
+<li><strong>Result:</strong> 10,000 carrots finished in time to chop
+just a few</li>
+</ul>
+<p><strong>GPU strength:</strong> Massive parallelism for simple,
+uniform tasks <strong>GPU limitation:</strong> Not suited for complex,
+varied operations</p>
+<p align="center">
+<img alt="GPU" src="img/Gemini_Generated_Image_uy6ru9uy6ru9uy6r.png" width="500">
+</p>
+</div>
+<div id="benchmark-cosine-similarity-search" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> Benchmark: Cosine
+Similarity Search</h2>
+<p><strong>Task:</strong> Find 3 most similar vectors for each new
+vector</p>
+<p><strong>3 approaches compared:</strong></p>
+<div id="pure-numpy" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> 1. Pure NumPy</h3>
+<pre class="python"><code>import time
+import numpy as np
+from utils_2 import nb_txt, dim, nb_new 
+
+def find_similar_numpy(new_texts_matrix, all_txt_matrix):
+    dot_product = np.dot(all_txt_matrix, new_texts_matrix.T)
+    all_txt_norm = np.linalg.norm(all_txt_matrix, axis=1)
+    new_texts_norm = np.linalg.norm(new_texts_matrix, axis=1)
+    denominator = all_txt_norm[:, np.newaxis] * new_texts_norm[np.newaxis, :]
+    similarity = dot_product / denominator
+    return np.argsort(-similarity, axis=1)[:, :3]
+
+
+if __name__ == &quot;__main__&quot;:
+    existing_txt_np = np.random.rand(nb_txt, dim).astype(np.float32)
+    new_txt_np = np.random.rand(nb_new,dim).astype(np.float32)
+    t = time.time()
+    closest_indices_np = find_similar_numpy(new_txt_np, existing_txt_np)
+    print(f&quot;Took %.3f seconds&quot; % (time.time() - t))</code></pre>
+</div>
+<div id="pytorch-cpu" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> 2. PyTorch CPU</h3>
+<pre class="python"><code>import torch
+import time
+import numpy as np
+from utils_2 import nb_txt, dim, nb_new
+
+
+device = torch.device(&quot;cpu&quot;)
+
+def find_similar_pytorch(new_texts_tensor, all_txt_tensor):
+    dot_product = torch.matmul(all_txt_tensor, new_texts_tensor.T)
+    all_txt_norm = torch.linalg.norm(all_txt_tensor, dim=1)
+    new_texts_norm = torch.linalg.norm(new_texts_tensor, dim=1)
+    denominator = all_txt_norm.unsqueeze(1) * new_texts_norm.unsqueeze(0)
+    similarity = dot_product / denominator
+    return torch.argsort(similarity, dim=1, descending=True)[:, :3]
+
+
+
+if __name__ == &quot;__main__&quot;:
+    existing_txt_np = np.random.rand(nb_txt, dim).astype(np.float32)
+    new_txt_np = np.random.rand(nb_new,dim).astype(np.float32)
+    existing_txt_pt_cpu = torch.from_numpy(existing_txt_np)
+    new_txt_pt_cpu = torch.from_numpy(new_txt_np)
+
+    t = time.time()
+    closest_indices_pt_cpu = find_similar_pytorch(new_txt_pt_cpu, existing_txt_pt_cpu)
+    print(f&quot;Took %.3f seconds&quot; % (time.time() - t))</code></pre>
+</div>
+<div id="pytorch-gpu" class="section level3" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> 3. PyTorch GPU</h3>
+<pre class="python"><code>import torch
+import time
+import numpy as np
+from utils_2 import nb_txt, dim, nb_new
+
+if torch.cuda.is_available():
+    device = torch.device(&quot;cuda&quot;)
+elif torch.backends.mps.is_available():
+    device = torch.device(&quot;mps&quot;)
+else:
+    device = torch.device(&quot;cpu&quot;)
+    print(&quot;No GPU detected&quot;)
+
+
+
+
+def find_similar_pytorch(new_texts_tensor, all_txt_tensor):
+    dot_product = torch.matmul(all_txt_tensor, new_texts_tensor.T)
+    all_txt_norm = torch.linalg.norm(all_txt_tensor, dim=1)
+    new_texts_norm = torch.linalg.norm(new_texts_tensor, dim=1)
+    denominator = all_txt_norm.unsqueeze(1) * new_texts_norm.unsqueeze(0)
+    similarity = dot_product / denominator
+    return torch.argsort(similarity, dim=1, descending=True)[:, :3]
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    existing_txt_np = np.random.rand(nb_txt, dim).astype(np.float32)
+    new_txt_np = np.random.rand(nb_new,dim).astype(np.float32)
+    existing_txt_gpu = torch.from_numpy(existing_txt_np).to(device)
+    new_txt_gpu = torch.from_numpy(new_txt_np).to(device)
+
+    t = time.time()
+    closest_indices_gpu = find_similar_pytorch(new_txt_gpu, existing_txt_gpu)
+    print(f&quot;Took %.3f seconds&quot; % (time.time() - t))</code></pre>
+</div>
+</div>
+<div id="results-analysis" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Results Analysis</h2>
+<div id="small-scale-data" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Small Scale
+Data</h3>
+<p><strong>Parameters:</strong> nb_txt = 1000, dim = 100, nb_new =
+100</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# Took 0.002 seconds
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# Took 0.002 seconds
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Took 1.196 seconds</code></pre>
+<ul>
+<li><strong>CPU wins:</strong> Calculation trivial for modern CPU
+(milliseconds)</li>
+<li><strong>GPU extremely slow:</strong> Data transfer overhead
+dominates</li>
+<li>Data must copy from RAM to GPU VRAM before computation</li>
+<li>Transfer time &gt;&gt; computation time for small data</li>
+<li>CPU accesses RAM almost instantly</li>
+</ul>
+</div>
+<div id="medium-to-large-scale-data" class="section level3"
+number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Medium to Large
+Scale Data</h3>
+<p><strong>Medium:</strong> nb_txt = 10000, dim = 100, nb_new = 1000</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# Took 0.305 seconds
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# Took 0.054 seconds
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Took 0.022 seconds</code></pre>
+<p><strong>Large:</strong> nb_txt = 1000000, dim = 100, nb_new =
+1000</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# Took 30.882 seconds
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# Took 4.023 seconds
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Took 0.026 seconds</code></pre>
+</div>
+<div id="scaling-dimensions-and-vectors" class="section level3"
+number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> Scaling Dimensions
+and Vectors</h3>
+<p><strong>Test 1:</strong> nb_txt = 100000, dim = 1000, nb_new =
+1000</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# Took 3.117 seconds
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# Took 0.444 seconds
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Took 0.022 seconds</code></pre>
+<p><strong>Test 2:</strong> nb_txt = 100000, dim = 1000, nb_new =
+10000</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# Took 41.750 seconds
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# Took 5.713 seconds
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Took 0.263 seconds</code></pre>
+<ul>
+<li><strong>PyTorch CPU &gt; NumPy:</strong> Built on optimized C++
+libraries (MKL/OpenMP)</li>
+<li>Better parallelization across CPU cores</li>
+<li>Optimized execution model for larger tensors</li>
+<li><strong>GPU dominates:</strong> Computation size hides data transfer
+latency</li>
+<li>Matrix multiplication is “embarrassingly parallel”</li>
+<li>Thousands of GPU cores vs. few CPU cores</li>
+<li>GPU time barely increases while CPU explodes</li>
+</ul>
+</div>
+<div id="memory-wall" class="section level3" number="4.3.4">
+<h3><span class="header-section-number">4.3.4</span> Memory Wall</h3>
+<p><strong>Test:</strong> nb_txt = 100000, dim = 1000, nb_new =
+100000</p>
+<pre class="python"><code># --- Running 2_numpy.py ---
+# ./run_all_2.sh: line 3: 35710 Killed: 9               python3 &quot;$f&quot;
+
+# ==============================
+# --- Running 2_pytorch_cpu.py ---
+# ./run_all_2.sh: line 3: 35787 Killed: 9               python3 &quot;$f&quot;
+
+# ==============================
+# --- Running 2_pytorch_gpu.py ---
+# Traceback (most recent call last):
+#   File &quot;/Users/peltouz/Library/Mobile Documents/com~apple~CloudDocs/GitHub/Advanced Programming/2_pytorch_gpu.py&quot;, line 35, in &lt;module&gt;
+#     closest_indices_gpu = find_similar_pytorch(new_txt_gpu, existing_txt_gpu)
+#   File &quot;/Users/peltouz/Library/Mobile Documents/com~apple~CloudDocs/GitHub/Advanced Programming/2_pytorch_gpu.py&quot;, line 18, in find_similar_pytorch
+#     dot_product = torch.matmul(all_txt_tensor, new_texts_tensor.T)
+# RuntimeError: Invalid buffer size: 37.25 GiB</code></pre>
+<p><strong>Killed: 9 (CPU):</strong></p>
+<ul>
+<li>OS Out Of Memory (OOM) killer terminated program</li>
+<li>Arrays too large for available RAM</li>
+<li>OS forcibly kills memory-hungry process to prevent system crash</li>
+</ul>
+<p><strong>RuntimeError: Invalid buffer size: 37.25 GiB
+(GPU):</strong></p>
+<ul>
+<li>Matrix multiplication needs 37.25 GiB intermediate buffer</li>
+<li>Exceeds available VRAM on GPU</li>
+<li><strong>GPU constraint:</strong> Entire dataset + model must fit in
+dedicated memory</li>
+<li>GPUs typically have less memory than system RAM</li>
+<li>Hit memory limits sooner for massive operations</li>
+</ul>
+</div>
+</div>
+</div>
 
 
 
